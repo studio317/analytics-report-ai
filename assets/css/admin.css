@@ -1,0 +1,12 @@
+.analytics-report-ai-admin .analytics-report-ai-card {
+	max-width: 960px;
+	margin-top: 20px;
+	padding: 20px;
+	background: #fff;
+	border: 1px solid #dcdcde;
+	border-radius: 4px;
+}
+
+.analytics-report-ai-admin .analytics-report-ai-card h2 {
+	margin-top: 0;
+}
