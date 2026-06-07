@@ -38,6 +38,29 @@ final class Analytics_Report_AI_Report_Data_Formatter {
 	}
 
 	/**
+	 * Create AI payload from GA4 summary data.
+	 *
+	 * @param array $conditions         Validated conditions.
+	 * @param array $settings           Plugin settings.
+	 * @param array $current_summary    Current GA4 summary.
+	 * @param array $comparison_summary Comparison GA4 summary.
+	 * @return array
+	 */
+	public static function create_payload_from_ga4_summary( $conditions, $settings, $current_summary, $comparison_summary = array() ) {
+		$has_comparison = ! empty( $conditions['comparison'] ) && 'none' !== $conditions['comparison'];
+		$payload        = self::create_dummy_payload( $conditions, $settings );
+
+		$payload['payload_version'] = '0.1.0-ga4-summary';
+		$payload['summary']         = self::build_summary_from_ga4_values(
+			$current_summary,
+			$has_comparison ? $comparison_summary : array(),
+			$has_comparison
+		);
+
+		return $payload;
+	}
+
+	/**
 	 * Build site payload.
 	 *
 	 * @param array $settings Plugin settings.
@@ -85,6 +108,34 @@ final class Analytics_Report_AI_Report_Data_Formatter {
 			'bounceRate'             => self::build_metric( '直帰率', 0.407, 0.413, 'ratio', $has_comparison ),
 			'averageSessionDuration' => self::build_metric( '平均セッション時間', 86.4, 81.2, 'seconds', $has_comparison ),
 		);
+	}
+
+	/**
+	 * Build summary from GA4 values.
+	 *
+	 * @param array $current_summary    Current summary.
+	 * @param array $comparison_summary Comparison summary.
+	 * @param bool  $has_comparison     Whether comparison exists.
+	 * @return array
+	 */
+	private static function build_summary_from_ga4_values( $current_summary, $comparison_summary, $has_comparison ) {
+		$definitions = analytics_report_ai_get_summary_metric_definitions();
+		$summary     = array();
+
+		foreach ( $definitions as $metric_name => $definition ) {
+			$current    = isset( $current_summary[ $metric_name ] ) ? $current_summary[ $metric_name ] : 0;
+			$comparison = isset( $comparison_summary[ $metric_name ] ) ? $comparison_summary[ $metric_name ] : 0;
+
+			$summary[ $metric_name ] = self::build_metric(
+				$definition['label'],
+				$current,
+				$comparison,
+				$definition['unit'],
+				$has_comparison
+			);
+		}
+
+		return $summary;
 	}
 
 	/**

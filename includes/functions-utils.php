@@ -343,3 +343,75 @@ if ( ! function_exists( 'analytics_report_ai_get_payload_transient_expiration' )
 		return 30 * MINUTE_IN_SECONDS;
 	}
 }
+
+if ( ! function_exists( 'analytics_report_ai_get_summary_metric_definitions' ) ) {
+	/**
+	 * Get summary metric definitions.
+	 *
+	 * @return array
+	 */
+	function analytics_report_ai_get_summary_metric_definitions() {
+		return array(
+			'screenPageViews'        => array(
+				'label' => '表示回数',
+				'unit'  => 'count',
+				'type'  => 'integer',
+			),
+			'activeUsers'            => array(
+				'label' => 'アクティブユーザー数',
+				'unit'  => 'count',
+				'type'  => 'integer',
+			),
+			'newUsers'               => array(
+				'label' => '新規ユーザー数',
+				'unit'  => 'count',
+				'type'  => 'integer',
+			),
+			'sessions'               => array(
+				'label' => 'セッション数',
+				'unit'  => 'count',
+				'type'  => 'integer',
+			),
+			'engagedSessions'        => array(
+				'label' => 'エンゲージメントのあったセッション数',
+				'unit'  => 'count',
+				'type'  => 'integer',
+			),
+			'engagementRate'         => array(
+				'label' => 'エンゲージメント率',
+				'unit'  => 'ratio',
+				'type'  => 'float',
+			),
+			'bounceRate'             => array(
+				'label' => '直帰率',
+				'unit'  => 'ratio',
+				'type'  => 'float',
+			),
+			'averageSessionDuration' => array(
+				'label' => '平均セッション時間',
+				'unit'  => 'seconds',
+				'type'  => 'float',
+			),
+		);
+	}
+}
+
+if ( ! function_exists( 'analytics_report_ai_cast_metric_value' ) ) {
+	/**
+	 * Cast metric value.
+	 *
+	 * @param string $metric_name Metric name.
+	 * @param mixed  $value Raw value.
+	 * @return int|float
+	 */
+	function analytics_report_ai_cast_metric_value( $metric_name, $value ) {
+		$definitions = analytics_report_ai_get_summary_metric_definitions();
+		$type        = isset( $definitions[ $metric_name ]['type'] ) ? $definitions[ $metric_name ]['type'] : 'float';
+
+		if ( 'integer' === $type ) {
+			return (int) $value;
+		}
+
+		return (float) $value;
+	}
+}

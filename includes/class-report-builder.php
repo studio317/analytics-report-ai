@@ -100,7 +100,7 @@ final class Analytics_Report_AI_Report_Builder {
 
 			<form method="post" action="" class="analytics-report-ai-card analytics-report-ai-report-form">
 				<?php wp_nonce_field( 'analytics_report_ai_report_builder_action', 'analytics_report_ai_report_builder_nonce' ); ?>
-				<input type="hidden" name="analytics_report_ai_report_action" value="create_dummy_payload" />
+				<input type="hidden" name="analytics_report_ai_report_action" value="fetch_ga4_summary" />
 
 				<h2><?php echo esc_html__( 'Report Conditions', 'analytics-report-ai' ); ?></h2>
 
@@ -220,12 +220,12 @@ final class Analytics_Report_AI_Report_Builder {
 
 				<p>
 					<button type="submit" class="button button-primary">
-						<?php echo esc_html__( 'Create Dummy Payload', 'analytics-report-ai' ); ?>
+						<?php echo esc_html__( 'Fetch GA4 Summary', 'analytics-report-ai' ); ?>
 					</button>
 				</p>
 
 				<p class="description">
-					<?php echo esc_html__( 'This button validates the conditions and creates a dummy AI payload preview. It does not call the GA4 API yet.', 'analytics-report-ai' ); ?>
+					<?php echo esc_html__( 'This button validates the conditions, fetches the basic GA4 summary, and creates an AI payload preview.', 'analytics-report-ai' ); ?>
 				</p>
 			</form>
 
@@ -270,8 +270,8 @@ final class Analytics_Report_AI_Report_Builder {
 			);
 		}
 
-		if ( 'create_dummy_payload' === $action ) {
-			return $this->handle_create_dummy_payload();
+		if ( 'fetch_ga4_summary' === $action ) {
+			return $this->handle_fetch_ga4_summary();
 		}
 
 		if ( 'generate_ai_report' === $action ) {
@@ -287,11 +287,11 @@ final class Analytics_Report_AI_Report_Builder {
 	}
 
 	/**
-	 * Handle dummy payload creation.
+	 * Handle GA4 summary fetching.
 	 *
 	 * @return array
 	 */
-	private function handle_create_dummy_payload() {
+	private function handle_fetch_ga4_summary() {
 		$raw_input = isset( $_POST['analytics_report_ai_report'] ) && is_array( $_POST['analytics_report_ai_report'] )
 			? wp_unslash( $_POST['analytics_report_ai_report'] )
 			: array();
@@ -312,7 +312,56 @@ final class Analytics_Report_AI_Report_Builder {
 
 		$conditions = $validation_result['conditions'];
 		$settings   = analytics_report_ai_get_settings();
-		$payload    = Analytics_Report_AI_Report_Data_Formatter::create_dummy_payload( $conditions, $settings );
+
+		$property_id  = isset( $settings['ga4_property_id'] ) ? (string) $settings['ga4_property_id'] : '';
+		$access_token = isset( $settings['google_tokens']['access_token'] ) ? (string) $settings['google_tokens']['access_token'] : '';
+
+		$current_summary = Analytics_Report_AI_GA4_Client::run_summary_report(
+			$property_id,
+			$access_token,
+			$conditions['period'],
+			$settings,
+			$conditions
+		);
+
+		if ( is_wp_error( $current_summary ) ) {
+			return array(
+				'status'      => 'error',
+				'errors'      => array(
+					$current_summary->get_error_message(),
+				),
+				'form_values' => $validation_result['form_values'],
+			);
+		}
+
+		$comparison_summary = array();
+
+		if ( ! empty( $conditions['comparison_period'] ) && is_array( $conditions['comparison_period'] ) ) {
+			$comparison_summary = Analytics_Report_AI_GA4_Client::run_summary_report(
+				$property_id,
+				$access_token,
+				$conditions['comparison_period'],
+				$settings,
+				$conditions
+			);
+
+			if ( is_wp_error( $comparison_summary ) ) {
+				return array(
+					'status'      => 'error',
+					'errors'      => array(
+						$comparison_summary->get_error_message(),
+					),
+					'form_values' => $validation_result['form_values'],
+				);
+			}
+		}
+
+		$payload = Analytics_Report_AI_Report_Data_Formatter::create_payload_from_ga4_summary(
+			$conditions,
+			$settings,
+			$current_summary,
+			$comparison_summary
+		);
 
 		$transient_key = analytics_report_ai_get_payload_transient_key();
 		$expiration    = analytics_report_ai_get_payload_transient_expiration();
@@ -320,12 +369,14 @@ final class Analytics_Report_AI_Report_Builder {
 		set_transient( $transient_key, $payload, $expiration );
 
 		return array(
-			'status'        => 'payload_created',
-			'conditions'    => $conditions,
-			'payload'       => $payload,
-			'transient_key' => $transient_key,
-			'expiration'    => $expiration,
-			'form_values'   => $validation_result['form_values'],
+			'status'             => 'payload_created',
+			'conditions'         => $conditions,
+			'payload'            => $payload,
+			'current_summary'    => $current_summary,
+			'comparison_summary' => $comparison_summary,
+			'transient_key'      => $transient_key,
+			'expiration'         => $expiration,
+			'form_values'        => $validation_result['form_values'],
 		);
 	}
 
@@ -475,7 +526,7 @@ final class Analytics_Report_AI_Report_Builder {
 		if ( 'payload_created' === $submission_result['status'] ) {
 			?>
 			<div class="notice notice-success">
-				<p><?php echo esc_html__( 'Dummy AI payload was created successfully.', 'analytics-report-ai' ); ?></p>
+				<p><?php echo esc_html__( 'GA4 summary was fetched and AI payload was created successfully.', 'analytics-report-ai' ); ?></p>
 			</div>
 			<?php
 			return;
@@ -604,7 +655,7 @@ final class Analytics_Report_AI_Report_Builder {
 			<p>
 				<?php
 				printf(
-					esc_html__( 'The dummy AI payload has been saved temporarily for %d minutes.', 'analytics-report-ai' ),
+					esc_html__( 'The AI payload has been saved temporarily for %d minutes.', 'analytics-report-ai' ),
 					(int) floor( $expiration / MINUTE_IN_SECONDS )
 				);
 				?>

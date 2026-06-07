@@ -119,10 +119,23 @@ final class Analytics_Report_AI_Settings {
 		}
 
 		/*
-		 * These values are not edited on this screen yet.
+		 * Google access token for MVP development.
+		 *
+		 * Empty input keeps the existing token.
 		 */
-		$settings['google_auth_status'] = isset( $existing['google_auth_status'] ) ? sanitize_text_field( $existing['google_auth_status'] ) : 'not_connected';
-		$settings['google_tokens']      = isset( $existing['google_tokens'] ) && is_array( $existing['google_tokens'] ) ? $existing['google_tokens'] : array();
+		$google_tokens = isset( $existing['google_tokens'] ) && is_array( $existing['google_tokens'] ) ? $existing['google_tokens'] : array();
+
+		$clear_google_access_token = ! empty( $input['clear_google_access_token'] );
+		$google_access_token       = isset( $input['google_access_token'] ) ? trim( (string) $input['google_access_token'] ) : '';
+
+		if ( $clear_google_access_token ) {
+			unset( $google_tokens['access_token'] );
+		} elseif ( '' !== $google_access_token ) {
+			$google_tokens['access_token'] = sanitize_text_field( $google_access_token );
+		}
+
+		$settings['google_tokens']      = $google_tokens;
+		$settings['google_auth_status'] = ! empty( $google_tokens['access_token'] ) ? 'connected' : 'not_connected';
 
 		return $settings;
 	}
@@ -140,6 +153,7 @@ final class Analytics_Report_AI_Settings {
 		$settings             = analytics_report_ai_get_settings();
 		$has_openai_api_key   = ! empty( $settings['openai_api_key'] );
 		$google_auth_status   = isset( $settings['google_auth_status'] ) ? $settings['google_auth_status'] : 'not_connected';
+		$has_google_access_token = ! empty( $settings['google_tokens']['access_token'] );
 		$host_filter_enabled  = ! empty( $settings['host_filter_enabled'] );
 		$ga4_property_id      = isset( $settings['ga4_property_id'] ) ? $settings['ga4_property_id'] : '';
 		$host_name            = isset( $settings['host_name'] ) ? $settings['host_name'] : analytics_report_ai_get_default_host();
@@ -186,6 +200,51 @@ final class Analytics_Report_AI_Settings {
 								<p class="description">
 									<?php echo esc_html__( 'Google OAuth connection will be implemented in a later step.', 'analytics-report-ai' ); ?>
 								</p>
+							</td>
+						</tr>
+
+						<tr>
+							<th scope="row">
+								<label for="analytics-report-ai-google-access-token">
+									<?php echo esc_html__( 'Google Access Token', 'analytics-report-ai' ); ?>
+								</label>
+							</th>
+							<td>
+								<input
+									type="password"
+									id="analytics-report-ai-google-access-token"
+									name="<?php echo esc_attr( ANALYTICS_REPORT_AI_OPTION_NAME ); ?>[google_access_token]"
+									value=""
+									class="regular-text"
+									autocomplete="off"
+									placeholder="<?php echo esc_attr( $has_google_access_token ? __( 'Saved. Enter a new token only when replacing it.', 'analytics-report-ai' ) : __( 'Not saved.', 'analytics-report-ai' ) ); ?>"
+								/>
+
+								<p class="description">
+									<?php
+									echo $has_google_access_token
+										? esc_html__( 'A Google access token is currently saved. Leave this field empty to keep the existing token.', 'analytics-report-ai' )
+										: esc_html__( 'No Google access token is currently saved.', 'analytics-report-ai' );
+									?>
+								</p>
+
+								<p class="description">
+									<?php echo esc_html__( 'This is a temporary MVP development field. The access token must have permission to read GA4 data, and it may expire in about one hour.', 'analytics-report-ai' ); ?>
+								</p>
+
+								<?php if ( $has_google_access_token ) : ?>
+									<p>
+										<label for="analytics-report-ai-clear-google-access-token">
+											<input
+												type="checkbox"
+												id="analytics-report-ai-clear-google-access-token"
+												name="<?php echo esc_attr( ANALYTICS_REPORT_AI_OPTION_NAME ); ?>[clear_google_access_token]"
+												value="1"
+											/>
+											<?php echo esc_html__( 'Delete the saved Google access token.', 'analytics-report-ai' ); ?>
+										</label>
+									</p>
+								<?php endif; ?>
 							</td>
 						</tr>
 
