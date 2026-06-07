@@ -274,8 +274,8 @@ final class Analytics_Report_AI_Report_Builder {
 			return $this->handle_create_dummy_payload();
 		}
 
-		if ( 'generate_dummy_report' === $action ) {
-			return $this->handle_generate_dummy_report();
+		if ( 'generate_ai_report' === $action ) {
+			return $this->handle_generate_ai_report();
 		}
 
 		return array(
@@ -330,11 +330,11 @@ final class Analytics_Report_AI_Report_Builder {
 	}
 
 	/**
-	 * Handle dummy AI report generation.
+	 * Handle AI report generation.
 	 *
 	 * @return array
 	 */
-	private function handle_generate_dummy_report() {
+	private function handle_generate_ai_report() {
 		$transient_key = analytics_report_ai_get_payload_transient_key();
 		$payload       = get_transient( $transient_key );
 
@@ -342,13 +342,26 @@ final class Analytics_Report_AI_Report_Builder {
 			return array(
 				'status' => 'error',
 				'errors' => array(
-					__( 'Temporary AI payload was not found. Please create the dummy payload again.', 'analytics-report-ai' ),
+					__( 'Temporary AI payload was not found. Please create the payload again.', 'analytics-report-ai' ),
 				),
 			);
 		}
 
-		$report_text = Analytics_Report_AI_OpenAI_Client::create_dummy_report( $payload );
-		$conditions  = isset( $payload['conditions'] ) && is_array( $payload['conditions'] ) ? $payload['conditions'] : array();
+		$settings    = analytics_report_ai_get_settings();
+		$report_text = Analytics_Report_AI_OpenAI_Client::generate_report( $payload, $settings );
+
+		if ( is_wp_error( $report_text ) ) {
+			return array(
+				'status'     => 'error',
+				'errors'     => array(
+					$report_text->get_error_message(),
+				),
+				'conditions' => isset( $payload['conditions'] ) && is_array( $payload['conditions'] ) ? $payload['conditions'] : array(),
+				'payload'    => $payload,
+			);
+		}
+
+		$conditions = isset( $payload['conditions'] ) && is_array( $payload['conditions'] ) ? $payload['conditions'] : array();
 
 		return array(
 			'status'      => 'report_generated',
@@ -471,7 +484,7 @@ final class Analytics_Report_AI_Report_Builder {
 		if ( 'report_generated' === $submission_result['status'] ) {
 			?>
 			<div class="notice notice-success">
-				<p><?php echo esc_html__( 'Dummy AI report was generated successfully.', 'analytics-report-ai' ); ?></p>
+				<p><?php echo esc_html__( 'AI report was generated successfully.', 'analytics-report-ai' ); ?></p>
 			</div>
 			<?php
 			return;
@@ -610,8 +623,7 @@ final class Analytics_Report_AI_Report_Builder {
 
 			<form method="post" action="" class="analytics-report-ai-generate-form">
 				<?php wp_nonce_field( 'analytics_report_ai_report_builder_action', 'analytics_report_ai_report_builder_nonce' ); ?>
-				<input type="hidden" name="analytics_report_ai_report_action" value="generate_dummy_report" />
-
+				<input type="hidden" name="analytics_report_ai_report_action" value="generate_ai_report" />
 				<p>
 					<button
 						type="submit"
@@ -622,15 +634,15 @@ final class Analytics_Report_AI_Report_Builder {
 					>
 						<?php
 						echo 'report_generated' === $submission_result['status']
-							? esc_html__( 'Regenerate Dummy AI Report', 'analytics-report-ai' )
-							: esc_html__( 'Generate Dummy AI Report', 'analytics-report-ai' );
+							? esc_html__( 'Regenerate AI Report', 'analytics-report-ai' )
+							: esc_html__( 'Generate AI Report', 'analytics-report-ai' );
 						?>
 					</button>
 				</p>
 			</form>
 
 			<p class="description">
-				<?php echo esc_html__( 'This button creates a dummy report from the payload saved in transient. It does not call the OpenAI API yet.', 'analytics-report-ai' ); ?>
+				<?php echo esc_html__( 'This button generates a report draft using the OpenAI API and the payload saved in transient.', 'analytics-report-ai' ); ?>
 			</p>
 		</div>
 		<?php

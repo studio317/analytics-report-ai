@@ -252,6 +252,16 @@ final class Analytics_Report_AI_Settings {
 									?>
 								</p>
 
+								<p class="description">
+									<?php echo esc_html__( 'OpenAI API keys can be used with All or Restricted permissions.', 'analytics-report-ai' ); ?>
+									<br>
+									<?php echo esc_html__( 'Choose All if you want a simpler setup.', 'analytics-report-ai' ); ?>
+									<br>
+									<?php echo esc_html__( 'For a safer setup, choose Restricted and set Model capabilities and Responses (/v1/responses) to Request.', 'analytics-report-ai' ); ?>
+									<br>
+									<?php echo esc_html__( 'We recommend keeping unused features set to None.', 'analytics-report-ai' ); ?>
+								</p>
+
 								<?php if ( $has_openai_api_key ) : ?>
 									<p>
 										<label for="analytics-report-ai-clear-openai-api-key">

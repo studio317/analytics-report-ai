@@ -12,189 +12,160 @@ if ( ! defined( 'ABSPATH' ) ) {
 final class Analytics_Report_AI_OpenAI_Client {
 
 	/**
-	 * Create dummy report text from payload.
-	 *
-	 * This method does not call the OpenAI API.
-	 * It will be replaced by the actual API request in a later step.
+	 * Generate report text using OpenAI Responses API.
 	 *
 	 * @param array $payload AI payload.
-	 * @return string
+	 * @param array $settings Plugin settings.
+	 * @return string|WP_Error
 	 */
-	public static function create_dummy_report( $payload ) {
-		$conditions = isset( $payload['conditions'] ) && is_array( $payload['conditions'] ) ? $payload['conditions'] : array();
-		$summary    = isset( $payload['summary'] ) && is_array( $payload['summary'] ) ? $payload['summary'] : array();
+	public static function generate_report( $payload, $settings ) {
+		$api_key = isset( $settings['openai_api_key'] ) ? trim( (string) $settings['openai_api_key'] ) : '';
 
-		$period            = isset( $conditions['period'] ) && is_array( $conditions['period'] ) ? $conditions['period'] : array();
-		$comparison_period = isset( $conditions['comparison_period'] ) && is_array( $conditions['comparison_period'] ) ? $conditions['comparison_period'] : null;
-		$scope_label       = isset( $conditions['scope_label'] ) ? (string) $conditions['scope_label'] : '';
-		$path              = isset( $conditions['path'] ) ? (string) $conditions['path'] : '';
-
-		$start_date = isset( $period['start_date'] ) ? (string) $period['start_date'] : '';
-		$end_date   = isset( $period['end_date'] ) ? (string) $period['end_date'] : '';
-
-		$paragraphs = array();
-
-		$intro = '本レポートは、Analytics Report AI のMVP検証用に生成されたダミーレポートです。';
-
-		if ( '' !== $start_date && '' !== $end_date ) {
-			$intro .= '対象期間は' . $start_date . 'から' . $end_date . 'です。';
+		if ( '' === $api_key ) {
+			return new WP_Error(
+				'analytics_report_ai_openai_api_key_missing',
+				__( 'OpenAI API key is not saved. Please save an API key in Settings.', 'analytics-report-ai' )
+			);
 		}
 
-		if ( '' !== $scope_label ) {
-			$intro .= '取得範囲は「' . $scope_label . '」です。';
+		$request_body = array(
+			'model'              => self::get_model(),
+			'instructions'       => Analytics_Report_AI_Prompt_Builder::build_system_prompt(),
+			'input'              => Analytics_Report_AI_Prompt_Builder::build_user_input( $payload ),
+			'max_output_tokens'  => 2200,
+		);
+
+		$response = wp_remote_post(
+			'https://api.openai.com/v1/responses',
+			array(
+				'timeout' => 60,
+				'headers' => array(
+					'Authorization' => 'Bearer ' . $api_key,
+					'Content-Type'  => 'application/json',
+				),
+				'body'    => wp_json_encode( $request_body ),
+			)
+		);
+
+		if ( is_wp_error( $response ) ) {
+			return new WP_Error(
+				'analytics_report_ai_openai_request_failed',
+				sprintf(
+					/* translators: %s: error message */
+					__( 'OpenAI API request failed: %s', 'analytics-report-ai' ),
+					$response->get_error_message()
+				)
+			);
 		}
 
-		if ( '' !== $path ) {
-			$intro .= '対象パスは ' . $path . ' です。';
+		$status_code = (int) wp_remote_retrieve_response_code( $response );
+		$body        = wp_remote_retrieve_body( $response );
+		$data        = json_decode( $body, true );
+
+		if ( $status_code < 200 || $status_code >= 300 ) {
+			return self::build_api_error( $status_code, $data );
 		}
 
-		if ( is_array( $comparison_period ) ) {
-			$intro .= '比較期間は' . $comparison_period['start_date'] . 'から' . $comparison_period['end_date'] . 'です。';
-		} else {
-			$intro .= '比較対象は設定されていません。';
+		if ( ! is_array( $data ) ) {
+			return new WP_Error(
+				'analytics_report_ai_openai_invalid_json',
+				__( 'OpenAI API returned an invalid JSON response.', 'analytics-report-ai' )
+			);
 		}
 
-		$paragraphs[] = $intro;
+		$text = self::extract_response_text( $data );
 
-		if ( ! empty( $summary ) ) {
-			$views          = isset( $summary['screenPageViews'] ) ? $summary['screenPageViews'] : null;
-			$active_users   = isset( $summary['activeUsers'] ) ? $summary['activeUsers'] : null;
-			$new_users      = isset( $summary['newUsers'] ) ? $summary['newUsers'] : null;
-			$sessions       = isset( $summary['sessions'] ) ? $summary['sessions'] : null;
-			$engagement     = isset( $summary['engagementRate'] ) ? $summary['engagementRate'] : null;
-			$bounce_rate    = isset( $summary['bounceRate'] ) ? $summary['bounceRate'] : null;
-			$avg_duration   = isset( $summary['averageSessionDuration'] ) ? $summary['averageSessionDuration'] : null;
-			$summary_text   = '主要指標を見ると、';
-			$summary_parts  = array();
-
-			if ( is_array( $views ) ) {
-				$summary_parts[] = '表示回数は' . self::format_metric_value( $views ) . 'でした';
-			}
-
-			if ( is_array( $active_users ) ) {
-				$summary_parts[] = 'アクティブユーザー数は' . self::format_metric_value( $active_users ) . 'でした';
-			}
-
-			if ( is_array( $new_users ) ) {
-				$summary_parts[] = '新規ユーザー数は' . self::format_metric_value( $new_users ) . 'でした';
-			}
-
-			if ( is_array( $sessions ) ) {
-				$summary_parts[] = 'セッション数は' . self::format_metric_value( $sessions ) . 'でした';
-			}
-
-			if ( ! empty( $summary_parts ) ) {
-				$summary_text .= implode( '、', $summary_parts ) . '。';
-			}
-
-			if ( is_array( $engagement ) || is_array( $bounce_rate ) || is_array( $avg_duration ) ) {
-				$quality_parts = array();
-
-				if ( is_array( $engagement ) ) {
-					$quality_parts[] = 'エンゲージメント率は' . self::format_metric_value( $engagement );
-				}
-
-				if ( is_array( $bounce_rate ) ) {
-					$quality_parts[] = '直帰率は' . self::format_metric_value( $bounce_rate );
-				}
-
-				if ( is_array( $avg_duration ) ) {
-					$quality_parts[] = '平均セッション時間は' . self::format_metric_value( $avg_duration );
-				}
-
-				$summary_text .= implode( '、', $quality_parts ) . 'となっています。';
-			}
-
-			if ( is_array( $views ) && isset( $views['change_rate'] ) && null !== $views['change_rate'] ) {
-				$summary_text .= '表示回数は比較期間に対して' . self::format_change_rate_sentence( $views['change_rate'] ) . 'しています。';
-			}
-
-			$paragraphs[] = $summary_text;
+		if ( '' === $text ) {
+			return new WP_Error(
+				'analytics_report_ai_openai_empty_text',
+				__( 'OpenAI API returned no report text.', 'analytics-report-ai' )
+			);
 		}
 
-		if ( ! empty( $payload['top_pages'] ) && is_array( $payload['top_pages'] ) ) {
-			$top_page = reset( $payload['top_pages'] );
-
-			if ( is_array( $top_page ) && ! empty( $top_page['pagePath'] ) ) {
-				$paragraphs[] = '上位ページでは、' . $top_page['pagePath'] . ' の閲覧が最も多く、サイト内の主要な入口または閲覧対象になっている可能性があります。その他の上位ページも含め、どのページがアクセスを集めているかを確認することで、今後の改善対象を整理しやすくなります。';
-			}
-		}
-
-		if ( ! empty( $payload['traffic_channels'] ) && is_array( $payload['traffic_channels'] ) ) {
-			$top_channel = reset( $payload['traffic_channels'] );
-
-			if ( is_array( $top_channel ) && ! empty( $top_channel['defaultChannelGroup'] ) ) {
-				$paragraphs[] = '流入チャネルでは、' . $top_channel['defaultChannelGroup'] . ' からの利用が目立っています。ただし、この結果だけで流入増減の要因を断定することは避け、参照元や上位ページの傾向と合わせて確認する必要があります。';
-			}
-		}
-
-		if ( ! empty( $payload['traffic_sources'] ) && is_array( $payload['traffic_sources'] ) ) {
-			$top_source = reset( $payload['traffic_sources'] );
-
-			if ( is_array( $top_source ) && ! empty( $top_source['sessionSource'] ) ) {
-				$paragraphs[] = '参照元では、' . $top_source['sessionSource'] . ' からのアクセスが上位に入っています。検索、直接流入、外部サイト経由などの内訳を継続的に確認することで、集客経路の変化を把握しやすくなります。';
-			}
-		}
-
-		if ( ! empty( $payload['regional_trends'] ) && is_array( $payload['regional_trends'] ) ) {
-			$top_region = reset( $payload['regional_trends'] );
-
-			if ( is_array( $top_region ) && ! empty( $top_region['city'] ) ) {
-				$paragraphs[] = '地域別では、' . $top_region['city'] . ' からの表示回数が多い傾向です。地域データは推定を含むため、単独で判断するのではなく、サイトの対象エリアや流入経路と合わせて参考情報として扱うのが適切です。';
-			}
-		}
-
-		$paragraphs[] = '以上はダミーデータに基づく検証用の文章です。実データ連携後は、GA4から取得した集計値をもとに、同じ画面フローで日本語レポート本文を生成します。';
-
-		return implode( "\n\n", $paragraphs );
+		return $text;
 	}
 
 	/**
-	 * Format metric current value.
+	 * Get OpenAI model.
 	 *
-	 * @param array $metric Metric payload.
 	 * @return string
 	 */
-	private static function format_metric_value( $metric ) {
-		$value = isset( $metric['current'] ) ? $metric['current'] : null;
-		$unit  = isset( $metric['unit'] ) ? (string) $metric['unit'] : '';
+	private static function get_model() {
+		if ( defined( 'ANALYTICS_REPORT_AI_OPENAI_MODEL' ) && ANALYTICS_REPORT_AI_OPENAI_MODEL ) {
+			return ANALYTICS_REPORT_AI_OPENAI_MODEL;
+		}
 
-		if ( null === $value ) {
+		return 'gpt-5.4-mini';
+	}
+
+	/**
+	 * Build API error.
+	 *
+	 * @param int        $status_code HTTP status code.
+	 * @param array|null $data Response data.
+	 * @return WP_Error
+	 */
+	private static function build_api_error( $status_code, $data ) {
+		$message = '';
+
+		if ( is_array( $data ) && ! empty( $data['error']['message'] ) ) {
+			$message = sanitize_text_field( (string) $data['error']['message'] );
+		}
+
+		if ( '' === $message ) {
+			$message = __( 'Unknown API error.', 'analytics-report-ai' );
+		}
+
+		$permission_note = __(
+			' If you are using a Restricted API key, make sure Model capabilities and Responses (/v1/responses) are set to Request.',
+			'analytics-report-ai'
+		);
+
+		return new WP_Error(
+			'analytics_report_ai_openai_api_error',
+			sprintf(
+				/* translators: 1: HTTP status code, 2: API error message, 3: permission note */
+				__( 'OpenAI API returned an error. HTTP status: %1$d. Message: %2$s%3$s', 'analytics-report-ai' ),
+				$status_code,
+				$message,
+				$permission_note
+			)
+		);
+	}
+
+	/**
+	 * Extract output text from Responses API response.
+	 *
+	 * @param array $data Response data.
+	 * @return string
+	 */
+	private static function extract_response_text( $data ) {
+		if ( isset( $data['output_text'] ) && is_string( $data['output_text'] ) ) {
+			return trim( $data['output_text'] );
+		}
+
+		if ( empty( $data['output'] ) || ! is_array( $data['output'] ) ) {
 			return '';
 		}
 
-		if ( 'ratio' === $unit ) {
-			return round( (float) $value * 100, 1 ) . '%';
+		$texts = array();
+
+		foreach ( $data['output'] as $output_item ) {
+			if ( empty( $output_item['content'] ) || ! is_array( $output_item['content'] ) ) {
+				continue;
+			}
+
+			foreach ( $output_item['content'] as $content_item ) {
+				if (
+					isset( $content_item['type'], $content_item['text'] )
+					&& 'output_text' === $content_item['type']
+					&& is_string( $content_item['text'] )
+				) {
+					$texts[] = $content_item['text'];
+				}
+			}
 		}
 
-		if ( 'seconds' === $unit ) {
-			return round( (float) $value, 1 ) . '秒';
-		}
-
-		if ( is_numeric( $value ) ) {
-			return number_format_i18n( (float) $value );
-		}
-
-		return (string) $value;
-	}
-
-	/**
-	 * Format change rate sentence.
-	 *
-	 * @param float $change_rate Change rate.
-	 * @return string
-	 */
-	private static function format_change_rate_sentence( $change_rate ) {
-		$percentage = round( abs( (float) $change_rate ) * 100, 1 );
-
-		if ( (float) $change_rate > 0 ) {
-			return $percentage . '%増加';
-		}
-
-		if ( (float) $change_rate < 0 ) {
-			return $percentage . '%減少';
-		}
-
-		return '横ばいで推移';
+		return trim( implode( "\n", $texts ) );
 	}
 }
