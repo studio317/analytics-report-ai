@@ -314,3 +314,32 @@ if ( ! function_exists( 'analytics_report_ai_normalize_report_path' ) ) {
 		return sanitize_text_field( $path );
 	}
 }
+
+if ( ! function_exists( 'analytics_report_ai_get_payload_transient_key' ) ) {
+	/**
+	 * Get transient key for AI payload preview.
+	 *
+	 * @param int $user_id User ID.
+	 * @return string
+	 */
+	function analytics_report_ai_get_payload_transient_key( $user_id = 0 ) {
+		$user_id = absint( $user_id );
+
+		if ( 0 === $user_id ) {
+			$user_id = get_current_user_id();
+		}
+
+		return 'analytics_report_ai_payload_' . $user_id;
+	}
+}
+
+if ( ! function_exists( 'analytics_report_ai_get_payload_transient_expiration' ) ) {
+	/**
+	 * Get transient expiration seconds for AI payload preview.
+	 *
+	 * @return int
+	 */
+	function analytics_report_ai_get_payload_transient_expiration() {
+		return 30 * MINUTE_IN_SECONDS;
+	}
+}

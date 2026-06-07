@@ -50,3 +50,27 @@
 	margin-bottom: 6px;
 	font-weight: 600;
 }
+
+.analytics-report-ai-admin .analytics-report-ai-preview-table {
+	margin-top: 8px;
+	margin-bottom: 20px;
+}
+
+.analytics-report-ai-admin .analytics-report-ai-json-preview {
+	margin-top: 20px;
+}
+
+.analytics-report-ai-admin .analytics-report-ai-json-preview summary {
+	cursor: pointer;
+	font-weight: 600;
+}
+
+.analytics-report-ai-admin .analytics-report-ai-json-preview pre {
+	max-height: 420px;
+	overflow: auto;
+	padding: 16px;
+	background: #1d2327;
+	color: #f0f0f1;
+	border-radius: 4px;
+	white-space: pre-wrap;
+}
