@@ -21,8 +21,21 @@ final class Analytics_Report_AI_Report_Builder {
 			return;
 		}
 
-		$settings       = analytics_report_ai_get_settings();
-		$default_period = analytics_report_ai_get_default_report_period();
+		$settings          = analytics_report_ai_get_settings();
+		$default_period    = analytics_report_ai_get_default_report_period();
+		$submission_result = $this->maybe_handle_request();
+
+		$form_values = array(
+			'start_date' => $default_period['start_date'],
+			'end_date'   => $default_period['end_date'],
+			'comparison' => 'previous_month',
+			'scope'      => 'site',
+			'path'       => '',
+		);
+
+		if ( isset( $submission_result['form_values'] ) && is_array( $submission_result['form_values'] ) ) {
+			$form_values = wp_parse_args( $submission_result['form_values'], $form_values );
+		}
 
 		$ga4_property_id     = isset( $settings['ga4_property_id'] ) ? $settings['ga4_property_id'] : '';
 		$host_filter_enabled = ! empty( $settings['host_filter_enabled'] );
@@ -31,6 +44,8 @@ final class Analytics_Report_AI_Report_Builder {
 		?>
 		<div class="wrap analytics-report-ai-admin">
 			<h1><?php echo esc_html__( 'Report Builder', 'analytics-report-ai' ); ?></h1>
+
+			<?php $this->render_submission_notices( $submission_result ); ?>
 
 			<div class="analytics-report-ai-card">
 				<h2><?php echo esc_html__( 'Current Settings', 'analytics-report-ai' ); ?></h2>
@@ -85,6 +100,7 @@ final class Analytics_Report_AI_Report_Builder {
 
 			<form method="post" action="" class="analytics-report-ai-card analytics-report-ai-report-form">
 				<?php wp_nonce_field( 'analytics_report_ai_report_builder_action', 'analytics_report_ai_report_builder_nonce' ); ?>
+				<input type="hidden" name="analytics_report_ai_report_action" value="validate_conditions" />
 
 				<h2><?php echo esc_html__( 'Report Conditions', 'analytics-report-ai' ); ?></h2>
 
@@ -102,7 +118,7 @@ final class Analytics_Report_AI_Report_Builder {
 									type="date"
 									id="analytics-report-ai-start-date"
 									name="analytics_report_ai_report[start_date]"
-									value="<?php echo esc_attr( $default_period['start_date'] ); ?>"
+									value="<?php echo esc_attr( $form_values['start_date'] ); ?>"
 								/>
 
 								<label for="analytics-report-ai-end-date" class="analytics-report-ai-inline-label">
@@ -112,7 +128,7 @@ final class Analytics_Report_AI_Report_Builder {
 									type="date"
 									id="analytics-report-ai-end-date"
 									name="analytics_report_ai_report[end_date]"
-									value="<?php echo esc_attr( $default_period['end_date'] ); ?>"
+									value="<?php echo esc_attr( $form_values['end_date'] ); ?>"
 								/>
 
 								<p class="description">
@@ -131,37 +147,21 @@ final class Analytics_Report_AI_Report_Builder {
 										<?php echo esc_html__( 'Comparison', 'analytics-report-ai' ); ?>
 									</legend>
 
-									<label class="analytics-report-ai-radio-label">
-										<input
-											type="radio"
-											name="analytics_report_ai_report[comparison]"
-											value="none"
-										/>
-										<?php echo esc_html__( 'No comparison', 'analytics-report-ai' ); ?>
-									</label>
-
-									<label class="analytics-report-ai-radio-label">
-										<input
-											type="radio"
-											name="analytics_report_ai_report[comparison]"
-											value="previous_month"
-											checked="checked"
-										/>
-										<?php echo esc_html__( 'Previous month', 'analytics-report-ai' ); ?>
-									</label>
-
-									<label class="analytics-report-ai-radio-label">
-										<input
-											type="radio"
-											name="analytics_report_ai_report[comparison]"
-											value="previous_year"
-										/>
-										<?php echo esc_html__( 'Previous year', 'analytics-report-ai' ); ?>
-									</label>
+									<?php foreach ( analytics_report_ai_get_comparison_options() as $value => $label ) : ?>
+										<label class="analytics-report-ai-radio-label">
+											<input
+												type="radio"
+												name="analytics_report_ai_report[comparison]"
+												value="<?php echo esc_attr( $value ); ?>"
+												<?php checked( $form_values['comparison'], $value ); ?>
+											/>
+											<?php echo esc_html( $label ); ?>
+										</label>
+									<?php endforeach; ?>
 								</fieldset>
 
 								<p class="description">
-									<?php echo esc_html__( 'Comparison period calculation will be implemented in the validation step.', 'analytics-report-ai' ); ?>
+									<?php echo esc_html__( 'The comparison period is calculated by shifting the selected period to the previous month or previous year.', 'analytics-report-ai' ); ?>
 								</p>
 							</td>
 						</tr>
@@ -176,36 +176,18 @@ final class Analytics_Report_AI_Report_Builder {
 										<?php echo esc_html__( 'Data Scope', 'analytics-report-ai' ); ?>
 									</legend>
 
-									<label class="analytics-report-ai-radio-label">
-										<input
-											type="radio"
-											name="analytics_report_ai_report[scope]"
-											value="site"
-											checked="checked"
-											data-analytics-report-ai-scope
-										/>
-										<?php echo esc_html__( 'Entire site', 'analytics-report-ai' ); ?>
-									</label>
-
-									<label class="analytics-report-ai-radio-label">
-										<input
-											type="radio"
-											name="analytics_report_ai_report[scope]"
-											value="directory"
-											data-analytics-report-ai-scope
-										/>
-										<?php echo esc_html__( 'Directory', 'analytics-report-ai' ); ?>
-									</label>
-
-									<label class="analytics-report-ai-radio-label">
-										<input
-											type="radio"
-											name="analytics_report_ai_report[scope]"
-											value="page"
-											data-analytics-report-ai-scope
-										/>
-										<?php echo esc_html__( 'Page', 'analytics-report-ai' ); ?>
-									</label>
+									<?php foreach ( analytics_report_ai_get_scope_options() as $value => $label ) : ?>
+										<label class="analytics-report-ai-radio-label">
+											<input
+												type="radio"
+												name="analytics_report_ai_report[scope]"
+												value="<?php echo esc_attr( $value ); ?>"
+												<?php checked( $form_values['scope'], $value ); ?>
+												data-analytics-report-ai-scope
+											/>
+											<?php echo esc_html( $label ); ?>
+										</label>
+									<?php endforeach; ?>
 								</fieldset>
 
 								<div class="analytics-report-ai-path-field" data-analytics-report-ai-path-field>
@@ -217,7 +199,7 @@ final class Analytics_Report_AI_Report_Builder {
 										type="text"
 										id="analytics-report-ai-path"
 										name="analytics_report_ai_report[path]"
-										value=""
+										value="<?php echo esc_attr( $form_values['path'] ); ?>"
 										class="regular-text"
 										placeholder="/blog/"
 										data-analytics-report-ai-path-input
@@ -229,7 +211,7 @@ final class Analytics_Report_AI_Report_Builder {
 								</div>
 
 								<p class="description">
-									<?php echo esc_html__( 'Path normalization and validation will be implemented in the next step.', 'analytics-report-ai' ); ?>
+									<?php echo esc_html__( 'Full URLs are not allowed. Query strings and fragments are removed during normalization.', 'analytics-report-ai' ); ?>
 								</p>
 							</td>
 						</tr>
@@ -237,15 +219,251 @@ final class Analytics_Report_AI_Report_Builder {
 				</table>
 
 				<p>
-					<button type="button" class="button button-primary" disabled="disabled">
-						<?php echo esc_html__( 'Fetch GA4 Data', 'analytics-report-ai' ); ?>
+					<button type="submit" class="button button-primary">
+						<?php echo esc_html__( 'Validate Conditions', 'analytics-report-ai' ); ?>
 					</button>
 				</p>
 
 				<p class="description">
-					<?php echo esc_html__( 'This button is disabled in Step 3. It will be enabled after validation and dummy payload handling are implemented.', 'analytics-report-ai' ); ?>
+					<?php echo esc_html__( 'This step validates and normalizes the conditions only. GA4 data fetching will be implemented later.', 'analytics-report-ai' ); ?>
 				</p>
 			</form>
+
+			<?php $this->render_validated_conditions( $submission_result ); ?>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Handle report builder request.
+	 *
+	 * @return array|null
+	 */
+	private function maybe_handle_request() {
+		if ( empty( $_POST['analytics_report_ai_report_action'] ) ) {
+			return null;
+		}
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return array(
+				'status' => 'error',
+				'errors' => array(
+					__( 'You do not have permission to perform this action.', 'analytics-report-ai' ),
+				),
+			);
+		}
+
+		$nonce = isset( $_POST['analytics_report_ai_report_builder_nonce'] )
+			? sanitize_text_field( wp_unslash( $_POST['analytics_report_ai_report_builder_nonce'] ) )
+			: '';
+
+		if ( ! wp_verify_nonce( $nonce, 'analytics_report_ai_report_builder_action' ) ) {
+			return array(
+				'status' => 'error',
+				'errors' => array(
+					__( 'Security check failed. Please reload the page and try again.', 'analytics-report-ai' ),
+				),
+			);
+		}
+
+		$raw_input = isset( $_POST['analytics_report_ai_report'] ) && is_array( $_POST['analytics_report_ai_report'] )
+			? wp_unslash( $_POST['analytics_report_ai_report'] )
+			: array();
+
+		$form_values = array(
+			'start_date' => isset( $raw_input['start_date'] ) ? sanitize_text_field( $raw_input['start_date'] ) : '',
+			'end_date'   => isset( $raw_input['end_date'] ) ? sanitize_text_field( $raw_input['end_date'] ) : '',
+			'comparison' => isset( $raw_input['comparison'] ) ? sanitize_text_field( $raw_input['comparison'] ) : '',
+			'scope'      => isset( $raw_input['scope'] ) ? sanitize_text_field( $raw_input['scope'] ) : '',
+			'path'       => isset( $raw_input['path'] ) ? sanitize_text_field( $raw_input['path'] ) : '',
+		);
+
+		$errors = array();
+
+		$start_date = $form_values['start_date'];
+		$end_date   = $form_values['end_date'];
+
+		if ( ! analytics_report_ai_is_valid_date_string( $start_date ) ) {
+			$errors[] = __( 'Start date is invalid.', 'analytics-report-ai' );
+		}
+
+		if ( ! analytics_report_ai_is_valid_date_string( $end_date ) ) {
+			$errors[] = __( 'End date is invalid.', 'analytics-report-ai' );
+		}
+
+		if (
+			analytics_report_ai_is_valid_date_string( $start_date )
+			&& analytics_report_ai_is_valid_date_string( $end_date )
+			&& $start_date > $end_date
+		) {
+			$errors[] = __( 'End date must be the same as or later than start date.', 'analytics-report-ai' );
+		}
+
+		$comparison_options = analytics_report_ai_get_comparison_options();
+		$comparison         = $form_values['comparison'];
+
+		if ( ! isset( $comparison_options[ $comparison ] ) ) {
+			$errors[]   = __( 'Comparison option is invalid.', 'analytics-report-ai' );
+			$comparison = 'previous_month';
+		}
+
+		$scope_options = analytics_report_ai_get_scope_options();
+		$scope         = $form_values['scope'];
+
+		if ( ! isset( $scope_options[ $scope ] ) ) {
+			$errors[] = __( 'Data scope is invalid.', 'analytics-report-ai' );
+			$scope    = 'site';
+		}
+
+		$normalized_path = analytics_report_ai_normalize_report_path( $form_values['path'], $scope );
+
+		if ( is_wp_error( $normalized_path ) ) {
+			$errors[]        = $normalized_path->get_error_message();
+			$normalized_path = '';
+		}
+
+		if ( ! empty( $errors ) ) {
+			return array(
+				'status'      => 'error',
+				'errors'      => $errors,
+				'form_values' => $form_values,
+			);
+		}
+
+		$form_values['comparison'] = $comparison;
+		$form_values['scope']      = $scope;
+		$form_values['path']       = $normalized_path;
+
+		$comparison_period = analytics_report_ai_calculate_comparison_period(
+			$start_date,
+			$end_date,
+			$comparison
+		);
+
+		$conditions = array(
+			'period'            => array(
+				'start_date' => $start_date,
+				'end_date'   => $end_date,
+			),
+			'comparison'        => $comparison,
+			'comparison_label'  => $comparison_options[ $comparison ],
+			'comparison_period' => $comparison_period,
+			'scope'             => $scope,
+			'scope_label'       => $scope_options[ $scope ],
+			'path'              => $normalized_path,
+		);
+
+		return array(
+			'status'      => 'success',
+			'conditions'  => $conditions,
+			'form_values' => $form_values,
+		);
+	}
+
+	/**
+	 * Render submission notices.
+	 *
+	 * @param array|null $submission_result Submission result.
+	 * @return void
+	 */
+	private function render_submission_notices( $submission_result ) {
+		if ( empty( $submission_result ) || empty( $submission_result['status'] ) ) {
+			return;
+		}
+
+		if ( 'success' === $submission_result['status'] ) {
+			?>
+			<div class="notice notice-success">
+				<p><?php echo esc_html__( 'Report conditions were validated successfully.', 'analytics-report-ai' ); ?></p>
+			</div>
+			<?php
+			return;
+		}
+
+		if ( empty( $submission_result['errors'] ) || ! is_array( $submission_result['errors'] ) ) {
+			return;
+		}
+		?>
+		<div class="notice notice-error">
+			<p><strong><?php echo esc_html__( 'Please fix the following errors.', 'analytics-report-ai' ); ?></strong></p>
+			<ul>
+				<?php foreach ( $submission_result['errors'] as $error ) : ?>
+					<li><?php echo esc_html( $error ); ?></li>
+				<?php endforeach; ?>
+			</ul>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Render validated conditions.
+	 *
+	 * @param array|null $submission_result Submission result.
+	 * @return void
+	 */
+	private function render_validated_conditions( $submission_result ) {
+		if (
+			empty( $submission_result )
+			|| empty( $submission_result['status'] )
+			|| 'success' !== $submission_result['status']
+			|| empty( $submission_result['conditions'] )
+			|| ! is_array( $submission_result['conditions'] )
+		) {
+			return;
+		}
+
+		$conditions        = $submission_result['conditions'];
+		$comparison_period = $conditions['comparison_period'];
+		?>
+		<div class="analytics-report-ai-card">
+			<h2><?php echo esc_html__( 'Validated Conditions', 'analytics-report-ai' ); ?></h2>
+
+			<table class="widefat striped analytics-report-ai-status-table">
+				<tbody>
+					<tr>
+						<th scope="row"><?php echo esc_html__( 'Date Range', 'analytics-report-ai' ); ?></th>
+						<td>
+							<code><?php echo esc_html( $conditions['period']['start_date'] ); ?></code>
+							-
+							<code><?php echo esc_html( $conditions['period']['end_date'] ); ?></code>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row"><?php echo esc_html__( 'Comparison', 'analytics-report-ai' ); ?></th>
+						<td><?php echo esc_html( $conditions['comparison_label'] ); ?></td>
+					</tr>
+					<tr>
+						<th scope="row"><?php echo esc_html__( 'Comparison Period', 'analytics-report-ai' ); ?></th>
+						<td>
+							<?php if ( is_array( $comparison_period ) ) : ?>
+								<code><?php echo esc_html( $comparison_period['start_date'] ); ?></code>
+								-
+								<code><?php echo esc_html( $comparison_period['end_date'] ); ?></code>
+							<?php else : ?>
+								<?php echo esc_html__( 'None', 'analytics-report-ai' ); ?>
+							<?php endif; ?>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row"><?php echo esc_html__( 'Data Scope', 'analytics-report-ai' ); ?></th>
+						<td><?php echo esc_html( $conditions['scope_label'] ); ?></td>
+					</tr>
+					<tr>
+						<th scope="row"><?php echo esc_html__( 'Normalized Path', 'analytics-report-ai' ); ?></th>
+						<td>
+							<?php if ( '' !== $conditions['path'] ) : ?>
+								<code><?php echo esc_html( $conditions['path'] ); ?></code>
+							<?php else : ?>
+								<?php echo esc_html__( 'None', 'analytics-report-ai' ); ?>
+							<?php endif; ?>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+
+			<p class="description">
+				<?php echo esc_html__( 'In the next step, these validated conditions will be used to create a dummy AI payload preview.', 'analytics-report-ai' ); ?>
+			</p>
 		</div>
 		<?php
 	}

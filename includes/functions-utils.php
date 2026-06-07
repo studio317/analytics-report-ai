@@ -140,3 +140,177 @@ if ( ! function_exists( 'analytics_report_ai_get_default_report_period' ) ) {
 		);
 	}
 }
+
+if ( ! function_exists( 'analytics_report_ai_get_comparison_options' ) ) {
+	/**
+	 * Get comparison options.
+	 *
+	 * @return array
+	 */
+	function analytics_report_ai_get_comparison_options() {
+		return array(
+			'none'           => __( 'No comparison', 'analytics-report-ai' ),
+			'previous_month' => __( 'Previous month', 'analytics-report-ai' ),
+			'previous_year'  => __( 'Previous year', 'analytics-report-ai' ),
+		);
+	}
+}
+
+if ( ! function_exists( 'analytics_report_ai_get_scope_options' ) ) {
+	/**
+	 * Get data scope options.
+	 *
+	 * @return array
+	 */
+	function analytics_report_ai_get_scope_options() {
+		return array(
+			'site'      => __( 'Entire site', 'analytics-report-ai' ),
+			'directory' => __( 'Directory', 'analytics-report-ai' ),
+			'page'      => __( 'Page', 'analytics-report-ai' ),
+		);
+	}
+}
+
+if ( ! function_exists( 'analytics_report_ai_is_valid_date_string' ) ) {
+	/**
+	 * Check whether the given value is a valid Y-m-d date.
+	 *
+	 * @param string $date Date string.
+	 * @return bool
+	 */
+	function analytics_report_ai_is_valid_date_string( $date ) {
+		$date = trim( (string) $date );
+
+		if ( ! preg_match( '/^\d{4}-\d{2}-\d{2}$/', $date ) ) {
+			return false;
+		}
+
+		$parts = explode( '-', $date );
+
+		return checkdate(
+			(int) $parts[1],
+			(int) $parts[2],
+			(int) $parts[0]
+		);
+	}
+}
+
+if ( ! function_exists( 'analytics_report_ai_shift_date_with_clamp' ) ) {
+	/**
+	 * Shift date to previous month or previous year with day clamping.
+	 *
+	 * Examples:
+	 * - 2026-05-31 previous_month => 2026-04-30
+	 * - 2024-02-29 previous_year  => 2023-02-28
+	 *
+	 * @param string $date Date string.
+	 * @param string $comparison Comparison type.
+	 * @return string
+	 */
+	function analytics_report_ai_shift_date_with_clamp( $date, $comparison ) {
+		$parts = explode( '-', $date );
+
+		$year  = (int) $parts[0];
+		$month = (int) $parts[1];
+		$day   = (int) $parts[2];
+
+		if ( 'previous_month' === $comparison ) {
+			$month--;
+
+			if ( $month < 1 ) {
+				$month = 12;
+				$year--;
+			}
+		} elseif ( 'previous_year' === $comparison ) {
+			$year--;
+		}
+
+		$first_day = DateTimeImmutable::createFromFormat(
+			'!Y-m-d',
+			sprintf( '%04d-%02d-01', $year, $month )
+		);
+
+		if ( ! $first_day ) {
+			return $date;
+		}
+
+		$last_day = (int) $first_day->modify( 'last day of this month' )->format( 'd' );
+		$day      = min( $day, $last_day );
+
+		return sprintf( '%04d-%02d-%02d', $year, $month, $day );
+	}
+}
+
+if ( ! function_exists( 'analytics_report_ai_calculate_comparison_period' ) ) {
+	/**
+	 * Calculate comparison period.
+	 *
+	 * @param string $start_date Start date.
+	 * @param string $end_date End date.
+	 * @param string $comparison Comparison type.
+	 * @return array|null
+	 */
+	function analytics_report_ai_calculate_comparison_period( $start_date, $end_date, $comparison ) {
+		if ( 'none' === $comparison ) {
+			return null;
+		}
+
+		return array(
+			'start_date' => analytics_report_ai_shift_date_with_clamp( $start_date, $comparison ),
+			'end_date'   => analytics_report_ai_shift_date_with_clamp( $end_date, $comparison ),
+		);
+	}
+}
+
+if ( ! function_exists( 'analytics_report_ai_normalize_report_path' ) ) {
+	/**
+	 * Normalize report path by scope.
+	 *
+	 * @param string $path Raw path.
+	 * @param string $scope Scope.
+	 * @return string|WP_Error
+	 */
+	function analytics_report_ai_normalize_report_path( $path, $scope ) {
+		$path = trim( (string) $path );
+
+		if ( 'site' === $scope ) {
+			return '';
+		}
+
+		if ( '' === $path ) {
+			return new WP_Error(
+				'analytics_report_ai_empty_path',
+				__( 'Path is required when Directory or Page is selected.', 'analytics-report-ai' )
+			);
+		}
+
+		if ( preg_match( '#^[a-z][a-z0-9+\-.]*://#i', $path ) ) {
+			return new WP_Error(
+				'analytics_report_ai_full_url_not_allowed',
+				__( 'Full URLs are not allowed. Enter only the path, such as /blog/ or /about.', 'analytics-report-ai' )
+			);
+		}
+
+		$path = preg_replace( '/[?#].*$/', '', $path );
+		$path = trim( $path );
+
+		if ( '' === $path ) {
+			return new WP_Error(
+				'analytics_report_ai_empty_path_after_normalization',
+				__( 'Path is empty after removing query strings and fragments.', 'analytics-report-ai' )
+			);
+		}
+
+		if ( '/' !== substr( $path, 0, 1 ) ) {
+			$path = '/' . $path;
+		}
+
+		$path = preg_replace( '#/+#', '/', $path );
+
+		if ( 'directory' === $scope && '/' !== substr( $path, -1 ) ) {
+			$path .= '/';
+		}
+
+		return sanitize_text_field( $path );
+	}
+}
