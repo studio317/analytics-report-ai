@@ -94,7 +94,7 @@ final class Analytics_Report_AI_Report_Builder {
 				</table>
 
 				<p class="description">
-					<?php echo esc_html__( 'This step creates a dummy AI payload preview. Actual GA4 data fetching will be implemented later.', 'analytics-report-ai' ); ?>
+					<?php echo esc_html__( 'This step creates a dummy AI report from the temporary payload. Actual OpenAI API integration will be implemented later.', 'analytics-report-ai' ); ?>
 				</p>
 			</div>
 
@@ -231,6 +231,7 @@ final class Analytics_Report_AI_Report_Builder {
 
 			<?php $this->render_validated_conditions( $submission_result ); ?>
 			<?php $this->render_payload_preview( $submission_result ); ?>
+			<?php $this->render_generated_report( $submission_result ); ?>
 		</div>
 		<?php
 	}
@@ -244,6 +245,8 @@ final class Analytics_Report_AI_Report_Builder {
 		if ( empty( $_POST['analytics_report_ai_report_action'] ) ) {
 			return null;
 		}
+
+		$action = sanitize_key( wp_unslash( $_POST['analytics_report_ai_report_action'] ) );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
 			return array(
@@ -267,6 +270,28 @@ final class Analytics_Report_AI_Report_Builder {
 			);
 		}
 
+		if ( 'create_dummy_payload' === $action ) {
+			return $this->handle_create_dummy_payload();
+		}
+
+		if ( 'generate_dummy_report' === $action ) {
+			return $this->handle_generate_dummy_report();
+		}
+
+		return array(
+			'status' => 'error',
+			'errors' => array(
+				__( 'Invalid action.', 'analytics-report-ai' ),
+			),
+		);
+	}
+
+	/**
+	 * Handle dummy payload creation.
+	 *
+	 * @return array
+	 */
+	private function handle_create_dummy_payload() {
 		$raw_input = isset( $_POST['analytics_report_ai_report'] ) && is_array( $_POST['analytics_report_ai_report'] )
 			? wp_unslash( $_POST['analytics_report_ai_report'] )
 			: array();
@@ -279,10 +304,71 @@ final class Analytics_Report_AI_Report_Builder {
 			'path'       => isset( $raw_input['path'] ) ? sanitize_text_field( $raw_input['path'] ) : '',
 		);
 
+		$validation_result = $this->validate_report_conditions( $form_values );
+
+		if ( 'error' === $validation_result['status'] ) {
+			return $validation_result;
+		}
+
+		$conditions = $validation_result['conditions'];
+		$settings   = analytics_report_ai_get_settings();
+		$payload    = Analytics_Report_AI_Report_Data_Formatter::create_dummy_payload( $conditions, $settings );
+
+		$transient_key = analytics_report_ai_get_payload_transient_key();
+		$expiration    = analytics_report_ai_get_payload_transient_expiration();
+
+		set_transient( $transient_key, $payload, $expiration );
+
+		return array(
+			'status'        => 'payload_created',
+			'conditions'    => $conditions,
+			'payload'       => $payload,
+			'transient_key' => $transient_key,
+			'expiration'    => $expiration,
+			'form_values'   => $validation_result['form_values'],
+		);
+	}
+
+	/**
+	 * Handle dummy AI report generation.
+	 *
+	 * @return array
+	 */
+	private function handle_generate_dummy_report() {
+		$transient_key = analytics_report_ai_get_payload_transient_key();
+		$payload       = get_transient( $transient_key );
+
+		if ( empty( $payload ) || ! is_array( $payload ) ) {
+			return array(
+				'status' => 'error',
+				'errors' => array(
+					__( 'Temporary AI payload was not found. Please create the dummy payload again.', 'analytics-report-ai' ),
+				),
+			);
+		}
+
+		$report_text = Analytics_Report_AI_OpenAI_Client::create_dummy_report( $payload );
+		$conditions  = isset( $payload['conditions'] ) && is_array( $payload['conditions'] ) ? $payload['conditions'] : array();
+
+		return array(
+			'status'      => 'report_generated',
+			'conditions'  => $conditions,
+			'payload'     => $payload,
+			'report_text' => $report_text,
+		);
+	}
+
+	/**
+	 * Validate report conditions.
+	 *
+	 * @param array $form_values Form values.
+	 * @return array
+	 */
+	private function validate_report_conditions( $form_values ) {
 		$errors = array();
 
-		$start_date = $form_values['start_date'];
-		$end_date   = $form_values['end_date'];
+		$start_date = isset( $form_values['start_date'] ) ? $form_values['start_date'] : '';
+		$end_date   = isset( $form_values['end_date'] ) ? $form_values['end_date'] : '';
 
 		if ( ! analytics_report_ai_is_valid_date_string( $start_date ) ) {
 			$errors[] = __( 'Start date is invalid.', 'analytics-report-ai' );
@@ -301,7 +387,7 @@ final class Analytics_Report_AI_Report_Builder {
 		}
 
 		$comparison_options = analytics_report_ai_get_comparison_options();
-		$comparison         = $form_values['comparison'];
+		$comparison         = isset( $form_values['comparison'] ) ? $form_values['comparison'] : '';
 
 		if ( ! isset( $comparison_options[ $comparison ] ) ) {
 			$errors[]   = __( 'Comparison option is invalid.', 'analytics-report-ai' );
@@ -309,14 +395,15 @@ final class Analytics_Report_AI_Report_Builder {
 		}
 
 		$scope_options = analytics_report_ai_get_scope_options();
-		$scope         = $form_values['scope'];
+		$scope         = isset( $form_values['scope'] ) ? $form_values['scope'] : '';
 
 		if ( ! isset( $scope_options[ $scope ] ) ) {
 			$errors[] = __( 'Data scope is invalid.', 'analytics-report-ai' );
 			$scope    = 'site';
 		}
 
-		$normalized_path = analytics_report_ai_normalize_report_path( $form_values['path'], $scope );
+		$path            = isset( $form_values['path'] ) ? $form_values['path'] : '';
+		$normalized_path = analytics_report_ai_normalize_report_path( $path, $scope );
 
 		if ( is_wp_error( $normalized_path ) ) {
 			$errors[]        = $normalized_path->get_error_message();
@@ -354,21 +441,10 @@ final class Analytics_Report_AI_Report_Builder {
 			'path'              => $normalized_path,
 		);
 
-		$settings = analytics_report_ai_get_settings();
-		$payload  = Analytics_Report_AI_Report_Data_Formatter::create_dummy_payload( $conditions, $settings );
-
-		$transient_key = analytics_report_ai_get_payload_transient_key();
-		$expiration    = analytics_report_ai_get_payload_transient_expiration();
-
-		set_transient( $transient_key, $payload, $expiration );
-
 		return array(
-			'status'        => 'success',
-			'conditions'    => $conditions,
-			'payload'       => $payload,
-			'transient_key' => $transient_key,
-			'expiration'    => $expiration,
-			'form_values'   => $form_values,
+			'status'      => 'success',
+			'conditions'  => $conditions,
+			'form_values' => $form_values,
 		);
 	}
 
@@ -383,10 +459,19 @@ final class Analytics_Report_AI_Report_Builder {
 			return;
 		}
 
-		if ( 'success' === $submission_result['status'] ) {
+		if ( 'payload_created' === $submission_result['status'] ) {
 			?>
 			<div class="notice notice-success">
 				<p><?php echo esc_html__( 'Dummy AI payload was created successfully.', 'analytics-report-ai' ); ?></p>
+			</div>
+			<?php
+			return;
+		}
+
+		if ( 'report_generated' === $submission_result['status'] ) {
+			?>
+			<div class="notice notice-success">
+				<p><?php echo esc_html__( 'Dummy AI report was generated successfully.', 'analytics-report-ai' ); ?></p>
 			</div>
 			<?php
 			return;
@@ -417,7 +502,7 @@ final class Analytics_Report_AI_Report_Builder {
 		if (
 			empty( $submission_result )
 			|| empty( $submission_result['status'] )
-			|| 'success' !== $submission_result['status']
+			|| ! in_array( $submission_result['status'], array( 'payload_created', 'report_generated' ), true )
 			|| empty( $submission_result['conditions'] )
 			|| ! is_array( $submission_result['conditions'] )
 		) {
@@ -425,7 +510,7 @@ final class Analytics_Report_AI_Report_Builder {
 		}
 
 		$conditions        = $submission_result['conditions'];
-		$comparison_period = $conditions['comparison_period'];
+		$comparison_period = isset( $conditions['comparison_period'] ) ? $conditions['comparison_period'] : null;
 		?>
 		<div class="analytics-report-ai-card">
 			<h2><?php echo esc_html__( 'Validated Conditions', 'analytics-report-ai' ); ?></h2>
@@ -486,7 +571,7 @@ final class Analytics_Report_AI_Report_Builder {
 		if (
 			empty( $submission_result )
 			|| empty( $submission_result['status'] )
-			|| 'success' !== $submission_result['status']
+			|| ! in_array( $submission_result['status'], array( 'payload_created', 'report_generated' ), true )
 			|| empty( $submission_result['payload'] )
 			|| ! is_array( $submission_result['payload'] )
 		) {
@@ -494,7 +579,7 @@ final class Analytics_Report_AI_Report_Builder {
 		}
 
 		$payload    = $submission_result['payload'];
-		$expiration = isset( $submission_result['expiration'] ) ? absint( $submission_result['expiration'] ) : 0;
+		$expiration = isset( $submission_result['expiration'] ) ? absint( $submission_result['expiration'] ) : analytics_report_ai_get_payload_transient_expiration();
 		$json       = wp_json_encode(
 			$payload,
 			JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
@@ -523,14 +608,79 @@ final class Analytics_Report_AI_Report_Builder {
 				<pre><code><?php echo esc_html( $json ); ?></code></pre>
 			</details>
 
-			<p>
-				<button type="button" class="button button-primary" disabled="disabled">
-					<?php echo esc_html__( 'Generate AI Report', 'analytics-report-ai' ); ?>
-				</button>
-			</p>
+			<form method="post" action="" class="analytics-report-ai-generate-form">
+				<?php wp_nonce_field( 'analytics_report_ai_report_builder_action', 'analytics_report_ai_report_builder_nonce' ); ?>
+				<input type="hidden" name="analytics_report_ai_report_action" value="generate_dummy_report" />
+
+				<p>
+					<button
+						type="submit"
+						class="button button-primary"
+						<?php if ( 'report_generated' === $submission_result['status'] ) : ?>
+							data-analytics-report-ai-confirm="<?php echo esc_attr__( 'The current report text will be overwritten. Continue?', 'analytics-report-ai' ); ?>"
+						<?php endif; ?>
+					>
+						<?php
+						echo 'report_generated' === $submission_result['status']
+							? esc_html__( 'Regenerate Dummy AI Report', 'analytics-report-ai' )
+							: esc_html__( 'Generate Dummy AI Report', 'analytics-report-ai' );
+						?>
+					</button>
+				</p>
+			</form>
 
 			<p class="description">
-				<?php echo esc_html__( 'AI report generation will be implemented in the next step using the payload saved in transient.', 'analytics-report-ai' ); ?>
+				<?php echo esc_html__( 'This button creates a dummy report from the payload saved in transient. It does not call the OpenAI API yet.', 'analytics-report-ai' ); ?>
+			</p>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Render generated report.
+	 *
+	 * @param array|null $submission_result Submission result.
+	 * @return void
+	 */
+	private function render_generated_report( $submission_result ) {
+		if (
+			empty( $submission_result )
+			|| empty( $submission_result['status'] )
+			|| 'report_generated' !== $submission_result['status']
+			|| ! isset( $submission_result['report_text'] )
+		) {
+			return;
+		}
+
+		$report_text = (string) $submission_result['report_text'];
+		?>
+		<div class="analytics-report-ai-card">
+			<h2><?php echo esc_html__( 'Generated Report Draft', 'analytics-report-ai' ); ?></h2>
+
+			<p class="description">
+				<?php echo esc_html__( 'The generated report text is not saved. You can edit it freely and copy the current textarea content.', 'analytics-report-ai' ); ?>
+			</p>
+
+			<textarea
+				id="analytics-report-ai-generated-report"
+				class="large-text analytics-report-ai-generated-report"
+				rows="18"
+				data-analytics-report-ai-report-textarea
+			><?php echo esc_textarea( $report_text ); ?></textarea>
+
+			<p class="analytics-report-ai-copy-actions">
+				<button
+					type="button"
+					class="button"
+					data-analytics-report-ai-copy-report
+				>
+					<?php echo esc_html__( 'Copy Report Text', 'analytics-report-ai' ); ?>
+				</button>
+				<span
+					class="analytics-report-ai-copy-status"
+					aria-live="polite"
+					data-analytics-report-ai-copy-status
+				></span>
 			</p>
 		</div>
 		<?php

@@ -74,3 +74,26 @@
 	border-radius: 4px;
 	white-space: pre-wrap;
 }
+
+.analytics-report-ai-admin .analytics-report-ai-generate-form {
+	margin-top: 20px;
+}
+
+.analytics-report-ai-admin .analytics-report-ai-generated-report {
+	width: 100%;
+	margin-top: 12px;
+	font-family: Consolas, Monaco, monospace;
+	line-height: 1.7;
+}
+
+.analytics-report-ai-admin .analytics-report-ai-copy-actions {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	margin-top: 12px;
+}
+
+.analytics-report-ai-admin .analytics-report-ai-copy-status {
+	color: #008a20;
+	font-weight: 600;
+}

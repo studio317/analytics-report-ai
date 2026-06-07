@@ -32,13 +32,13 @@
 
 			if ('directory' === scope) {
 				pathInput.setAttribute('placeholder', '/blog/');
-				pathDescription.textContent = 'For directory scope, enter a path such as /blog/. It will be normalized in the next step.';
+				pathDescription.textContent = 'For directory scope, enter a path such as /blog/. It will be normalized before payload creation.';
 				return;
 			}
 
 			if ('page' === scope) {
 				pathInput.setAttribute('placeholder', '/about');
-				pathDescription.textContent = 'For page scope, enter a path such as /about or /about/. It will be normalized in the next step.';
+				pathDescription.textContent = 'For page scope, enter a path such as /about or /about/. It will be normalized before payload creation.';
 			}
 		}
 
@@ -49,9 +49,90 @@
 		updatePathField();
 	}
 
-	if ('loading' === document.readyState) {
-		document.addEventListener('DOMContentLoaded', initializeScopeField);
-	} else {
+	function initializeCopyReport() {
+		var copyButton = document.querySelector('[data-analytics-report-ai-copy-report]');
+		var textarea = document.querySelector('[data-analytics-report-ai-report-textarea]');
+		var status = document.querySelector('[data-analytics-report-ai-copy-status]');
+
+		if (!copyButton || !textarea) {
+			return;
+		}
+
+		function setStatus(message) {
+			if (!status) {
+				return;
+			}
+
+			status.textContent = message;
+
+			window.setTimeout(function () {
+				status.textContent = '';
+			}, 3000);
+		}
+
+		function fallbackCopy(text) {
+			textarea.focus();
+			textarea.select();
+
+			try {
+				document.execCommand('copy');
+				setStatus('Copied.');
+			} catch (error) {
+				setStatus('Copy failed. Please select and copy manually.');
+			}
+		}
+
+		copyButton.addEventListener('click', function () {
+			var text = textarea.value;
+
+			if (!text) {
+				setStatus('Nothing to copy.');
+				return;
+			}
+
+			if (navigator.clipboard && navigator.clipboard.writeText) {
+				navigator.clipboard.writeText(text)
+					.then(function () {
+						setStatus('Copied.');
+					})
+					.catch(function () {
+						fallbackCopy(text);
+					});
+
+				return;
+			}
+
+			fallbackCopy(text);
+		});
+	}
+
+	function initializeConfirmButtons() {
+		var buttons = document.querySelectorAll('[data-analytics-report-ai-confirm]');
+
+		if (!buttons.length) {
+			return;
+		}
+
+		Array.prototype.forEach.call(buttons, function (button) {
+			button.addEventListener('click', function (event) {
+				var message = button.getAttribute('data-analytics-report-ai-confirm');
+
+				if (message && !window.confirm(message)) {
+					event.preventDefault();
+				}
+			});
+		});
+	}
+
+	function initialize() {
 		initializeScopeField();
+		initializeCopyReport();
+		initializeConfirmButtons();
+	}
+
+	if ('loading' === document.readyState) {
+		document.addEventListener('DOMContentLoaded', initialize);
+	} else {
+		initialize();
 	}
 })();
