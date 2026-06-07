@@ -43,6 +43,56 @@ final class Analytics_Report_AI_GA4_Client {
 	}
 
 	/**
+	 * Run daily trend report.
+	 *
+	 * @param string $property_id  GA4 property ID.
+	 * @param string $access_token Google OAuth access token.
+	 * @param array  $period       Period.
+	 * @param array  $settings     Plugin settings.
+	 * @param array  $conditions   Validated conditions.
+	 * @return array|WP_Error
+	 */
+	public static function run_daily_trend_report( $property_id, $access_token, $period, $settings, $conditions ) {
+		$result = self::run_report(
+			$property_id,
+			$access_token,
+			$period,
+			$settings,
+			$conditions,
+			array( 'date' ),
+			array( 'screenPageViews', 'activeUsers' )
+		);
+
+		if ( is_wp_error( $result ) ) {
+			return $result;
+		}
+
+		$rows = self::extract_dimension_rows(
+			$result,
+			array( 'date' ),
+			array( 'screenPageViews', 'activeUsers' )
+		);
+
+		usort(
+			$rows,
+			static function ( $a, $b ) {
+				$date_a = isset( $a['date'] ) ? (string) $a['date'] : '';
+				$date_b = isset( $b['date'] ) ? (string) $b['date'] : '';
+
+				return strcmp( $date_a, $date_b );
+			}
+		);
+
+		foreach ( $rows as $index => $row ) {
+			if ( isset( $row['date'] ) && preg_match( '/^\d{8}$/', (string) $row['date'] ) ) {
+				$rows[ $index ]['date'] = substr( $row['date'], 0, 4 ) . '-' . substr( $row['date'], 4, 2 ) . '-' . substr( $row['date'], 6, 2 );
+			}
+		}
+
+		return $rows;
+	}
+
+	/**
 	 * Run top pages report.
 	 *
 	 * @param string $property_id  GA4 property ID.

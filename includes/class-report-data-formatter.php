@@ -38,7 +38,7 @@ final class Analytics_Report_AI_Report_Data_Formatter {
 	}
 
 	/**
-	 * Create AI payload from GA4 summary data.
+	 * Create AI payload from GA4 data.
 	 *
 	 * @param array $conditions         Validated conditions.
 	 * @param array $settings           Plugin settings.
@@ -49,32 +49,50 @@ final class Analytics_Report_AI_Report_Data_Formatter {
 	 */
 	public static function create_payload_from_ga4_summary( $conditions, $settings, $current_summary, $comparison_summary = array(), $preset_reports = array() ) {
 		$has_comparison = ! empty( $conditions['comparison'] ) && 'none' !== $conditions['comparison'];
-		$payload        = self::create_dummy_payload( $conditions, $settings );
 
-		$payload['payload_version'] = '0.1.0-ga4-presets';
-		$payload['summary']         = self::build_summary_from_ga4_values(
-			$current_summary,
-			$has_comparison ? $comparison_summary : array(),
-			$has_comparison
+		return array(
+			'plugin'           => 'Analytics Report AI',
+			'payload_version'  => '0.1.0-mvp',
+			'language'         => 'ja',
+			'report_type'      => 'ga4_summary',
+			'site'             => self::build_site_payload( $settings ),
+			'conditions'       => self::build_conditions_payload( $conditions ),
+			'summary'          => self::build_summary_from_ga4_values(
+				$current_summary,
+				$has_comparison ? $comparison_summary : array(),
+				$has_comparison
+			),
+			'daily_trend'      => self::limit_rows(
+				isset( $preset_reports['daily_trend'] ) && is_array( $preset_reports['daily_trend'] )
+					? $preset_reports['daily_trend']
+					: array(),
+				31
+			),
+			'top_pages'        => self::limit_rows(
+				isset( $preset_reports['top_pages'] ) && is_array( $preset_reports['top_pages'] )
+					? $preset_reports['top_pages']
+					: array(),
+				10
+			),
+			'traffic_channels' => self::limit_rows(
+				isset( $preset_reports['traffic_channels'] ) && is_array( $preset_reports['traffic_channels'] )
+					? $preset_reports['traffic_channels']
+					: array(),
+				10
+			),
+			'traffic_sources'  => self::limit_rows(
+				isset( $preset_reports['traffic_sources'] ) && is_array( $preset_reports['traffic_sources'] )
+					? $preset_reports['traffic_sources']
+					: array(),
+				10
+			),
+			'regional_trends'  => self::limit_rows(
+				isset( $preset_reports['regional_trends'] ) && is_array( $preset_reports['regional_trends'] )
+					? $preset_reports['regional_trends']
+					: array(),
+				10
+			),
 		);
-
-		if ( isset( $preset_reports['top_pages'] ) && is_array( $preset_reports['top_pages'] ) ) {
-			$payload['top_pages'] = array_slice( $preset_reports['top_pages'], 0, 10 );
-		}
-
-		if ( isset( $preset_reports['traffic_channels'] ) && is_array( $preset_reports['traffic_channels'] ) ) {
-			$payload['traffic_channels'] = array_slice( $preset_reports['traffic_channels'], 0, 10 );
-		}
-
-		if ( isset( $preset_reports['traffic_sources'] ) && is_array( $preset_reports['traffic_sources'] ) ) {
-			$payload['traffic_sources'] = array_slice( $preset_reports['traffic_sources'], 0, 10 );
-		}
-
-		if ( isset( $preset_reports['regional_trends'] ) && is_array( $preset_reports['regional_trends'] ) ) {
-			$payload['regional_trends'] = array_slice( $preset_reports['regional_trends'], 0, 10 );
-		}
-
-		return $payload;
 	}
 
 	/**
@@ -128,6 +146,21 @@ final class Analytics_Report_AI_Report_Data_Formatter {
 	}
 
 	/**
+	 * Limit rows.
+	 *
+	 * @param array $rows  Rows.
+	 * @param int   $limit Limit.
+	 * @return array
+	 */
+	private static function limit_rows( $rows, $limit ) {
+		if ( empty( $rows ) || ! is_array( $rows ) ) {
+			return array();
+		}
+
+		return array_slice( array_values( $rows ), 0, absint( $limit ) );
+	}
+
+	/**
 	 * Build summary from GA4 values.
 	 *
 	 * @param array $current_summary    Current summary.
@@ -158,14 +191,17 @@ final class Analytics_Report_AI_Report_Data_Formatter {
 	/**
 	 * Build one metric payload.
 	 *
-	 * @param string     $label Label.
-	 * @param int|float  $current Current value.
-	 * @param int|float  $comparison Comparison value.
-	 * @param string     $unit Unit.
-	 * @param bool       $has_comparison Whether comparison exists.
+	 * @param string    $label Label.
+	 * @param int|float $current Current value.
+	 * @param int|float $comparison Comparison value.
+	 * @param string    $unit Unit.
+	 * @param bool      $has_comparison Whether comparison exists.
 	 * @return array
 	 */
 	private static function build_metric( $label, $current, $comparison, $unit, $has_comparison ) {
+		$current    = is_numeric( $current ) ? $current + 0 : 0;
+		$comparison = is_numeric( $comparison ) ? $comparison + 0 : 0;
+
 		$diff        = null;
 		$change_rate = null;
 

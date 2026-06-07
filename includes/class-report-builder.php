@@ -358,6 +358,26 @@ final class Analytics_Report_AI_Report_Builder {
 
 		$preset_reports = array();
 
+		$daily_trend = Analytics_Report_AI_GA4_Client::run_daily_trend_report(
+			$property_id,
+			$access_token,
+			$conditions['period'],
+			$settings,
+			$conditions
+		);
+
+		if ( is_wp_error( $daily_trend ) ) {
+			return array(
+				'status'      => 'error',
+				'errors'      => array(
+					$daily_trend->get_error_message(),
+				),
+				'form_values' => $validation_result['form_values'],
+			);
+		}
+
+		$preset_reports['daily_trend'] = $daily_trend;
+
 		$top_pages = Analytics_Report_AI_GA4_Client::run_top_pages_report(
 			$property_id,
 			$access_token,
@@ -746,6 +766,7 @@ final class Analytics_Report_AI_Report_Builder {
 			</p>
 
 			<?php $this->render_summary_preview_table( $payload ); ?>
+			<?php $this->render_list_preview_table( __( 'Daily Trend', 'analytics-report-ai' ), isset( $payload['daily_trend'] ) ? $payload['daily_trend'] : array() ); ?>
 			<?php $this->render_list_preview_table( __( 'Top Pages', 'analytics-report-ai' ), isset( $payload['top_pages'] ) ? $payload['top_pages'] : array() ); ?>
 			<?php $this->render_list_preview_table( __( 'Traffic Channels', 'analytics-report-ai' ), isset( $payload['traffic_channels'] ) ? $payload['traffic_channels'] : array() ); ?>
 			<?php $this->render_list_preview_table( __( 'Traffic Sources', 'analytics-report-ai' ), isset( $payload['traffic_sources'] ) ? $payload['traffic_sources'] : array() ); ?>
