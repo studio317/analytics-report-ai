@@ -220,12 +220,12 @@ final class Analytics_Report_AI_Report_Builder {
 
 				<p>
 					<button type="submit" class="button button-primary">
-						<?php echo esc_html__( 'Fetch GA4 Summary', 'analytics-report-ai' ); ?>
+						<?php echo esc_html__( 'Fetch GA4 Data', 'analytics-report-ai' ); ?>
 					</button>
 				</p>
 
 				<p class="description">
-					<?php echo esc_html__( 'This button validates the conditions, fetches the basic GA4 summary, and creates an AI payload preview.', 'analytics-report-ai' ); ?>
+					<?php echo esc_html__( 'This button validates the conditions, fetches GA4 preset reports, and creates an AI payload preview.', 'analytics-report-ai' ); ?>
 				</p>
 			</form>
 
@@ -356,11 +356,94 @@ final class Analytics_Report_AI_Report_Builder {
 			}
 		}
 
+		$preset_reports = array();
+
+		$top_pages = Analytics_Report_AI_GA4_Client::run_top_pages_report(
+			$property_id,
+			$access_token,
+			$conditions['period'],
+			$settings,
+			$conditions
+		);
+
+		if ( is_wp_error( $top_pages ) ) {
+			return array(
+				'status'      => 'error',
+				'errors'      => array(
+					$top_pages->get_error_message(),
+				),
+				'form_values' => $validation_result['form_values'],
+			);
+		}
+
+		$preset_reports['top_pages'] = $top_pages;
+
+		$traffic_channels = Analytics_Report_AI_GA4_Client::run_traffic_channels_report(
+			$property_id,
+			$access_token,
+			$conditions['period'],
+			$settings,
+			$conditions
+		);
+
+		if ( is_wp_error( $traffic_channels ) ) {
+			return array(
+				'status'      => 'error',
+				'errors'      => array(
+					$traffic_channels->get_error_message(),
+				),
+				'form_values' => $validation_result['form_values'],
+			);
+		}
+
+		$preset_reports['traffic_channels'] = $traffic_channels;
+
+		$traffic_sources = Analytics_Report_AI_GA4_Client::run_traffic_sources_report(
+			$property_id,
+			$access_token,
+			$conditions['period'],
+			$settings,
+			$conditions
+		);
+
+		if ( is_wp_error( $traffic_sources ) ) {
+			return array(
+				'status'      => 'error',
+				'errors'      => array(
+					$traffic_sources->get_error_message(),
+				),
+				'form_values' => $validation_result['form_values'],
+			);
+		}
+
+		$preset_reports['traffic_sources'] = $traffic_sources;
+
+		$regional_trends = Analytics_Report_AI_GA4_Client::run_regional_trends_report(
+			$property_id,
+			$access_token,
+			$conditions['period'],
+			$settings,
+			$conditions
+		);
+
+		if ( is_wp_error( $regional_trends ) ) {
+			return array(
+				'status'      => 'error',
+				'errors'      => array(
+					$regional_trends->get_error_message(),
+				),
+				'form_values' => $validation_result['form_values'],
+			);
+		}
+
+		$preset_reports['regional_trends'] = $regional_trends;
+
 		$payload = Analytics_Report_AI_Report_Data_Formatter::create_payload_from_ga4_summary(
 			$conditions,
 			$settings,
 			$current_summary,
-			$comparison_summary
+			$comparison_summary,
+			$preset_reports
 		);
 
 		$transient_key = analytics_report_ai_get_payload_transient_key();
@@ -374,6 +457,7 @@ final class Analytics_Report_AI_Report_Builder {
 			'payload'            => $payload,
 			'current_summary'    => $current_summary,
 			'comparison_summary' => $comparison_summary,
+			'preset_reports'     => $preset_reports,
 			'transient_key'      => $transient_key,
 			'expiration'         => $expiration,
 			'form_values'        => $validation_result['form_values'],
@@ -526,7 +610,7 @@ final class Analytics_Report_AI_Report_Builder {
 		if ( 'payload_created' === $submission_result['status'] ) {
 			?>
 			<div class="notice notice-success">
-				<p><?php echo esc_html__( 'GA4 summary was fetched and AI payload was created successfully.', 'analytics-report-ai' ); ?></p>
+				<p><?php echo esc_html__( 'GA4 preset reports were fetched and AI payload was created successfully.', 'analytics-report-ai' ); ?></p>
 			</div>
 			<?php
 			return;

@@ -44,18 +44,35 @@ final class Analytics_Report_AI_Report_Data_Formatter {
 	 * @param array $settings           Plugin settings.
 	 * @param array $current_summary    Current GA4 summary.
 	 * @param array $comparison_summary Comparison GA4 summary.
+	 * @param array $preset_reports     GA4 preset reports.
 	 * @return array
 	 */
-	public static function create_payload_from_ga4_summary( $conditions, $settings, $current_summary, $comparison_summary = array() ) {
+	public static function create_payload_from_ga4_summary( $conditions, $settings, $current_summary, $comparison_summary = array(), $preset_reports = array() ) {
 		$has_comparison = ! empty( $conditions['comparison'] ) && 'none' !== $conditions['comparison'];
 		$payload        = self::create_dummy_payload( $conditions, $settings );
 
-		$payload['payload_version'] = '0.1.0-ga4-summary';
+		$payload['payload_version'] = '0.1.0-ga4-presets';
 		$payload['summary']         = self::build_summary_from_ga4_values(
 			$current_summary,
 			$has_comparison ? $comparison_summary : array(),
 			$has_comparison
 		);
+
+		if ( isset( $preset_reports['top_pages'] ) && is_array( $preset_reports['top_pages'] ) ) {
+			$payload['top_pages'] = array_slice( $preset_reports['top_pages'], 0, 10 );
+		}
+
+		if ( isset( $preset_reports['traffic_channels'] ) && is_array( $preset_reports['traffic_channels'] ) ) {
+			$payload['traffic_channels'] = array_slice( $preset_reports['traffic_channels'], 0, 10 );
+		}
+
+		if ( isset( $preset_reports['traffic_sources'] ) && is_array( $preset_reports['traffic_sources'] ) ) {
+			$payload['traffic_sources'] = array_slice( $preset_reports['traffic_sources'], 0, 10 );
+		}
+
+		if ( isset( $preset_reports['regional_trends'] ) && is_array( $preset_reports['regional_trends'] ) ) {
+			$payload['regional_trends'] = array_slice( $preset_reports['regional_trends'], 0, 10 );
+		}
 
 		return $payload;
 	}
