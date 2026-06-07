@@ -10,3 +10,43 @@
 .analytics-report-ai-admin .analytics-report-ai-card h2 {
 	margin-top: 0;
 }
+
+.analytics-report-ai-admin .analytics-report-ai-status-table {
+	margin-top: 12px;
+}
+
+.analytics-report-ai-admin .analytics-report-ai-status-table th {
+	width: 220px;
+}
+
+.analytics-report-ai-admin .analytics-report-ai-status-warning {
+	color: #b32d2e;
+	font-weight: 600;
+}
+
+.analytics-report-ai-admin .analytics-report-ai-inline-label {
+	margin-left: 16px;
+}
+
+.analytics-report-ai-admin .analytics-report-ai-radio-label {
+	display: block;
+	margin: 0 0 8px;
+}
+
+.analytics-report-ai-admin .analytics-report-ai-path-field {
+	margin-top: 12px;
+	padding: 12px;
+	background: #f6f7f7;
+	border: 1px solid #dcdcde;
+	border-radius: 4px;
+}
+
+.analytics-report-ai-admin .analytics-report-ai-path-field.is-hidden {
+	display: none;
+}
+
+.analytics-report-ai-admin .analytics-report-ai-path-field label {
+	display: block;
+	margin-bottom: 6px;
+	font-weight: 600;
+}

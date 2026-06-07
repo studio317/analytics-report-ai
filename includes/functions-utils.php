@@ -116,3 +116,27 @@ if ( ! function_exists( 'analytics_report_ai_is_measurement_id' ) ) {
 		return (bool) preg_match( '/^G-[A-Z0-9]+$/i', trim( (string) $value ) );
 	}
 }
+
+if ( ! function_exists( 'analytics_report_ai_get_default_report_period' ) ) {
+	/**
+	 * Get default report period.
+	 *
+	 * Default period is the first day to the last day of the previous month
+	 * based on the WordPress timezone.
+	 *
+	 * @return array
+	 */
+	function analytics_report_ai_get_default_report_period() {
+		$timezone = wp_timezone();
+		$now      = new DateTimeImmutable( 'now', $timezone );
+
+		$first_day_this_month = $now->modify( 'first day of this month' )->setTime( 0, 0, 0 );
+		$start_date           = $first_day_this_month->modify( '-1 month' )->format( 'Y-m-01' );
+		$end_date             = $first_day_this_month->modify( '-1 day' )->format( 'Y-m-d' );
+
+		return array(
+			'start_date' => $start_date,
+			'end_date'   => $end_date,
+		);
+	}
+}
