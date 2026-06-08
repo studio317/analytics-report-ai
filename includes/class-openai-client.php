@@ -50,11 +50,7 @@ final class Analytics_Report_AI_OpenAI_Client {
 		if ( is_wp_error( $response ) ) {
 			return new WP_Error(
 				'analytics_report_ai_openai_request_failed',
-				sprintf(
-					/* translators: %s: error message */
-					__( 'OpenAI API request failed: %s', 'analytics-report-ai' ),
-					$response->get_error_message()
-				)
+				__( 'Could not connect to OpenAI API. Check the server network connection and try again.', 'analytics-report-ai' )
 			);
 		}
 
@@ -69,7 +65,7 @@ final class Analytics_Report_AI_OpenAI_Client {
 		if ( ! is_array( $data ) ) {
 			return new WP_Error(
 				'analytics_report_ai_openai_invalid_json',
-				__( 'OpenAI API returned an invalid JSON response.', 'analytics-report-ai' )
+				__( 'OpenAI API returned an unreadable response. Please try again later.', 'analytics-report-ai' )
 			);
 		}
 
@@ -102,34 +98,114 @@ final class Analytics_Report_AI_OpenAI_Client {
 	 * Build API error.
 	 *
 	 * @param int        $status_code HTTP status code.
-	 * @param array|null $data Response data.
+	 * @param array|null $data        Response data.
 	 * @return WP_Error
 	 */
 	private static function build_api_error( $status_code, $data ) {
-		$message = '';
-
-		if ( is_array( $data ) && ! empty( $data['error']['message'] ) ) {
-			$message = sanitize_text_field( (string) $data['error']['message'] );
-		}
-
-		if ( '' === $message ) {
-			$message = __( 'Unknown API error.', 'analytics-report-ai' );
-		}
-
-		$permission_note = __(
-			' If you are using a Restricted API key, make sure Model capabilities and Responses (/v1/responses) are set to Request.',
-			'analytics-report-ai'
-		);
+		$message = self::get_safe_api_error_message( $status_code, $data );
 
 		return new WP_Error(
 			'analytics_report_ai_openai_api_error',
-			sprintf(
-				/* translators: 1: HTTP status code, 2: API error message, 3: permission note */
-				__( 'OpenAI API returned an error. HTTP status: %1$d. Message: %2$s%3$s', 'analytics-report-ai' ),
-				$status_code,
-				$message,
-				$permission_note
-			)
+			self::append_http_status( $message, $status_code )
+		);
+	}
+
+	/**
+	 * Get a safe user-facing OpenAI API error message.
+	 *
+	 * @param int        $status_code HTTP status code.
+	 * @param array|null $data        Response data.
+	 * @return string
+	 */
+	private static function get_safe_api_error_message( $status_code, $data ) {
+		if ( 400 === $status_code ) {
+			return __( 'OpenAI API rejected the request. Check the report payload and model configuration.', 'analytics-report-ai' );
+		}
+
+		if ( 401 === $status_code ) {
+			return __( 'OpenAI API key is invalid or missing. Check the API key in Settings.', 'analytics-report-ai' );
+		}
+
+		if ( 403 === $status_code ) {
+			return __( 'OpenAI API permission was denied. If you use a restricted key, allow Model capabilities and Responses (/v1/responses) requests.', 'analytics-report-ai' );
+		}
+
+		if ( 404 === $status_code ) {
+			return __( 'The configured OpenAI model or endpoint was not found. Check the model configuration.', 'analytics-report-ai' );
+		}
+
+		if ( 429 === $status_code ) {
+			return __( 'OpenAI API rate limit or quota may have been exceeded. Check your OpenAI Platform usage and billing.', 'analytics-report-ai' );
+		}
+
+		if ( $status_code >= 500 ) {
+			return __( 'OpenAI API is temporarily unavailable. Please try again later.', 'analytics-report-ai' );
+		}
+
+		if ( self::has_api_error_value( $data, 'type', array( 'invalid_request_error' ) ) ) {
+			return __( 'OpenAI API rejected the request. Check the report payload and model configuration.', 'analytics-report-ai' );
+		}
+
+		if ( self::has_api_error_value( $data, 'type', array( 'authentication_error' ) ) ) {
+			return __( 'OpenAI API key is invalid or missing. Check the API key in Settings.', 'analytics-report-ai' );
+		}
+
+		if (
+			self::has_api_error_value( $data, 'type', array( 'permission_error' ) )
+			|| self::has_api_error_value( $data, 'code', array( 'insufficient_permissions' ) )
+		) {
+			return __( 'OpenAI API permission was denied. If you use a restricted key, allow Model capabilities and Responses (/v1/responses) requests.', 'analytics-report-ai' );
+		}
+
+		if ( self::has_api_error_value( $data, 'code', array( 'model_not_found' ) ) ) {
+			return __( 'The configured OpenAI model or endpoint was not found. Check the model configuration.', 'analytics-report-ai' );
+		}
+
+		if (
+			self::has_api_error_value( $data, 'type', array( 'rate_limit_error' ) )
+			|| self::has_api_error_value( $data, 'code', array( 'insufficient_quota', 'rate_limit_exceeded' ) )
+		) {
+			return __( 'OpenAI API rate limit or quota may have been exceeded. Check your OpenAI Platform usage and billing.', 'analytics-report-ai' );
+		}
+
+		return __( 'OpenAI API returned an unexpected error. Check the settings and try again.', 'analytics-report-ai' );
+	}
+
+	/**
+	 * Check whether an OpenAI error field matches a safe known value.
+	 *
+	 * @param array|null $data   Response data.
+	 * @param string     $field  Error field name.
+	 * @param array      $values Allowed field values.
+	 * @return bool
+	 */
+	private static function has_api_error_value( $data, $field, $values ) {
+		if ( ! is_array( $data ) || empty( $data['error'][ $field ] ) ) {
+			return false;
+		}
+
+		$value = sanitize_key( (string) $data['error'][ $field ] );
+
+		return in_array( $value, $values, true );
+	}
+
+	/**
+	 * Append the HTTP status code without exposing the response body.
+	 *
+	 * @param string $message     Safe user-facing message.
+	 * @param int    $status_code HTTP status code.
+	 * @return string
+	 */
+	private static function append_http_status( $message, $status_code ) {
+		if ( $status_code <= 0 ) {
+			return $message;
+		}
+
+		return sprintf(
+			/* translators: 1: safe user-facing error message, 2: HTTP status code. */
+			__( '%1$s HTTP status: %2$d', 'analytics-report-ai' ),
+			$message,
+			$status_code
 		);
 	}
 

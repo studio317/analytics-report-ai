@@ -336,11 +336,7 @@ final class Analytics_Report_AI_GA4_Client {
 		if ( is_wp_error( $response ) ) {
 			return new WP_Error(
 				'analytics_report_ai_ga4_request_failed',
-				sprintf(
-					/* translators: %s: error message */
-					__( 'GA4 Data API request failed: %s', 'analytics-report-ai' ),
-					$response->get_error_message()
-				)
+				__( 'Could not connect to Google Analytics Data API. Check the server network connection and try again.', 'analytics-report-ai' )
 			);
 		}
 
@@ -355,7 +351,7 @@ final class Analytics_Report_AI_GA4_Client {
 		if ( ! is_array( $data ) ) {
 			return new WP_Error(
 				'analytics_report_ai_ga4_invalid_json',
-				__( 'GA4 Data API returned an invalid JSON response.', 'analytics-report-ai' )
+				__( 'Google Analytics Data API returned an unreadable response. Please try again later.', 'analytics-report-ai' )
 			);
 		}
 
@@ -541,24 +537,108 @@ final class Analytics_Report_AI_GA4_Client {
 	 * @return WP_Error
 	 */
 	private static function build_api_error( $status_code, $data ) {
-		$message = '';
-
-		if ( is_array( $data ) && ! empty( $data['error']['message'] ) ) {
-			$message = sanitize_text_field( (string) $data['error']['message'] );
-		}
-
-		if ( '' === $message ) {
-			$message = __( 'Unknown GA4 Data API error.', 'analytics-report-ai' );
-		}
+		$message = self::get_safe_api_error_message( $status_code, $data );
 
 		return new WP_Error(
 			'analytics_report_ai_ga4_api_error',
-			sprintf(
-				/* translators: 1: HTTP status code, 2: API error message */
-				__( 'GA4 Data API returned an error. HTTP status: %1$d. Message: %2$s', 'analytics-report-ai' ),
-				$status_code,
-				$message
-			)
+			self::append_http_status( $message, $status_code )
+		);
+	}
+
+	/**
+	 * Get a safe user-facing GA4 API error message.
+	 *
+	 * @param int        $status_code HTTP status code.
+	 * @param array|null $data        Response data.
+	 * @return string
+	 */
+	private static function get_safe_api_error_message( $status_code, $data ) {
+		if ( 400 === $status_code ) {
+			return __( 'Google Analytics Data API rejected the report request. Check the GA4 property ID, date range, and report filters.', 'analytics-report-ai' );
+		}
+
+		if ( 401 === $status_code ) {
+			return __( 'Google Access Token is invalid or expired. Please create a new temporary token and save it in Settings.', 'analytics-report-ai' );
+		}
+
+		if ( 403 === $status_code ) {
+			return __( 'Google Analytics Data API permission was denied. Check that the token has access to the selected GA4 property.', 'analytics-report-ai' );
+		}
+
+		if ( 404 === $status_code ) {
+			return __( 'GA4 property was not found. Check that the property ID is correct and that the token can access it.', 'analytics-report-ai' );
+		}
+
+		if ( 429 === $status_code ) {
+			return __( 'Google Analytics Data API rate limit may have been exceeded. Please wait and try again later.', 'analytics-report-ai' );
+		}
+
+		if ( $status_code >= 500 ) {
+			return __( 'Google Analytics Data API is temporarily unavailable. Please try again later.', 'analytics-report-ai' );
+		}
+
+		if ( self::has_api_error_status( $data, array( 'INVALID_ARGUMENT' ) ) ) {
+			return __( 'Google Analytics Data API rejected the report request. Check the GA4 property ID, date range, and report filters.', 'analytics-report-ai' );
+		}
+
+		if ( self::has_api_error_status( $data, array( 'UNAUTHENTICATED' ) ) ) {
+			return __( 'Google Access Token is invalid or expired. Please create a new temporary token and save it in Settings.', 'analytics-report-ai' );
+		}
+
+		if ( self::has_api_error_status( $data, array( 'PERMISSION_DENIED' ) ) ) {
+			return __( 'Google Analytics Data API permission was denied. Check that the token has access to the selected GA4 property.', 'analytics-report-ai' );
+		}
+
+		if ( self::has_api_error_status( $data, array( 'NOT_FOUND' ) ) ) {
+			return __( 'GA4 property was not found. Check that the property ID is correct and that the token can access it.', 'analytics-report-ai' );
+		}
+
+		if ( self::has_api_error_status( $data, array( 'RESOURCE_EXHAUSTED' ) ) ) {
+			return __( 'Google Analytics Data API rate limit may have been exceeded. Please wait and try again later.', 'analytics-report-ai' );
+		}
+
+		if ( self::has_api_error_status( $data, array( 'ABORTED', 'DEADLINE_EXCEEDED', 'INTERNAL', 'UNAVAILABLE', 'UNKNOWN' ) ) ) {
+			return __( 'Google Analytics Data API is temporarily unavailable. Please try again later.', 'analytics-report-ai' );
+		}
+
+		return __( 'Google Analytics Data API returned an unexpected error. Check the settings and try again.', 'analytics-report-ai' );
+	}
+
+	/**
+	 * Check whether the GA4 error status matches one of the expected safe codes.
+	 *
+	 * @param array|null $data     Response data.
+	 * @param array      $statuses Allowed API error statuses.
+	 * @return bool
+	 */
+	private static function has_api_error_status( $data, $statuses ) {
+		if ( ! is_array( $data ) || empty( $data['error']['status'] ) ) {
+			return false;
+		}
+
+		$status = sanitize_key( (string) $data['error']['status'] );
+		$status = strtoupper( str_replace( '-', '_', $status ) );
+
+		return in_array( $status, $statuses, true );
+	}
+
+	/**
+	 * Append the HTTP status code without exposing the response body.
+	 *
+	 * @param string $message     Safe user-facing message.
+	 * @param int    $status_code HTTP status code.
+	 * @return string
+	 */
+	private static function append_http_status( $message, $status_code ) {
+		if ( $status_code <= 0 ) {
+			return $message;
+		}
+
+		return sprintf(
+			/* translators: 1: safe user-facing error message, 2: HTTP status code. */
+			__( '%1$s HTTP status: %2$d', 'analytics-report-ai' ),
+			$message,
+			$status_code
 		);
 	}
 }
