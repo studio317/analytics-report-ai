@@ -49,10 +49,11 @@ final class Analytics_Report_AI_Report_Data_Formatter {
 	 */
 	public static function create_payload_from_ga4_summary( $conditions, $settings, $current_summary, $comparison_summary = array(), $preset_reports = array() ) {
 		$has_comparison = ! empty( $conditions['comparison'] ) && 'none' !== $conditions['comparison'];
+		$row_limits     = analytics_report_ai_get_payload_row_limits();
 
 		return array(
 			'plugin'           => 'Analytics Report AI',
-			'payload_version'  => '0.1.0-mvp',
+			'payload_version'  => analytics_report_ai_get_payload_version(),
 			'language'         => 'ja',
 			'report_type'      => 'ga4_summary',
 			'site'             => self::build_site_payload( $settings ),
@@ -66,31 +67,31 @@ final class Analytics_Report_AI_Report_Data_Formatter {
 				isset( $preset_reports['daily_trend'] ) && is_array( $preset_reports['daily_trend'] )
 					? $preset_reports['daily_trend']
 					: array(),
-				31
+				$row_limits['daily_trend']
 			),
 			'top_pages'        => self::limit_rows(
 				isset( $preset_reports['top_pages'] ) && is_array( $preset_reports['top_pages'] )
 					? $preset_reports['top_pages']
 					: array(),
-				10
+				$row_limits['top_pages']
 			),
 			'traffic_channels' => self::limit_rows(
 				isset( $preset_reports['traffic_channels'] ) && is_array( $preset_reports['traffic_channels'] )
 					? $preset_reports['traffic_channels']
 					: array(),
-				10
+				$row_limits['traffic_channels']
 			),
 			'traffic_sources'  => self::limit_rows(
 				isset( $preset_reports['traffic_sources'] ) && is_array( $preset_reports['traffic_sources'] )
 					? $preset_reports['traffic_sources']
 					: array(),
-				10
+				$row_limits['traffic_sources']
 			),
 			'regional_trends'  => self::limit_rows(
 				isset( $preset_reports['regional_trends'] ) && is_array( $preset_reports['regional_trends'] )
 					? $preset_reports['regional_trends']
 					: array(),
-				10
+				$row_limits['regional_trends']
 			),
 		);
 	}

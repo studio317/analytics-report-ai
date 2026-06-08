@@ -449,6 +449,105 @@ if ( ! function_exists( 'analytics_report_ai_get_payload_transient_expiration' )
 	}
 }
 
+if ( ! function_exists( 'analytics_report_ai_get_payload_version' ) ) {
+	/**
+	 * Get expected MVP AI payload version.
+	 *
+	 * @return string
+	 */
+	function analytics_report_ai_get_payload_version() {
+		if ( defined( 'ANALYTICS_REPORT_AI_PAYLOAD_VERSION' ) ) {
+			return (string) ANALYTICS_REPORT_AI_PAYLOAD_VERSION;
+		}
+
+		return '0.1.0-mvp';
+	}
+}
+
+if ( ! function_exists( 'analytics_report_ai_get_payload_row_limits' ) ) {
+	/**
+	 * Get expected MVP AI payload row limits.
+	 *
+	 * @return array
+	 */
+	function analytics_report_ai_get_payload_row_limits() {
+		return array(
+			'daily_trend'      => 31,
+			'top_pages'        => 10,
+			'traffic_channels' => 10,
+			'traffic_sources'  => 10,
+			'regional_trends'  => 10,
+		);
+	}
+}
+
+if ( ! function_exists( 'analytics_report_ai_validate_ai_payload' ) ) {
+	/**
+	 * Validate the MVP AI payload shape before storage or OpenAI submission.
+	 *
+	 * @param mixed $payload AI payload.
+	 * @return true|WP_Error
+	 */
+	function analytics_report_ai_validate_ai_payload( $payload ) {
+		if ( ! is_array( $payload ) ) {
+			return new WP_Error(
+				'analytics_report_ai_payload_not_array',
+				__( 'AI payload is invalid.', 'analytics-report-ai' )
+			);
+		}
+
+		$expected_values = array(
+			'payload_version' => analytics_report_ai_get_payload_version(),
+			'language'        => 'ja',
+			'report_type'     => 'ga4_summary',
+		);
+
+		foreach ( $expected_values as $key => $expected_value ) {
+			if (
+				! isset( $payload[ $key ] )
+				|| ! is_scalar( $payload[ $key ] )
+				|| (string) $payload[ $key ] !== $expected_value
+			) {
+				return new WP_Error(
+					'analytics_report_ai_payload_unexpected_' . sanitize_key( $key ),
+					__( 'AI payload is invalid.', 'analytics-report-ai' )
+				);
+			}
+		}
+
+		$required_array_keys = array(
+			'site',
+			'conditions',
+			'summary',
+			'daily_trend',
+			'top_pages',
+			'traffic_channels',
+			'traffic_sources',
+			'regional_trends',
+		);
+
+		foreach ( $required_array_keys as $key ) {
+			if ( ! isset( $payload[ $key ] ) || ! is_array( $payload[ $key ] ) ) {
+				return new WP_Error(
+					'analytics_report_ai_payload_missing_' . sanitize_key( $key ),
+					__( 'AI payload is invalid.', 'analytics-report-ai' )
+				);
+			}
+		}
+
+		foreach ( analytics_report_ai_get_payload_row_limits() as $key => $limit ) {
+			if ( count( $payload[ $key ] ) > absint( $limit ) ) {
+				return new WP_Error(
+					'analytics_report_ai_payload_row_limit_' . sanitize_key( $key ),
+					__( 'AI payload is invalid.', 'analytics-report-ai' )
+				);
+			}
+		}
+
+		return true;
+	}
+}
+
 if ( ! function_exists( 'analytics_report_ai_get_summary_metric_definitions' ) ) {
 	/**
 	 * Get summary metric definitions.

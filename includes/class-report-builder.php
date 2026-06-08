@@ -497,6 +497,18 @@ final class Analytics_Report_AI_Report_Builder {
 			$preset_reports
 		);
 
+		$payload_validation = analytics_report_ai_validate_ai_payload( $payload );
+
+		if ( is_wp_error( $payload_validation ) ) {
+			return array(
+				'status'      => 'error',
+				'errors'      => array(
+					__( 'The GA4 data could not be converted into a valid AI payload. Please check the settings and try again.', 'analytics-report-ai' ),
+				),
+				'form_values' => $validation_result['form_values'],
+			);
+		}
+
 		$transient_key = analytics_report_ai_get_payload_transient_key();
 		$expiration    = analytics_report_ai_get_payload_transient_expiration();
 
@@ -524,11 +536,15 @@ final class Analytics_Report_AI_Report_Builder {
 		$transient_key = analytics_report_ai_get_payload_transient_key();
 		$payload       = get_transient( $transient_key );
 
-		if ( empty( $payload ) || ! is_array( $payload ) ) {
+		$payload_validation = analytics_report_ai_validate_ai_payload( $payload );
+
+		if ( is_wp_error( $payload_validation ) ) {
+			delete_transient( $transient_key );
+
 			return array(
 				'status' => 'error',
 				'errors' => array(
-					__( 'Temporary AI payload was not found. Please create the payload again.', 'analytics-report-ai' ),
+					__( 'The saved AI payload is missing, expired, or no longer valid. Please fetch GA4 data again.', 'analytics-report-ai' ),
 				),
 			);
 		}
@@ -830,6 +846,10 @@ final class Analytics_Report_AI_Report_Builder {
 					(int) floor( $expiration / MINUTE_IN_SECONDS )
 				);
 				?>
+			</p>
+
+			<p class="description">
+				<?php echo esc_html__( 'The reviewed payload is stored temporarily for this user and expires automatically.', 'analytics-report-ai' ); ?>
 			</p>
 
 			<div class="analytics-report-ai-info-block">
