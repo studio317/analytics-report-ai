@@ -1,6 +1,21 @@
 (function () {
 	'use strict';
 
+	function getAdminString(key, fallback) {
+		var strings = window.analyticsReportAiAdmin && window.analyticsReportAiAdmin.strings;
+
+		if (
+			strings &&
+			Object.prototype.hasOwnProperty.call(strings, key) &&
+			'string' === typeof strings[key] &&
+			strings[key]
+		) {
+			return strings[key];
+		}
+
+		return fallback;
+	}
+
 	function initializeScopeField() {
 		var scopeInputs = document.querySelectorAll('[data-analytics-report-ai-scope]');
 		var pathField = document.querySelector('[data-analytics-report-ai-path-field]');
@@ -32,13 +47,19 @@
 
 			if ('directory' === scope) {
 				pathInput.setAttribute('placeholder', '/blog/');
-				pathDescription.textContent = 'Directory scope matches paths that start with the entered path, such as /blog/.';
+				pathDescription.textContent = getAdminString(
+					'directoryScopeDescription',
+					'Directory scope matches paths that start with the entered path, such as /blog/.'
+				);
 				return;
 			}
 
 			if ('page' === scope) {
 				pathInput.setAttribute('placeholder', '/about');
-				pathDescription.textContent = 'Page scope matches the exact normalized path, such as /about.';
+				pathDescription.textContent = getAdminString(
+					'pageScopeDescription',
+					'Page scope matches the exact normalized path, such as /about.'
+				);
 			}
 		}
 
@@ -76,9 +97,11 @@
 
 			try {
 				document.execCommand('copy');
-				setStatus('Copied.');
+				setStatus(getAdminString('copied', 'Copied.'));
 			} catch (error) {
-				setStatus('Copy failed. Please select and copy manually.');
+				setStatus(
+					getAdminString('copyFailed', 'Copy failed. Please select and copy manually.')
+				);
 			}
 		}
 
@@ -86,14 +109,16 @@
 			var text = textarea.value;
 
 			if (!text) {
-				setStatus('Nothing to copy.');
+				setStatus(
+					getAdminString('nothingToCopy', 'Nothing to copy.')
+				);
 				return;
 			}
 
 			if (navigator.clipboard && navigator.clipboard.writeText) {
 				navigator.clipboard.writeText(text)
 					.then(function () {
-						setStatus('Copied.');
+						setStatus(getAdminString('copied', 'Copied.'));
 					})
 					.catch(function () {
 						fallbackCopy(text);

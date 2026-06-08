@@ -97,5 +97,19 @@ final class Analytics_Report_AI_Admin {
 			ANALYTICS_REPORT_AI_VERSION,
 			true
 		);
+
+		wp_localize_script(
+			'analytics-report-ai-admin',
+			'analyticsReportAiAdmin',
+			array(
+				'strings' => array(
+					'directoryScopeDescription' => __( 'Directory scope matches paths that start with the entered path, such as /blog/.', 'analytics-report-ai' ),
+					'pageScopeDescription'      => __( 'Page scope matches the exact normalized path, such as /about.', 'analytics-report-ai' ),
+					'copied'                    => __( 'Copied.', 'analytics-report-ai' ),
+					'copyFailed'                => __( 'Copy failed. Please select and copy manually.', 'analytics-report-ai' ),
+					'nothingToCopy'             => __( 'Nothing to copy.', 'analytics-report-ai' ),
+				),
+			)
+		);
 	}
 }
