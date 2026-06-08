@@ -254,6 +254,52 @@ if ( ! function_exists( 'analytics_report_ai_is_valid_date_string' ) ) {
 	}
 }
 
+if ( ! function_exists( 'analytics_report_ai_get_max_report_days' ) ) {
+	/**
+	 * Get the maximum inclusive report period length for the MVP.
+	 *
+	 * @return int
+	 */
+	function analytics_report_ai_get_max_report_days() {
+		if ( defined( 'ANALYTICS_REPORT_AI_MAX_REPORT_DAYS' ) ) {
+			return max( 1, absint( ANALYTICS_REPORT_AI_MAX_REPORT_DAYS ) );
+		}
+
+		return 31;
+	}
+}
+
+if ( ! function_exists( 'analytics_report_ai_get_report_period_day_count' ) ) {
+	/**
+	 * Get inclusive day count for a valid report period.
+	 *
+	 * @param string $start_date Start date.
+	 * @param string $end_date   End date.
+	 * @return int
+	 */
+	function analytics_report_ai_get_report_period_day_count( $start_date, $end_date ) {
+		if (
+			! analytics_report_ai_is_valid_date_string( $start_date )
+			|| ! analytics_report_ai_is_valid_date_string( $end_date )
+		) {
+			return 0;
+		}
+
+		if ( $start_date > $end_date ) {
+			return 0;
+		}
+
+		$start = DateTimeImmutable::createFromFormat( '!Y-m-d', $start_date );
+		$end   = DateTimeImmutable::createFromFormat( '!Y-m-d', $end_date );
+
+		if ( ! $start || ! $end ) {
+			return 0;
+		}
+
+		return (int) $start->diff( $end )->days + 1;
+	}
+}
+
 if ( ! function_exists( 'analytics_report_ai_shift_date_with_clamp' ) ) {
 	/**
 	 * Shift date to previous month or previous year with day clamping.

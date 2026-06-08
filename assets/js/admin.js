@@ -124,10 +124,36 @@
 		});
 	}
 
+	function initializeSingleSubmitForms() {
+		var forms = document.querySelectorAll('[data-analytics-report-ai-single-submit]');
+
+		if (!forms.length) {
+			return;
+		}
+
+		Array.prototype.forEach.call(forms, function (form) {
+			form.addEventListener('submit', function (event) {
+				var button = form.querySelector('[data-analytics-report-ai-submit-button]');
+
+				if (form.getAttribute('data-analytics-report-ai-submitting')) {
+					event.preventDefault();
+					return;
+				}
+
+				form.setAttribute('data-analytics-report-ai-submitting', '1');
+
+				if (button) {
+					button.setAttribute('disabled', 'disabled');
+				}
+			});
+		});
+	}
+
 	function initialize() {
 		initializeScopeField();
 		initializeCopyReport();
 		initializeConfirmButtons();
+		initializeSingleSubmitForms();
 	}
 
 	if ('loading' === document.readyState) {

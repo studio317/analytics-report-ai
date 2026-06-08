@@ -41,6 +41,7 @@ final class Analytics_Report_AI_Report_Builder {
 		$host_filter_enabled = ! empty( $settings['host_filter_enabled'] );
 		$host_name           = isset( $settings['host_name'] ) ? $settings['host_name'] : '';
 		$has_openai_api_key  = ! empty( $settings['openai_api_key'] );
+		$max_report_days     = analytics_report_ai_get_max_report_days();
 		?>
 		<div class="wrap analytics-report-ai-admin">
 			<h1><?php echo esc_html__( 'Report Builder', 'analytics-report-ai' ); ?></h1>
@@ -134,6 +135,15 @@ final class Analytics_Report_AI_Report_Builder {
 								<p class="description">
 									<?php echo esc_html__( 'The default date range is the previous month based on the WordPress timezone.', 'analytics-report-ai' ); ?>
 								</p>
+
+								<p class="description">
+									<?php
+									printf(
+										esc_html__( 'For the MVP, the report period is limited to %d days to keep GA4 requests and AI payloads manageable.', 'analytics-report-ai' ),
+										(int) $max_report_days
+									);
+									?>
+								</p>
 							</td>
 						</tr>
 
@@ -162,6 +172,10 @@ final class Analytics_Report_AI_Report_Builder {
 
 								<p class="description">
 									<?php echo esc_html__( 'The comparison period is calculated by shifting the selected period to the previous month or previous year.', 'analytics-report-ai' ); ?>
+								</p>
+
+								<p class="description">
+									<?php echo esc_html__( 'When comparison is enabled, the comparison period is fetched separately from GA4.', 'analytics-report-ai' ); ?>
 								</p>
 							</td>
 						</tr>
@@ -571,6 +585,23 @@ final class Analytics_Report_AI_Report_Builder {
 			$errors[] = __( 'End date must be the same as or later than start date.', 'analytics-report-ai' );
 		}
 
+		if (
+			analytics_report_ai_is_valid_date_string( $start_date )
+			&& analytics_report_ai_is_valid_date_string( $end_date )
+			&& $start_date <= $end_date
+		) {
+			$report_days     = analytics_report_ai_get_report_period_day_count( $start_date, $end_date );
+			$max_report_days = analytics_report_ai_get_max_report_days();
+
+			if ( $report_days > $max_report_days ) {
+				$errors[] = sprintf(
+					/* translators: %d: maximum report period days. */
+					__( 'The report period cannot exceed %d days for the MVP. Please choose a shorter date range.', 'analytics-report-ai' ),
+					$max_report_days
+				);
+			}
+		}
+
 		$comparison_options = analytics_report_ai_get_comparison_options();
 		$comparison         = isset( $form_values['comparison'] ) ? $form_values['comparison'] : '';
 
@@ -612,6 +643,25 @@ final class Analytics_Report_AI_Report_Builder {
 			$end_date,
 			$comparison
 		);
+
+		if (
+			is_array( $comparison_period )
+			&& (
+				empty( $comparison_period['start_date'] )
+				|| empty( $comparison_period['end_date'] )
+				|| ! analytics_report_ai_is_valid_date_string( $comparison_period['start_date'] )
+				|| ! analytics_report_ai_is_valid_date_string( $comparison_period['end_date'] )
+				|| $comparison_period['start_date'] > $comparison_period['end_date']
+			)
+		) {
+			return array(
+				'status'      => 'error',
+				'errors'      => array(
+					__( 'Comparison period could not be calculated. Please choose a different date range or comparison option.', 'analytics-report-ai' ),
+				),
+				'form_values' => $form_values,
+			);
+		}
 
 		$conditions = array(
 			'period'            => array(
@@ -822,17 +872,22 @@ final class Analytics_Report_AI_Report_Builder {
 				</p>
 
 				<p>
+					<?php echo esc_html__( 'Generating a report sends the reviewed payload to OpenAI API and may consume API usage.', 'analytics-report-ai' ); ?>
+				</p>
+
+				<p>
 					<?php echo esc_html__( 'The generated result is a draft. Review and edit it before publishing, sharing, or sending it.', 'analytics-report-ai' ); ?>
 				</p>
 			</div>
 
-			<form method="post" action="" class="analytics-report-ai-generate-form">
+			<form method="post" action="" class="analytics-report-ai-generate-form" data-analytics-report-ai-single-submit>
 				<?php wp_nonce_field( 'analytics_report_ai_report_builder_action', 'analytics_report_ai_report_builder_nonce' ); ?>
 				<input type="hidden" name="analytics_report_ai_report_action" value="generate_ai_report" />
 				<p>
 					<button
 						type="submit"
 						class="button button-primary"
+						data-analytics-report-ai-submit-button
 						<?php if ( 'report_generated' === $submission_result['status'] ) : ?>
 							data-analytics-report-ai-confirm="<?php echo esc_attr__( 'The current report text will be overwritten. Continue?', 'analytics-report-ai' ); ?>"
 						<?php endif; ?>
