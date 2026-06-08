@@ -180,10 +180,10 @@ final class Analytics_Report_AI_Settings {
 
 				<ul class="analytics-report-ai-notice-list">
 					<li>
-						<?php echo esc_html__( 'Google Access Token is used for Google Analytics Data API requests only.', 'analytics-report-ai' ); ?>
+						<?php echo esc_html__( 'Google Analytics Data API requests use the saved Google Access Token.', 'analytics-report-ai' ); ?>
 					</li>
 					<li>
-						<?php echo esc_html__( 'OpenAI API Key is used for OpenAI API requests only.', 'analytics-report-ai' ); ?>
+						<?php echo esc_html__( 'OpenAI API requests use the saved OpenAI API Key.', 'analytics-report-ai' ); ?>
 					</li>
 				</ul>
 			</div>
@@ -197,22 +197,19 @@ final class Analytics_Report_AI_Settings {
 
 				<ul class="analytics-report-ai-notice-list">
 					<li>
-						<?php echo esc_html__( 'Saved credential values are not displayed again in the form fields. The fields only show whether a value is saved.', 'analytics-report-ai' ); ?>
-					</li>
-					<li>
-						<?php echo esc_html__( 'Leave a credential field empty to keep the existing saved value, or use the delete checkbox to remove the saved value.', 'analytics-report-ai' ); ?>
+						<?php echo esc_html__( 'Saved credential values are not displayed again. Empty fields keep existing values; delete checkboxes remove saved values.', 'analytics-report-ai' ); ?>
 					</li>
 					<li>
 						<?php echo esc_html__( 'Database administrators, backups, server administrators, and code that can read WordPress options may be able to access saved credentials.', 'analytics-report-ai' ); ?>
 					</li>
 					<li>
-						<?php echo esc_html__( 'This storage method is intended for MVP and developer verification only. It must be redesigned before public use or multi-user use.', 'analytics-report-ai' ); ?>
+						<?php echo esc_html__( 'This storage method is for MVP and developer verification. Public or multi-user use needs a redesigned credential flow.', 'analytics-report-ai' ); ?>
 					</li>
 					<li>
-						<?php echo esc_html__( 'The manual Google Access Token field is temporary. A public version needs an OAuth connection flow, expiry handling, scope checks, and a revoke or reconnect path.', 'analytics-report-ai' ); ?>
+						<?php echo esc_html__( 'The manual Google Access Token field is temporary and needs OAuth connection, expiry handling, scope checks, and revoke or reconnect controls before public use.', 'analytics-report-ai' ); ?>
 					</li>
 					<li>
-						<?php echo esc_html__( 'For OpenAI, use a Restricted API key with the minimum permissions needed for Responses API requests whenever possible.', 'analytics-report-ai' ); ?>
+						<?php echo esc_html__( 'For OpenAI, use a Restricted API key with the minimum permissions needed for Responses API requests where possible.', 'analytics-report-ai' ); ?>
 					</li>
 				</ul>
 			</div>
@@ -247,12 +244,12 @@ final class Analytics_Report_AI_Settings {
 
 						<tr>
 							<th scope="row">
-								<?php echo esc_html__( 'Google Auth Status', 'analytics-report-ai' ); ?>
+								<?php echo esc_html__( 'Google Access Token Status', 'analytics-report-ai' ); ?>
 							</th>
 							<td>
 								<code><?php echo esc_html( $google_auth_status ); ?></code>
 								<p class="description">
-									<?php echo esc_html__( 'Google OAuth connection will be implemented in a later step.', 'analytics-report-ai' ); ?>
+									<?php echo esc_html__( 'This status is based on whether a temporary Google Access Token is saved. The token value is not displayed.', 'analytics-report-ai' ); ?>
 								</p>
 							</td>
 						</tr>
@@ -283,7 +280,7 @@ final class Analytics_Report_AI_Settings {
 								</p>
 
 								<p class="description">
-									<?php echo esc_html__( 'This is a temporary MVP development field. The access token must have permission to read GA4 data, and it may expire in about one hour.', 'analytics-report-ai' ); ?>
+									<?php echo esc_html__( 'This temporary MVP/developer verification field must contain a token with GA4 read access. The token may expire in about one hour.', 'analytics-report-ai' ); ?>
 								</p>
 
 								<?php if ( $has_google_access_token ) : ?>
@@ -366,11 +363,7 @@ final class Analytics_Report_AI_Settings {
 								</p>
 
 								<p class="description">
-									<?php echo esc_html__( 'OpenAI API keys can be used with All or Restricted permissions.', 'analytics-report-ai' ); ?>
-									<br>
-									<?php echo esc_html__( 'Choose All if you want a simpler setup.', 'analytics-report-ai' ); ?>
-									<br>
-									<?php echo esc_html__( 'For a safer setup, choose Restricted and set Model capabilities and Responses (/v1/responses) to Request.', 'analytics-report-ai' ); ?>
+									<?php echo esc_html__( 'For a safer setup, use a Restricted key and set Model capabilities and Responses (/v1/responses) to Request.', 'analytics-report-ai' ); ?>
 									<br>
 									<?php echo esc_html__( 'We recommend keeping unused features set to None.', 'analytics-report-ai' ); ?>
 								</p>

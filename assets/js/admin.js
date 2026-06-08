@@ -32,13 +32,13 @@
 
 			if ('directory' === scope) {
 				pathInput.setAttribute('placeholder', '/blog/');
-				pathDescription.textContent = 'For directory scope, enter a path such as /blog/. It will be normalized before payload creation.';
+				pathDescription.textContent = 'Directory scope matches paths that start with the entered path, such as /blog/.';
 				return;
 			}
 
 			if ('page' === scope) {
 				pathInput.setAttribute('placeholder', '/about');
-				pathDescription.textContent = 'For page scope, enter a path such as /about or /about/. It will be normalized before payload creation.';
+				pathDescription.textContent = 'Page scope matches the exact normalized path, such as /about.';
 			}
 		}
 

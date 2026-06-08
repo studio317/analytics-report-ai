@@ -37,11 +37,12 @@ final class Analytics_Report_AI_Report_Builder {
 			$form_values = wp_parse_args( $submission_result['form_values'], $form_values );
 		}
 
-		$ga4_property_id     = isset( $settings['ga4_property_id'] ) ? $settings['ga4_property_id'] : '';
-		$host_filter_enabled = ! empty( $settings['host_filter_enabled'] );
-		$host_name           = isset( $settings['host_name'] ) ? $settings['host_name'] : '';
-		$has_openai_api_key  = ! empty( $settings['openai_api_key'] );
-		$max_report_days     = analytics_report_ai_get_max_report_days();
+		$ga4_property_id        = isset( $settings['ga4_property_id'] ) ? $settings['ga4_property_id'] : '';
+		$host_filter_enabled    = ! empty( $settings['host_filter_enabled'] );
+		$host_name              = isset( $settings['host_name'] ) ? $settings['host_name'] : '';
+		$has_google_access_token = ! empty( $settings['google_tokens']['access_token'] );
+		$has_openai_api_key     = ! empty( $settings['openai_api_key'] );
+		$max_report_days        = analytics_report_ai_get_max_report_days();
 		?>
 		<div class="wrap analytics-report-ai-admin">
 			<h1><?php echo esc_html__( 'Report Builder', 'analytics-report-ai' ); ?></h1>
@@ -70,12 +71,32 @@ final class Analytics_Report_AI_Report_Builder {
 							<td>
 								<?php if ( $host_filter_enabled ) : ?>
 									<?php echo esc_html__( 'Enabled', 'analytics-report-ai' ); ?>
-									<?php if ( '' !== $host_name ) : ?>
-										:
-										<code><?php echo esc_html( $host_name ); ?></code>
-									<?php endif; ?>
 								<?php else : ?>
 									<?php echo esc_html__( 'Disabled', 'analytics-report-ai' ); ?>
+								<?php endif; ?>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row"><?php echo esc_html__( 'Host Name', 'analytics-report-ai' ); ?></th>
+							<td>
+								<?php if ( '' !== $host_name ) : ?>
+									<code><?php echo esc_html( $host_name ); ?></code>
+								<?php else : ?>
+									<span class="analytics-report-ai-status-warning">
+										<?php echo esc_html__( 'Not configured', 'analytics-report-ai' ); ?>
+									</span>
+								<?php endif; ?>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row"><?php echo esc_html__( 'Google Access Token', 'analytics-report-ai' ); ?></th>
+							<td>
+								<?php if ( $has_google_access_token ) : ?>
+									<?php echo esc_html__( 'Saved', 'analytics-report-ai' ); ?>
+								<?php else : ?>
+									<span class="analytics-report-ai-status-warning">
+										<?php echo esc_html__( 'Not saved', 'analytics-report-ai' ); ?>
+									</span>
 								<?php endif; ?>
 							</td>
 						</tr>
@@ -171,11 +192,7 @@ final class Analytics_Report_AI_Report_Builder {
 								</fieldset>
 
 								<p class="description">
-									<?php echo esc_html__( 'The comparison period is calculated by shifting the selected period to the previous month or previous year.', 'analytics-report-ai' ); ?>
-								</p>
-
-								<p class="description">
-									<?php echo esc_html__( 'When comparison is enabled, the comparison period is fetched separately from GA4.', 'analytics-report-ai' ); ?>
+									<?php echo esc_html__( 'When comparison is enabled, the selected period is shifted to the previous month or previous year and fetched separately from GA4.', 'analytics-report-ai' ); ?>
 								</p>
 							</td>
 						</tr>
@@ -225,7 +242,7 @@ final class Analytics_Report_AI_Report_Builder {
 								</div>
 
 								<p class="description">
-									<?php echo esc_html__( 'Full URLs are not allowed. Query strings and fragments are removed during normalization.', 'analytics-report-ai' ); ?>
+									<?php echo esc_html__( 'Site scope covers all paths. Directory scope matches paths that start with the entered path. Page scope matches the exact normalized path. Full URLs are not allowed.', 'analytics-report-ai' ); ?>
 								</p>
 							</td>
 						</tr>
@@ -256,7 +273,7 @@ final class Analytics_Report_AI_Report_Builder {
 				</p>
 
 				<p class="description">
-					<?php echo esc_html__( 'This button validates the conditions, fetches GA4 preset reports, and creates an AI payload preview.', 'analytics-report-ai' ); ?>
+					<?php echo esc_html__( 'Fetch GA4 Data validates the conditions, fetches GA4 preset reports, and creates a Payload Preview.', 'analytics-report-ai' ); ?>
 				</p>
 			</form>
 
@@ -849,14 +866,14 @@ final class Analytics_Report_AI_Report_Builder {
 			</p>
 
 			<p class="description">
-				<?php echo esc_html__( 'The reviewed payload is stored temporarily for this user and expires automatically.', 'analytics-report-ai' ); ?>
+				<?php echo esc_html__( 'The reviewed AI payload is stored temporarily for this user and expires automatically.', 'analytics-report-ai' ); ?>
 			</p>
 
 			<div class="analytics-report-ai-info-block">
 				<h3><?php echo esc_html__( 'Review before sending', 'analytics-report-ai' ); ?></h3>
 
 				<p>
-					<?php echo esc_html__( 'This payload preview shows the content that will be sent to the OpenAI API when you generate an AI report.', 'analytics-report-ai' ); ?>
+					<?php echo esc_html__( 'This Payload Preview shows the content that will be sent to the OpenAI API when you generate an AI report.', 'analytics-report-ai' ); ?>
 				</p>
 
 				<p>
@@ -922,7 +939,7 @@ final class Analytics_Report_AI_Report_Builder {
 			</form>
 
 			<p class="description">
-				<?php echo esc_html__( 'This button generates a report draft using the OpenAI API and the payload saved in transient.', 'analytics-report-ai' ); ?>
+				<?php echo esc_html__( 'Use Generate AI Report only after reviewing the Payload Preview.', 'analytics-report-ai' ); ?>
 			</p>
 		</div>
 		<?php
