@@ -110,12 +110,16 @@ final class Analytics_Report_AI_Settings {
 		 * Empty input keeps the existing key.
 		 */
 		$clear_openai_api_key = ! empty( $input['clear_openai_api_key'] );
-		$openai_api_key       = isset( $input['openai_api_key'] ) ? trim( (string) $input['openai_api_key'] ) : '';
+		$openai_api_key       = isset( $input['openai_api_key'] ) && is_scalar( $input['openai_api_key'] ) ? trim( (string) $input['openai_api_key'] ) : '';
 
 		if ( $clear_openai_api_key ) {
 			$settings['openai_api_key'] = '';
 		} elseif ( '' !== $openai_api_key ) {
-			$settings['openai_api_key'] = sanitize_text_field( $openai_api_key );
+			$sanitized_openai_api_key = analytics_report_ai_sanitize_credential_value( $openai_api_key );
+
+			if ( '' !== $sanitized_openai_api_key ) {
+				$settings['openai_api_key'] = $sanitized_openai_api_key;
+			}
 		}
 
 		/*
@@ -126,12 +130,16 @@ final class Analytics_Report_AI_Settings {
 		$google_tokens = isset( $existing['google_tokens'] ) && is_array( $existing['google_tokens'] ) ? $existing['google_tokens'] : array();
 
 		$clear_google_access_token = ! empty( $input['clear_google_access_token'] );
-		$google_access_token       = isset( $input['google_access_token'] ) ? trim( (string) $input['google_access_token'] ) : '';
+		$google_access_token       = isset( $input['google_access_token'] ) && is_scalar( $input['google_access_token'] ) ? trim( (string) $input['google_access_token'] ) : '';
 
 		if ( $clear_google_access_token ) {
 			unset( $google_tokens['access_token'] );
 		} elseif ( '' !== $google_access_token ) {
-			$google_tokens['access_token'] = sanitize_text_field( $google_access_token );
+			$sanitized_google_access_token = analytics_report_ai_sanitize_credential_value( $google_access_token );
+
+			if ( '' !== $sanitized_google_access_token ) {
+				$google_tokens['access_token'] = $sanitized_google_access_token;
+			}
 		}
 
 		$settings['google_tokens']      = $google_tokens;
@@ -150,13 +158,13 @@ final class Analytics_Report_AI_Settings {
 			return;
 		}
 
-		$settings             = analytics_report_ai_get_settings();
-		$has_openai_api_key   = ! empty( $settings['openai_api_key'] );
-		$google_auth_status   = isset( $settings['google_auth_status'] ) ? $settings['google_auth_status'] : 'not_connected';
+		$settings                = analytics_report_ai_get_settings();
+		$has_openai_api_key      = ! empty( $settings['openai_api_key'] );
+		$google_auth_status      = isset( $settings['google_auth_status'] ) ? $settings['google_auth_status'] : 'not_connected';
 		$has_google_access_token = ! empty( $settings['google_tokens']['access_token'] );
-		$host_filter_enabled  = ! empty( $settings['host_filter_enabled'] );
-		$ga4_property_id      = isset( $settings['ga4_property_id'] ) ? $settings['ga4_property_id'] : '';
-		$host_name            = isset( $settings['host_name'] ) ? $settings['host_name'] : analytics_report_ai_get_default_host();
+		$host_filter_enabled     = ! empty( $settings['host_filter_enabled'] );
+		$ga4_property_id         = isset( $settings['ga4_property_id'] ) ? $settings['ga4_property_id'] : '';
+		$host_name               = isset( $settings['host_name'] ) ? $settings['host_name'] : analytics_report_ai_get_default_host();
 		?>
 		<div class="wrap analytics-report-ai-admin">
 			<h1><?php echo esc_html__( 'Analytics Report AI Settings', 'analytics-report-ai' ); ?></h1>
@@ -172,13 +180,39 @@ final class Analytics_Report_AI_Settings {
 
 				<ul class="analytics-report-ai-notice-list">
 					<li>
-						<?php echo esc_html__( 'Google Access Token and OpenAI API Key values are saved in the MVP settings, but saved credential values are not displayed again in these admin fields.', 'analytics-report-ai' ); ?>
+						<?php echo esc_html__( 'Google Access Token is used for Google Analytics Data API requests only.', 'analytics-report-ai' ); ?>
 					</li>
 					<li>
-						<?php echo esc_html__( 'This temporary Google Access Token method is for MVP/developer verification only.', 'analytics-report-ai' ); ?>
+						<?php echo esc_html__( 'OpenAI API Key is used for OpenAI API requests only.', 'analytics-report-ai' ); ?>
+					</li>
+				</ul>
+			</div>
+
+			<div class="analytics-report-ai-card">
+				<h2><?php echo esc_html__( 'Credential Storage (MVP)', 'analytics-report-ai' ); ?></h2>
+
+				<p>
+					<?php echo esc_html__( 'In the current MVP, the Google Access Token and OpenAI API Key are saved in the WordPress database as plugin settings.', 'analytics-report-ai' ); ?>
+				</p>
+
+				<ul class="analytics-report-ai-notice-list">
+					<li>
+						<?php echo esc_html__( 'Saved credential values are not displayed again in the form fields. The fields only show whether a value is saved.', 'analytics-report-ai' ); ?>
 					</li>
 					<li>
-						<?php echo esc_html__( 'Before public use or multi-user use, the OAuth connection flow and credential storage design must be reviewed and redesigned.', 'analytics-report-ai' ); ?>
+						<?php echo esc_html__( 'Leave a credential field empty to keep the existing saved value, or use the delete checkbox to remove the saved value.', 'analytics-report-ai' ); ?>
+					</li>
+					<li>
+						<?php echo esc_html__( 'Database administrators, backups, server administrators, and code that can read WordPress options may be able to access saved credentials.', 'analytics-report-ai' ); ?>
+					</li>
+					<li>
+						<?php echo esc_html__( 'This storage method is intended for MVP and developer verification only. It must be redesigned before public use or multi-user use.', 'analytics-report-ai' ); ?>
+					</li>
+					<li>
+						<?php echo esc_html__( 'The manual Google Access Token field is temporary. A public version needs an OAuth connection flow, expiry handling, scope checks, and a revoke or reconnect path.', 'analytics-report-ai' ); ?>
+					</li>
+					<li>
+						<?php echo esc_html__( 'For OpenAI, use a Restricted API key with the minimum permissions needed for Responses API requests whenever possible.', 'analytics-report-ai' ); ?>
 					</li>
 				</ul>
 			</div>

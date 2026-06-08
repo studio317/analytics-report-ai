@@ -81,7 +81,66 @@ if ( ! function_exists( 'analytics_report_ai_get_settings' ) ) {
 			$saved = array();
 		}
 
-		return wp_parse_args( $saved, $defaults );
+		$settings = wp_parse_args( $saved, $defaults );
+
+		if ( ! isset( $settings['google_tokens'] ) || ! is_array( $settings['google_tokens'] ) ) {
+			$settings['google_tokens'] = array();
+		}
+
+		$settings['openai_api_key'] = isset( $settings['openai_api_key'] ) && is_scalar( $settings['openai_api_key'] )
+			? (string) $settings['openai_api_key']
+			: '';
+
+		if ( isset( $settings['google_tokens']['access_token'] ) && is_scalar( $settings['google_tokens']['access_token'] ) ) {
+			$settings['google_tokens']['access_token'] = (string) $settings['google_tokens']['access_token'];
+		} else {
+			unset( $settings['google_tokens']['access_token'] );
+		}
+
+		$settings['google_auth_status'] = ! empty( $settings['google_tokens']['access_token'] ) ? 'connected' : 'not_connected';
+
+		return $settings;
+	}
+}
+
+if ( ! function_exists( 'analytics_report_ai_maybe_add_default_settings_option' ) ) {
+	/**
+	 * Add the default settings option without autoloading it on new installs.
+	 *
+	 * @return void
+	 */
+	function analytics_report_ai_maybe_add_default_settings_option() {
+		if ( false !== get_option( ANALYTICS_REPORT_AI_OPTION_NAME, false ) ) {
+			return;
+		}
+
+		add_option( ANALYTICS_REPORT_AI_OPTION_NAME, analytics_report_ai_get_default_settings(), '', false );
+	}
+}
+
+if ( ! function_exists( 'analytics_report_ai_sanitize_credential_value' ) ) {
+	/**
+	 * Sanitize an opaque credential while preserving non-control characters.
+	 *
+	 * @param string $credential Credential value.
+	 * @return string
+	 */
+	function analytics_report_ai_sanitize_credential_value( $credential ) {
+		$credential = trim( (string) $credential );
+
+		if ( '' === $credential ) {
+			return '';
+		}
+
+		$credential = wp_check_invalid_utf8( $credential );
+		$credential = str_replace( array( "\r", "\n", "\t" ), '', $credential );
+		$credential = preg_replace( '/[\x00-\x1F\x7F]/', '', $credential );
+
+		if ( ! is_string( $credential ) ) {
+			return '';
+		}
+
+		return $credential;
 	}
 }
 

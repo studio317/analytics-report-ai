@@ -32,6 +32,18 @@ final class Analytics_Report_AI_Plugin {
 	}
 
 	/**
+	 * Activate plugin.
+	 *
+	 * @param bool $network_wide Whether the plugin is network activated.
+	 * @return void
+	 */
+	public static function activate( $network_wide = false ) {
+		require_once ANALYTICS_REPORT_AI_DIR . 'includes/functions-utils.php';
+
+		analytics_report_ai_maybe_add_default_settings_option();
+	}
+
+	/**
 	 * Constructor.
 	 */
 	private function __construct() {

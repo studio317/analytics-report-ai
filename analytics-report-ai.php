@@ -25,4 +25,6 @@ define( 'ANALYTICS_REPORT_AI_OPENAI_MODEL', 'gpt-5.4-mini' );
 
 require_once ANALYTICS_REPORT_AI_DIR . 'includes/class-plugin.php';
 
+register_activation_hook( ANALYTICS_REPORT_AI_FILE, array( 'Analytics_Report_AI_Plugin', 'activate' ) );
+
 Analytics_Report_AI_Plugin::init();
