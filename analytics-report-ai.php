@@ -2,11 +2,14 @@
 /**
  * Plugin Name: Analytics Report AI
  * Plugin URI: https://cuerda.org/
- * Description: Helps create Japanese analytics report drafts from GA4 data using AI.
+ * Description: Creates AI-assisted Japanese report drafts from GA4 data with admin review, editing, and copy tools.
  * Version: 0.1.0
+ * Requires at least: 6.0
+ * Requires PHP: 7.4
  * Author: cuerda
  * Author URI: https://cuerda.org/
  * License: GPL-2.0-or-later
+ * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: analytics-report-ai
  *
  * @package Analytics_Report_AI

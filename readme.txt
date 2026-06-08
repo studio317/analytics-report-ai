@@ -2,17 +2,17 @@
 Contributors: cuerda
 Tags: analytics, ai, ga4, reports
 Requires at least: 6.0
-Tested up to: 6.5
+Tested up to: 7.0
 Requires PHP: 7.4
 Stable tag: 0.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Analytics Report AI helps create Japanese analytics report drafts from GA4 data using AI.
+Creates AI-assisted Japanese report drafts from GA4 data with admin review, editing, and copy tools.
 
 == Description ==
 
-Analytics Report AI is a business support plugin that helps generate Japanese report drafts based on GA4 analytics data.
+Analytics Report AI helps administrators fetch selected GA4 report data, review an AI payload, generate a Japanese report draft with OpenAI, edit the draft, and copy the final text.
 
 This MVP version is intended for development and verification.
 
@@ -97,4 +97,5 @@ The plugin does not send the full raw GA4 response to OpenAI. It formats selecte
 == Changelog ==
 
 = 0.1.0 =
-* Initial plugin skeleton.
+* Added the MVP flow for GA4 data retrieval, AI payload preview, OpenAI report generation, and admin review/edit/copy workflow.
+* Added admin-side safety notices, external service disclosures, credential storage guidance, payload validation, usage guardrails, localized admin JavaScript strings, and maturation documentation.
