@@ -24,6 +24,26 @@
 	font-weight: 600;
 }
 
+.analytics-report-ai-admin .analytics-report-ai-info-block {
+	margin: 16px 0;
+	padding: 12px 14px;
+	background: #f6f7f7;
+	border-left: 4px solid #72aee6;
+}
+
+.analytics-report-ai-admin .analytics-report-ai-info-block h3 {
+	margin: 0 0 8px;
+}
+
+.analytics-report-ai-admin .analytics-report-ai-info-block p {
+	margin: 8px 0;
+}
+
+.analytics-report-ai-admin .analytics-report-ai-notice-list {
+	margin: 8px 0 0 20px;
+	list-style: disc;
+}
+
 .analytics-report-ai-admin .analytics-report-ai-inline-label {
 	margin-left: 16px;
 }

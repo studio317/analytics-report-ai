@@ -94,7 +94,7 @@ final class Analytics_Report_AI_Report_Builder {
 				</table>
 
 				<p class="description">
-					<?php echo esc_html__( 'This step creates a dummy AI report from the temporary payload. Actual OpenAI API integration will be implemented later.', 'analytics-report-ai' ); ?>
+					<?php echo esc_html__( 'This screen uses a two-step flow: fetch GA4 data, review the AI payload, then generate a report draft with the OpenAI API.', 'analytics-report-ai' ); ?>
 				</p>
 			</div>
 
@@ -217,6 +217,23 @@ final class Analytics_Report_AI_Report_Builder {
 						</tr>
 					</tbody>
 				</table>
+
+				<div class="analytics-report-ai-info-block">
+					<h3><?php echo esc_html__( 'Data sent to Google Analytics Data API', 'analytics-report-ai' ); ?></h3>
+
+					<p>
+						<?php echo esc_html__( 'When you click Fetch GA4 Data, the selected date range, comparison setting, data scope, host/path filters, and required metrics/dimensions are sent to the Google Analytics Data API.', 'analytics-report-ai' ); ?>
+					</p>
+
+					<ul class="analytics-report-ai-notice-list">
+						<li>
+							<?php echo esc_html__( 'The OpenAI API Key is not sent to Google.', 'analytics-report-ai' ); ?>
+						</li>
+						<li>
+							<?php echo esc_html__( 'WordPress user information, cookies, and IP addresses are not included in this GA4 request body by design.', 'analytics-report-ai' ); ?>
+						</li>
+					</ul>
+				</div>
 
 				<p>
 					<button type="submit" class="button button-primary">
@@ -765,6 +782,26 @@ final class Analytics_Report_AI_Report_Builder {
 				?>
 			</p>
 
+			<div class="analytics-report-ai-info-block">
+				<h3><?php echo esc_html__( 'Review before sending', 'analytics-report-ai' ); ?></h3>
+
+				<p>
+					<?php echo esc_html__( 'This payload preview shows the content that will be sent to the OpenAI API when you generate an AI report.', 'analytics-report-ai' ); ?>
+				</p>
+
+				<p>
+					<?php echo esc_html__( 'The payload can include host name, page path, traffic channel/source, city, summary metrics, and comparison differences.', 'analytics-report-ai' ); ?>
+				</p>
+
+				<p>
+					<?php echo esc_html__( 'Credentials are not included in the AI payload. Google Access Token, OpenAI API Key, GA4 Property ID, WordPress user information, cookies, and IP addresses are not included by design.', 'analytics-report-ai' ); ?>
+				</p>
+
+				<p>
+					<?php echo esc_html__( 'Page paths and traffic sources can still be sensitive business analytics information, so review the payload before sending it.', 'analytics-report-ai' ); ?>
+				</p>
+			</div>
+
 			<?php $this->render_summary_preview_table( $payload ); ?>
 			<?php $this->render_list_preview_table( __( 'Daily Trend', 'analytics-report-ai' ), isset( $payload['daily_trend'] ) ? $payload['daily_trend'] : array() ); ?>
 			<?php $this->render_list_preview_table( __( 'Top Pages', 'analytics-report-ai' ), isset( $payload['top_pages'] ) ? $payload['top_pages'] : array() ); ?>
@@ -776,6 +813,18 @@ final class Analytics_Report_AI_Report_Builder {
 				<summary><?php echo esc_html__( 'Show payload JSON', 'analytics-report-ai' ); ?></summary>
 				<pre><code><?php echo esc_html( $json ); ?></code></pre>
 			</details>
+
+			<div class="analytics-report-ai-info-block">
+				<h3><?php echo esc_html__( 'Data sent to OpenAI API', 'analytics-report-ai' ); ?></h3>
+
+				<p>
+					<?php echo esc_html__( 'When you click Generate AI Report, the content shown in the payload preview is sent to the OpenAI API.', 'analytics-report-ai' ); ?>
+				</p>
+
+				<p>
+					<?php echo esc_html__( 'The generated result is a draft. Review and edit it before publishing, sharing, or sending it.', 'analytics-report-ai' ); ?>
+				</p>
+			</div>
 
 			<form method="post" action="" class="analytics-report-ai-generate-form">
 				<?php wp_nonce_field( 'analytics_report_ai_report_builder_action', 'analytics_report_ai_report_builder_nonce' ); ?>
@@ -827,6 +876,10 @@ final class Analytics_Report_AI_Report_Builder {
 
 			<p class="description">
 				<?php echo esc_html__( 'The generated report text is not saved. You can edit it freely and copy the current textarea content.', 'analytics-report-ai' ); ?>
+			</p>
+
+			<p class="description">
+				<?php echo esc_html__( 'This AI-generated text is a draft. Review and edit it before publishing, sharing, or sending it.', 'analytics-report-ai' ); ?>
 			</p>
 
 			<textarea

@@ -163,6 +163,26 @@ final class Analytics_Report_AI_Settings {
 
 			<?php settings_errors( ANALYTICS_REPORT_AI_OPTION_NAME ); ?>
 
+			<div class="analytics-report-ai-card">
+				<h2><?php echo esc_html__( 'External service usage', 'analytics-report-ai' ); ?></h2>
+
+				<p>
+					<?php echo esc_html__( 'Analytics Report AI uses the Google Analytics Data API to fetch selected GA4 report data and uses the OpenAI API to generate a Japanese report draft from the reviewed payload.', 'analytics-report-ai' ); ?>
+				</p>
+
+				<ul class="analytics-report-ai-notice-list">
+					<li>
+						<?php echo esc_html__( 'Google Access Token and OpenAI API Key values are saved in the MVP settings, but saved credential values are not displayed again in these admin fields.', 'analytics-report-ai' ); ?>
+					</li>
+					<li>
+						<?php echo esc_html__( 'This temporary Google Access Token method is for MVP/developer verification only.', 'analytics-report-ai' ); ?>
+					</li>
+					<li>
+						<?php echo esc_html__( 'Before public use or multi-user use, the OAuth connection flow and credential storage design must be reviewed and redesigned.', 'analytics-report-ai' ); ?>
+					</li>
+				</ul>
+			</div>
+
 			<form method="post" action="options.php" class="analytics-report-ai-card">
 				<?php settings_fields( $this->settings_group ); ?>
 
