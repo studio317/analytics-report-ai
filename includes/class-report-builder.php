@@ -320,7 +320,11 @@ final class Analytics_Report_AI_Report_Builder {
 		}
 
 		if ( 'fetch_ga4_summary' === $action ) {
-			return $this->handle_fetch_ga4_summary();
+			$report_input = isset( $_POST['analytics_report_ai_report'] ) && is_array( $_POST['analytics_report_ai_report'] )
+				? map_deep( wp_unslash( $_POST['analytics_report_ai_report'] ), 'sanitize_text_field' )
+				: array();
+
+			return $this->handle_fetch_ga4_summary( $this->normalize_report_input( $report_input ) );
 		}
 
 		if ( 'generate_ai_report' === $action ) {
@@ -336,23 +340,32 @@ final class Analytics_Report_AI_Report_Builder {
 	}
 
 	/**
-	 * Handle GA4 summary fetching.
+	 * Normalize sanitized report condition input.
 	 *
+	 * @param array $report_input Sanitized report condition input.
 	 * @return array
 	 */
-	private function handle_fetch_ga4_summary() {
-		$raw_input = isset( $_POST['analytics_report_ai_report'] ) && is_array( $_POST['analytics_report_ai_report'] )
-			? wp_unslash( $_POST['analytics_report_ai_report'] )
-			: array();
+	private function normalize_report_input( $report_input ) {
+		if ( ! is_array( $report_input ) ) {
+			return array();
+		}
 
-		$form_values = array(
-			'start_date' => isset( $raw_input['start_date'] ) ? sanitize_text_field( $raw_input['start_date'] ) : '',
-			'end_date'   => isset( $raw_input['end_date'] ) ? sanitize_text_field( $raw_input['end_date'] ) : '',
-			'comparison' => isset( $raw_input['comparison'] ) ? sanitize_text_field( $raw_input['comparison'] ) : '',
-			'scope'      => isset( $raw_input['scope'] ) ? sanitize_text_field( $raw_input['scope'] ) : '',
-			'path'       => isset( $raw_input['path'] ) ? sanitize_text_field( $raw_input['path'] ) : '',
+		return array(
+			'start_date' => isset( $report_input['start_date'] ) && is_scalar( $report_input['start_date'] ) ? (string) $report_input['start_date'] : '',
+			'end_date'   => isset( $report_input['end_date'] ) && is_scalar( $report_input['end_date'] ) ? (string) $report_input['end_date'] : '',
+			'comparison' => isset( $report_input['comparison'] ) && is_scalar( $report_input['comparison'] ) ? (string) $report_input['comparison'] : '',
+			'scope'      => isset( $report_input['scope'] ) && is_scalar( $report_input['scope'] ) ? (string) $report_input['scope'] : '',
+			'path'       => isset( $report_input['path'] ) && is_scalar( $report_input['path'] ) ? (string) $report_input['path'] : '',
 		);
+	}
 
+	/**
+	 * Handle GA4 summary fetching.
+	 *
+	 * @param array $form_values Sanitized report condition input from a nonce-verified request.
+	 * @return array
+	 */
+	private function handle_fetch_ga4_summary( $form_values ) {
 		$validation_result = $this->validate_report_conditions( $form_values );
 
 		if ( 'error' === $validation_result['status'] ) {
