@@ -43,6 +43,12 @@ final class Analytics_Report_AI_Plugin {
 	 * @return void
 	 */
 	public static function activate( $network_wide = false ) {
+		/*
+		 * Multisite network activation is outside the MVP support scope.
+		 * Keep the parameter for the WordPress activation hook signature.
+		 */
+		unset( $network_wide );
+
 		require_once ANALYTICS_REPORT_AI_DIR . 'includes/functions-utils.php';
 
 		analytics_report_ai_maybe_add_default_settings_option();
