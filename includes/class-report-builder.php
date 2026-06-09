@@ -160,6 +160,7 @@ final class Analytics_Report_AI_Report_Builder {
 								<p class="description">
 									<?php
 									printf(
+										/* translators: %d: maximum number of report days. */
 										esc_html__( 'For the MVP, the report period is limited to %d days to keep GA4 requests and AI payloads manageable.', 'analytics-report-ai' ),
 										(int) $max_report_days
 									);
@@ -859,6 +860,7 @@ final class Analytics_Report_AI_Report_Builder {
 			<p>
 				<?php
 				printf(
+					/* translators: %d: number of minutes the AI payload is saved temporarily. */
 					esc_html__( 'The AI payload has been saved temporarily for %d minutes.', 'analytics-report-ai' ),
 					(int) floor( $expiration / MINUTE_IN_SECONDS )
 				);
