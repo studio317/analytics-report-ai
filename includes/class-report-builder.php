@@ -42,12 +42,12 @@ final class Analytics_Report_AI_Report_Builder {
 			$form_values = wp_parse_args( $submission_result['form_values'], $form_values );
 		}
 
-		$ga4_property_id        = isset( $settings['ga4_property_id'] ) ? $settings['ga4_property_id'] : '';
-		$host_filter_enabled    = ! empty( $settings['host_filter_enabled'] );
-		$host_name              = isset( $settings['host_name'] ) ? $settings['host_name'] : '';
+		$ga4_property_id         = isset( $settings['ga4_property_id'] ) ? $settings['ga4_property_id'] : '';
+		$host_filter_enabled     = ! empty( $settings['host_filter_enabled'] );
+		$host_name               = isset( $settings['host_name'] ) ? $settings['host_name'] : '';
 		$has_google_access_token = ! empty( $settings['google_tokens']['access_token'] );
-		$has_openai_api_key     = ! empty( $settings['openai_api_key'] );
-		$max_report_days        = analytics_report_ai_get_max_report_days();
+		$has_openai_api_key      = ! empty( $settings['openai_api_key'] );
+		$max_report_days         = analytics_report_ai_get_max_report_days();
 		?>
 		<div class="wrap analytics-report-ai-admin">
 			<h1><?php echo esc_html__( 'Report Builder', 'analytics-report-ai' ); ?></h1>

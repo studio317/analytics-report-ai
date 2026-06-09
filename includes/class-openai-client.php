@@ -34,10 +34,10 @@ final class Analytics_Report_AI_OpenAI_Client {
 		}
 
 		$request_body = array(
-			'model'              => self::get_model(),
-			'instructions'       => Analytics_Report_AI_Prompt_Builder::build_system_prompt(),
-			'input'              => Analytics_Report_AI_Prompt_Builder::build_user_input( $payload ),
-			'max_output_tokens'  => 2200,
+			'model'             => self::get_model(),
+			'instructions'      => Analytics_Report_AI_Prompt_Builder::build_system_prompt(),
+			'input'             => Analytics_Report_AI_Prompt_Builder::build_user_input( $payload ),
+			'max_output_tokens' => 2200,
 		);
 
 		$response = wp_remote_post(
