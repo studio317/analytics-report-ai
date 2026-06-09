@@ -41,6 +41,7 @@ npm-debug.log*
 
 # Coding standard and PHPUnit config.
 phpcs.xml
+phpcs.xml.dist
 .phpcs.xml
 .phpcs.xml.dist
 phpunit.xml
