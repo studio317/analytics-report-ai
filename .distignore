@@ -1,0 +1,78 @@
+# Analytics Report AI distribution ignore draft.
+# This file is for future WordPress.org / release zip packaging.
+# Recheck this draft before creating a release zip.
+#
+# Keep runtime files in the package:
+# - analytics-report-ai.php
+# - includes/
+# - assets/
+# - readme.txt
+# - license file, if one is added later.
+
+# Repository metadata.
+.git/
+.github/
+.gitignore
+
+# The ignore file itself is source/release tooling, not runtime.
+.distignore
+
+# Source-only development records.
+# Keep docs/maturation/ in the GitHub source repository, but exclude it from
+# WordPress.org / release zip packages by default.
+docs/maturation/
+
+# Development tools and tests.
+tools/
+tests/
+
+# Composer dependencies and metadata.
+# Current MVP has no runtime Composer dependency. If vendor/ later contains
+# runtime dependencies, revisit this rule before packaging.
+vendor/
+composer.json
+composer.lock
+
+# npm dependencies and metadata.
+node_modules/
+package.json
+package-lock.json
+npm-debug.log*
+
+# Coding standard and PHPUnit config.
+phpcs.xml
+.phpcs.xml
+.phpcs.xml.dist
+phpunit.xml
+phpunit.xml.dist
+
+# Coverage, logs, and temporary files.
+coverage/
+coverage-*/
+*.log
+logs/
+tmp/
+temp/
+*.tmp
+*.bak
+*.swp
+*.swo
+
+# Build and release artifacts.
+build/
+dist/
+release/
+releases/
+*.zip
+*.tar
+*.tar.gz
+
+# IDE/editor/project files.
+.idea/
+.vscode/
+*.code-workspace
+.editorconfig
+
+# OS metadata files.
+.DS_Store
+Thumbs.db
