@@ -49,7 +49,6 @@ final class Analytics_Report_AI_Plugin {
 	private function __construct() {
 		$this->load_dependencies();
 
-		add_action( 'plugins_loaded', array( $this, 'load_textdomain' ) );
 		add_action( 'init', array( $this, 'boot' ) );
 	}
 
@@ -67,19 +66,6 @@ final class Analytics_Report_AI_Plugin {
 		require_once ANALYTICS_REPORT_AI_DIR . 'includes/class-report-data-formatter.php';
 		require_once ANALYTICS_REPORT_AI_DIR . 'includes/class-openai-client.php';
 		require_once ANALYTICS_REPORT_AI_DIR . 'includes/class-prompt-builder.php';
-	}
-
-	/**
-	 * Load translation files.
-	 *
-	 * @return void
-	 */
-	public function load_textdomain() {
-		load_plugin_textdomain(
-			'analytics-report-ai',
-			false,
-			dirname( plugin_basename( ANALYTICS_REPORT_AI_FILE ) ) . '/languages'
-		);
 	}
 
 	/**
