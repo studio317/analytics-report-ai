@@ -9,6 +9,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Handles OpenAI API requests and response parsing for report generation.
+ *
+ * @since 0.1.0
+ */
 final class Analytics_Report_AI_OpenAI_Client {
 
 	/**

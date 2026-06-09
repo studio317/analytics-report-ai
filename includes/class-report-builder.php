@@ -9,6 +9,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Controls the Report Builder screen flow from GA4 fetch to AI generation.
+ *
+ * @since 0.1.0
+ */
 final class Analytics_Report_AI_Report_Builder {
 
 	/**

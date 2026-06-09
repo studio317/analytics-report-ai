@@ -9,6 +9,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Builds prompt text for AI report generation.
+ *
+ * @since 0.1.0
+ */
 final class Analytics_Report_AI_Prompt_Builder {
 
 	/**

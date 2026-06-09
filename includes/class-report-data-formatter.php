@@ -9,6 +9,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Formats GA4 response data into the validated AI payload structure.
+ *
+ * @since 0.1.0
+ */
 final class Analytics_Report_AI_Report_Data_Formatter {
 
 	/**

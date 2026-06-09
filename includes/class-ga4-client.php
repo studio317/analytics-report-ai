@@ -9,6 +9,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Handles GA4 Data API requests for Analytics Report AI reports.
+ *
+ * @since 0.1.0
+ */
 final class Analytics_Report_AI_GA4_Client {
 
 	/**

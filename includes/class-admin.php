@@ -9,6 +9,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Registers admin menus, screens, and assets for Analytics Report AI.
+ *
+ * @since 0.1.0
+ */
 final class Analytics_Report_AI_Admin {
 
 	/**

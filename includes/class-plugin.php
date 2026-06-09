@@ -9,6 +9,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Boots the plugin, loads dependencies, and registers activation behavior.
+ *
+ * @since 0.1.0
+ */
 final class Analytics_Report_AI_Plugin {
 
 	/**

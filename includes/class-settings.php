@@ -9,6 +9,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Registers, sanitizes, and renders Analytics Report AI settings.
+ *
+ * @since 0.1.0
+ */
 final class Analytics_Report_AI_Settings {
 
 	/**
