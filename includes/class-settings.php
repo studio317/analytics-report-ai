@@ -174,7 +174,7 @@ final class Analytics_Report_AI_Settings {
 		<div class="wrap analytics-report-ai-admin">
 			<h1><?php echo esc_html__( 'Analytics Report AI Settings', 'analytics-report-ai' ); ?></h1>
 
-			<?php settings_errors( ANALYTICS_REPORT_AI_OPTION_NAME ); ?>
+			<?php settings_errors(); ?>
 
 			<div class="analytics-report-ai-card">
 				<h2><?php echo esc_html__( 'External service usage', 'analytics-report-ai' ); ?></h2>
