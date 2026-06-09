@@ -18,6 +18,15 @@
 
 	<rule ref="WordPress"/>
 
+	<!--
+		The project intentionally uses short role-based class file names such as
+		includes/class-report-builder.php. Renaming them would broaden the change to
+		loader paths without improving runtime behavior for the current MVP.
+	-->
+	<rule ref="WordPress.Files.FileName.InvalidClassFileName">
+		<exclude-pattern>includes/class-*.php</exclude-pattern>
+	</rule>
+
 	<rule ref="WordPress.WP.I18n">
 		<properties>
 			<property name="text_domain" type="array">
