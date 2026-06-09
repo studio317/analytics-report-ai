@@ -320,14 +320,14 @@ if ( ! function_exists( 'analytics_report_ai_shift_date_with_clamp' ) ) {
 		$day   = (int) $parts[2];
 
 		if ( 'previous_month' === $comparison ) {
-			$month--;
+			--$month;
 
 			if ( $month < 1 ) {
 				$month = 12;
-				$year--;
+				--$year;
 			}
 		} elseif ( 'previous_year' === $comparison ) {
-			$year--;
+			--$year;
 		}
 
 		$first_day = DateTimeImmutable::createFromFormat(
