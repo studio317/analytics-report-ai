@@ -137,6 +137,14 @@ final class Analytics_Report_AI_Settings {
 		$clear_google_access_token = ! empty( $input['clear_google_access_token'] );
 		$google_access_token       = isset( $input['google_access_token'] ) && is_scalar( $input['google_access_token'] ) ? trim( (string) $input['google_access_token'] ) : '';
 
+		if (
+			'' === $google_access_token
+			&& isset( $input['google_tokens']['access_token'] )
+			&& is_scalar( $input['google_tokens']['access_token'] )
+		) {
+			$google_access_token = trim( (string) $input['google_tokens']['access_token'] );
+		}
+
 		if ( $clear_google_access_token ) {
 			unset( $google_tokens['access_token'] );
 		} elseif ( '' !== $google_access_token ) {
