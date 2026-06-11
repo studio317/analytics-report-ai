@@ -545,6 +545,18 @@ final class Analytics_Report_AI_Report_Builder {
 			);
 		}
 
+		if ( ! analytics_report_ai_payload_allows_generation( $payload ) ) {
+			delete_transient( analytics_report_ai_get_payload_transient_key() );
+
+			return array(
+				'status'      => 'no_data_blocked',
+				'errors'      => array(
+					$this->get_generation_block_message( $payload ),
+				),
+				'form_values' => $validation_result['form_values'],
+			);
+		}
+
 		$transient_key = analytics_report_ai_get_payload_transient_key();
 		$expiration    = analytics_report_ai_get_payload_transient_expiration();
 
@@ -559,6 +571,7 @@ final class Analytics_Report_AI_Report_Builder {
 			'preset_reports'     => $preset_reports,
 			'transient_key'      => $transient_key,
 			'expiration'         => $expiration,
+			'warnings'           => $this->get_payload_warning_messages( $payload ),
 			'form_values'        => $validation_result['form_values'],
 		);
 	}
@@ -582,6 +595,18 @@ final class Analytics_Report_AI_Report_Builder {
 				'errors' => array(
 					__( 'The saved AI payload is missing, expired, or no longer valid. Please fetch GA4 data again.', 'analytics-report-ai' ),
 				),
+			);
+		}
+
+		if ( ! analytics_report_ai_payload_allows_generation( $payload ) ) {
+			return array(
+				'status'     => 'generation_blocked',
+				'errors'     => array(
+					$this->get_generation_block_message( $payload ),
+				),
+				'conditions' => isset( $payload['conditions'] ) && is_array( $payload['conditions'] ) ? $payload['conditions'] : array(),
+				'payload'    => $payload,
+				'warnings'   => $this->get_payload_warning_messages( $payload ),
 			);
 		}
 
@@ -747,6 +772,23 @@ final class Analytics_Report_AI_Report_Builder {
 		}
 
 		if ( 'payload_created' === $submission_result['status'] ) {
+			$warnings = isset( $submission_result['warnings'] ) && is_array( $submission_result['warnings'] )
+				? $submission_result['warnings']
+				: array();
+
+			if ( ! empty( $warnings ) ) {
+				?>
+				<div class="notice notice-warning">
+					<p><strong><?php echo esc_html__( 'GA4 data was fetched and the AI payload was created with warnings.', 'analytics-report-ai' ); ?></strong></p>
+					<ul>
+						<?php foreach ( $warnings as $warning ) : ?>
+							<li><?php echo esc_html( $warning ); ?></li>
+						<?php endforeach; ?>
+					</ul>
+				</div>
+				<?php
+				return;
+			}
 			?>
 			<div class="notice notice-success">
 				<p><?php echo esc_html__( 'GA4 preset reports were fetched and AI payload was created successfully.', 'analytics-report-ai' ); ?></p>
@@ -789,7 +831,7 @@ final class Analytics_Report_AI_Report_Builder {
 		if (
 			empty( $submission_result )
 			|| empty( $submission_result['status'] )
-			|| ! in_array( $submission_result['status'], array( 'payload_created', 'report_generated' ), true )
+			|| ! in_array( $submission_result['status'], array( 'payload_created', 'report_generated', 'generation_blocked' ), true )
 			|| empty( $submission_result['conditions'] )
 			|| ! is_array( $submission_result['conditions'] )
 		) {
@@ -858,7 +900,7 @@ final class Analytics_Report_AI_Report_Builder {
 		if (
 			empty( $submission_result )
 			|| empty( $submission_result['status'] )
-			|| ! in_array( $submission_result['status'], array( 'payload_created', 'report_generated' ), true )
+			|| ! in_array( $submission_result['status'], array( 'payload_created', 'report_generated', 'generation_blocked' ), true )
 			|| empty( $submission_result['payload'] )
 			|| ! is_array( $submission_result['payload'] )
 		) {
@@ -867,6 +909,7 @@ final class Analytics_Report_AI_Report_Builder {
 
 		$payload    = $submission_result['payload'];
 		$expiration = isset( $submission_result['expiration'] ) ? absint( $submission_result['expiration'] ) : analytics_report_ai_get_payload_transient_expiration();
+		$generation_allowed = analytics_report_ai_payload_allows_generation( $payload );
 		$json       = wp_json_encode(
 			$payload,
 			JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
@@ -888,6 +931,8 @@ final class Analytics_Report_AI_Report_Builder {
 			<p class="description">
 				<?php echo esc_html__( 'The reviewed AI payload is stored temporarily for this user and expires automatically.', 'analytics-report-ai' ); ?>
 			</p>
+
+			<?php $this->render_payload_status_notices( $payload ); ?>
 
 			<div class="analytics-report-ai-info-block">
 				<h3><?php echo esc_html__( 'Review before sending', 'analytics-report-ai' ); ?></h3>
@@ -945,6 +990,7 @@ final class Analytics_Report_AI_Report_Builder {
 						type="submit"
 						class="button button-primary"
 						data-analytics-report-ai-submit-button
+						<?php disabled( ! $generation_allowed ); ?>
 						<?php if ( 'report_generated' === $submission_result['status'] ) : ?>
 							data-analytics-report-ai-confirm="<?php echo esc_attr__( 'The current report text will be overwritten. Continue?', 'analytics-report-ai' ); ?>"
 						<?php endif; ?>
@@ -959,10 +1005,155 @@ final class Analytics_Report_AI_Report_Builder {
 			</form>
 
 			<p class="description">
-				<?php echo esc_html__( 'Use Generate AI Report only after reviewing the Payload Preview.', 'analytics-report-ai' ); ?>
+				<?php
+				echo $generation_allowed
+					? esc_html__( 'Use Generate AI Report only after reviewing the Payload Preview.', 'analytics-report-ai' )
+					: esc_html__( 'Generate AI Report is blocked because this payload does not contain reportable current-period data.', 'analytics-report-ai' );
+				?>
 			</p>
 		</div>
 		<?php
+	}
+
+	/**
+	 * Render payload status warnings near the preview.
+	 *
+	 * @param array $payload Payload.
+	 * @return void
+	 */
+	private function render_payload_status_notices( $payload ) {
+		if ( ! analytics_report_ai_payload_allows_generation( $payload ) ) {
+			?>
+			<div class="notice notice-error inline">
+				<p><?php echo esc_html( $this->get_generation_block_message( $payload ) ); ?></p>
+			</div>
+			<?php
+			return;
+		}
+
+		$warnings = $this->get_payload_warning_messages( $payload );
+
+		if ( empty( $warnings ) ) {
+			return;
+		}
+		?>
+		<div class="notice notice-warning inline">
+			<p><strong><?php echo esc_html__( 'Review these GA4 data warnings before generating a report.', 'analytics-report-ai' ); ?></strong></p>
+			<ul>
+				<?php foreach ( $warnings as $warning ) : ?>
+					<li><?php echo esc_html( $warning ); ?></li>
+				<?php endforeach; ?>
+			</ul>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Get a safe user-facing generation block message.
+	 *
+	 * @param array $payload Payload.
+	 * @return string
+	 */
+	private function get_generation_block_message( $payload ) {
+		$reason = isset( $payload['payload_status']['generation_block_reason'] ) && is_scalar( $payload['payload_status']['generation_block_reason'] )
+			? sanitize_key( (string) $payload['payload_status']['generation_block_reason'] )
+			: '';
+
+		if ( 'current_period_no_data' === $reason ) {
+			return __( 'GA4 returned no reportable current-period data for the selected conditions. Change the date range or scope and fetch GA4 data again.', 'analytics-report-ai' );
+		}
+
+		return __( 'AI generation is blocked because the saved payload is not reportable. Fetch GA4 data again before generating a report.', 'analytics-report-ai' );
+	}
+
+	/**
+	 * Get safe user-facing warning messages from payload metadata.
+	 *
+	 * @param array $payload Payload.
+	 * @return array
+	 */
+	private function get_payload_warning_messages( $payload ) {
+		if ( empty( $payload['payload_status']['warnings'] ) || ! is_array( $payload['payload_status']['warnings'] ) ) {
+			return array();
+		}
+
+		$messages = array();
+
+		foreach ( $payload['payload_status']['warnings'] as $warning ) {
+			if ( ! is_array( $warning ) ) {
+				continue;
+			}
+
+			$code     = isset( $warning['code'] ) ? sanitize_key( (string) $warning['code'] ) : '';
+			$category = isset( $warning['category'] ) ? sanitize_key( (string) $warning['category'] ) : '';
+
+			$messages[] = $this->get_payload_warning_message( $code, $category );
+		}
+
+		return array_values( array_unique( array_filter( $messages ) ) );
+	}
+
+	/**
+	 * Get one safe user-facing warning message.
+	 *
+	 * @param string $code Warning code.
+	 * @param string $category Warning category.
+	 * @return string
+	 */
+	private function get_payload_warning_message( $code, $category ) {
+		if ( 'current_period_zero_activity' === $code ) {
+			return __( 'The current-period summary contains explicit zero activity. This is treated as measured zero activity, not as a GA4 API error.', 'analytics-report-ai' );
+		}
+
+		if ( 'current_summary_partial_metric_values' === $code ) {
+			return __( 'Some current-period summary metrics were unavailable, so the report should treat the summary as partial.', 'analytics-report-ai' );
+		}
+
+		if ( 'current_summary_missing' === $code ) {
+			return __( 'Current-period summary metrics were unavailable, but detail rows were present. Review the partial payload before generating.', 'analytics-report-ai' );
+		}
+
+		if ( 'comparison_period_no_data' === $code ) {
+			return __( 'Comparison-period data is unavailable. Generated text should avoid comparison claims.', 'analytics-report-ai' );
+		}
+
+		if ( 'comparison_period_zero_activity' === $code ) {
+			return __( 'The comparison period contains explicit zero activity, so comparison wording may be limited.', 'analytics-report-ai' );
+		}
+
+		if ( 'comparison_summary_partial_metric_values' === $code ) {
+			return __( 'Some comparison-period summary metrics were unavailable, so comparison wording may be limited.', 'analytics-report-ai' );
+		}
+
+		if ( 'detail_preset_empty' === $code ) {
+			return sprintf(
+				/* translators: %s: safe GA4 preset label. */
+				__( '%s rows are unavailable for the selected conditions.', 'analytics-report-ai' ),
+				$this->get_payload_warning_category_label( $category )
+			);
+		}
+
+		return __( 'The payload includes a GA4 data availability warning.', 'analytics-report-ai' );
+	}
+
+	/**
+	 * Get a safe category label for no-data warnings.
+	 *
+	 * @param string $category Warning category.
+	 * @return string
+	 */
+	private function get_payload_warning_category_label( $category ) {
+		$labels = array(
+			'daily_trend'       => __( 'Daily Trend', 'analytics-report-ai' ),
+			'top_pages'         => __( 'Top Pages', 'analytics-report-ai' ),
+			'traffic_channels'  => __( 'Traffic Channels', 'analytics-report-ai' ),
+			'traffic_sources'   => __( 'Traffic Sources', 'analytics-report-ai' ),
+			'regional_trends'   => __( 'Regional Trends', 'analytics-report-ai' ),
+			'summary'           => __( 'Summary Metrics', 'analytics-report-ai' ),
+			'comparison_period' => __( 'Comparison Period', 'analytics-report-ai' ),
+		);
+
+		return isset( $labels[ $category ] ) ? $labels[ $category ] : __( 'GA4 detail', 'analytics-report-ai' );
 	}
 
 	/**

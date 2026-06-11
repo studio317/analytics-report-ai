@@ -480,22 +480,109 @@ final class Analytics_Report_AI_GA4_Client {
 	 * @return array
 	 */
 	private static function extract_summary_values( $data, $metric_names ) {
-		$summary = array_fill_keys( $metric_names, 0 );
+		$summary             = array_fill_keys( $metric_names, 0 );
+		$metric_values       = isset( $data['rows'][0]['metricValues'] ) && is_array( $data['rows'][0]['metricValues'] )
+			? $data['rows'][0]['metricValues']
+			: array();
+		$row_present         = isset( $data['rows'][0] ) && is_array( $data['rows'][0] );
+		$present_metric_keys = array();
+		$non_zero_present    = false;
 
-		if ( empty( $data['rows'][0]['metricValues'] ) || ! is_array( $data['rows'][0]['metricValues'] ) ) {
+		if ( empty( $metric_values ) ) {
+			$summary['_availability'] = self::build_summary_availability(
+				$row_present ? 'missing_metric_values' : 'missing_row',
+				false,
+				0,
+				count( $metric_names ),
+				array(),
+				false
+			);
+
 			return $summary;
 		}
 
 		foreach ( $metric_names as $index => $metric_name ) {
-			if ( isset( $data['rows'][0]['metricValues'][ $index ]['value'] ) ) {
+			if ( isset( $metric_values[ $index ]['value'] ) ) {
 				$summary[ $metric_name ] = analytics_report_ai_cast_metric_value(
 					$metric_name,
-					$data['rows'][0]['metricValues'][ $index ]['value']
+					$metric_values[ $index ]['value']
 				);
+
+				$present_metric_keys[] = $metric_name;
+
+				if ( 0.0 !== (float) $summary[ $metric_name ] ) {
+					$non_zero_present = true;
+				}
 			}
 		}
 
+		$present_count = count( $present_metric_keys );
+		$missing_count = max( 0, count( $metric_names ) - $present_count );
+
+		if ( 0 === $present_count ) {
+			$status = 'missing_metric_values';
+		} elseif ( $missing_count > 0 ) {
+			$status = 'partial_metric_values';
+		} elseif ( $non_zero_present ) {
+			$status = 'present_non_zero';
+		} else {
+			$status = 'present_zero';
+		}
+
+		$summary['_availability'] = self::build_summary_availability(
+			$status,
+			0 === $missing_count && $present_count > 0,
+			$present_count,
+			$missing_count,
+			$present_metric_keys,
+			$non_zero_present
+		);
+
 		return $summary;
+	}
+
+	/**
+	 * Build safe summary availability metadata.
+	 *
+	 * @param string $status              Availability status.
+	 * @param bool   $all_requested_found Whether all requested metrics were present.
+	 * @param int    $present_count       Present metric count.
+	 * @param int    $missing_count       Missing metric count.
+	 * @param array  $present_metric_keys Present metric keys.
+	 * @param bool   $non_zero_present    Whether any present metric is non-zero.
+	 * @return array
+	 */
+	private static function build_summary_availability( $status, $all_requested_found, $present_count, $missing_count, $present_metric_keys, $non_zero_present ) {
+		$status = sanitize_key( (string) $status );
+
+		return array(
+			'status'               => $status,
+			'has_reportable_data'  => $present_count > 0,
+			'all_requested_found'  => (bool) $all_requested_found,
+			'present_metric_count' => absint( $present_count ),
+			'missing_metric_count' => absint( $missing_count ),
+			'present_metric_keys'  => array_values( array_map( 'sanitize_key', $present_metric_keys ) ),
+			'value_state'          => self::get_summary_value_state( $status, $non_zero_present ),
+		);
+	}
+
+	/**
+	 * Get summary value state for no-data classification.
+	 *
+	 * @param string $status           Availability status.
+	 * @param bool   $non_zero_present Whether any present metric is non-zero.
+	 * @return string
+	 */
+	private static function get_summary_value_state( $status, $non_zero_present ) {
+		if ( in_array( $status, array( 'missing_row', 'missing_metric_values' ), true ) ) {
+			return 'missing';
+		}
+
+		if ( $non_zero_present ) {
+			return 'non_zero';
+		}
+
+		return 'zero';
 	}
 
 	/**

@@ -516,6 +516,9 @@ if ( ! function_exists( 'analytics_report_ai_validate_ai_payload' ) ) {
 		}
 
 		$required_array_keys = array(
+			'payload_status',
+			'data_availability',
+			'value_semantics',
 			'site',
 			'conditions',
 			'summary',
@@ -535,6 +538,90 @@ if ( ! function_exists( 'analytics_report_ai_validate_ai_payload' ) ) {
 			}
 		}
 
+		if (
+			empty( $payload['payload_status']['overall_status'] )
+			|| ! is_scalar( $payload['payload_status']['overall_status'] )
+			|| ! isset( $payload['payload_status']['generation_allowed'] )
+			|| ! is_bool( $payload['payload_status']['generation_allowed'] )
+			|| ! isset( $payload['payload_status']['warnings'] )
+			|| ! is_array( $payload['payload_status']['warnings'] )
+		) {
+			return new WP_Error(
+				'analytics_report_ai_payload_invalid_status',
+				__( 'AI payload is invalid.', 'analytics-report-ai' )
+			);
+		}
+
+		if (
+			isset( $payload['payload_status']['generation_block_reason'] )
+			&& ! is_scalar( $payload['payload_status']['generation_block_reason'] )
+			&& null !== $payload['payload_status']['generation_block_reason']
+		) {
+			return new WP_Error(
+				'analytics_report_ai_payload_invalid_block_reason',
+				__( 'AI payload is invalid.', 'analytics-report-ai' )
+			);
+		}
+
+		foreach ( $payload['payload_status']['warnings'] as $warning ) {
+			if (
+				! is_array( $warning )
+				|| empty( $warning['code'] )
+				|| empty( $warning['category'] )
+				|| empty( $warning['severity'] )
+				|| ! is_scalar( $warning['code'] )
+				|| ! is_scalar( $warning['category'] )
+				|| ! is_scalar( $warning['severity'] )
+			) {
+				return new WP_Error(
+					'analytics_report_ai_payload_invalid_warning',
+					__( 'AI payload is invalid.', 'analytics-report-ai' )
+				);
+			}
+		}
+
+		if (
+			empty( $payload['data_availability']['current_period'] )
+			|| ! is_array( $payload['data_availability']['current_period'] )
+			|| empty( $payload['data_availability']['comparison_period'] )
+			|| ! is_array( $payload['data_availability']['comparison_period'] )
+			|| empty( $payload['data_availability']['summary'] )
+			|| ! is_array( $payload['data_availability']['summary'] )
+			|| ! isset( $payload['data_availability']['detail_presets'] )
+			|| ! is_array( $payload['data_availability']['detail_presets'] )
+		) {
+			return new WP_Error(
+				'analytics_report_ai_payload_invalid_availability',
+				__( 'AI payload is invalid.', 'analytics-report-ai' )
+			);
+		}
+
+		foreach ( analytics_report_ai_get_payload_row_limits() as $key => $limit ) {
+			if (
+				! isset( $payload['data_availability']['detail_presets'][ $key ] )
+				|| ! is_array( $payload['data_availability']['detail_presets'][ $key ] )
+				|| empty( $payload['data_availability']['detail_presets'][ $key ]['status'] )
+				|| ! is_scalar( $payload['data_availability']['detail_presets'][ $key ]['status'] )
+			) {
+				return new WP_Error(
+					'analytics_report_ai_payload_invalid_detail_availability_' . sanitize_key( $key ),
+					__( 'AI payload is invalid.', 'analytics-report-ai' )
+				);
+			}
+		}
+
+		if (
+			! isset( $payload['value_semantics']['zero_values_are_real'] )
+			|| ! is_bool( $payload['value_semantics']['zero_values_are_real'] )
+			|| ! isset( $payload['value_semantics']['missing_values_are_unavailable'] )
+			|| ! is_bool( $payload['value_semantics']['missing_values_are_unavailable'] )
+		) {
+			return new WP_Error(
+				'analytics_report_ai_payload_invalid_value_semantics',
+				__( 'AI payload is invalid.', 'analytics-report-ai' )
+			);
+		}
+
 		foreach ( analytics_report_ai_get_payload_row_limits() as $key => $limit ) {
 			if ( count( $payload[ $key ] ) > absint( $limit ) ) {
 				return new WP_Error(
@@ -545,6 +632,22 @@ if ( ! function_exists( 'analytics_report_ai_validate_ai_payload' ) ) {
 		}
 
 		return true;
+	}
+}
+
+if ( ! function_exists( 'analytics_report_ai_payload_allows_generation' ) ) {
+	/**
+	 * Check whether a validated payload permits OpenAI generation.
+	 *
+	 * @param array $payload AI payload.
+	 * @return bool
+	 */
+	function analytics_report_ai_payload_allows_generation( $payload ) {
+		return (
+			is_array( $payload )
+			&& isset( $payload['payload_status']['generation_allowed'] )
+			&& true === $payload['payload_status']['generation_allowed']
+		);
 	}
 }
 
