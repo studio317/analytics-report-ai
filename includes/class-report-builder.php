@@ -935,14 +935,22 @@ final class Analytics_Report_AI_Report_Builder {
 			<?php $this->render_payload_status_notices( $payload ); ?>
 
 			<div class="analytics-report-ai-info-block">
-				<h3><?php echo esc_html__( 'Review before sending', 'analytics-report-ai' ); ?></h3>
+				<h3><?php echo esc_html__( 'Structured pre-send review', 'analytics-report-ai' ); ?></h3>
 
 				<p>
-					<?php echo esc_html__( 'This Payload Preview shows the content that will be sent to the OpenAI API when you generate an AI report.', 'analytics-report-ai' ); ?>
+					<?php echo esc_html__( 'Review this structured summary before sending data to AI.', 'analytics-report-ai' ); ?>
 				</p>
 
 				<p>
-					<?php echo esc_html__( 'The payload can include host name, page path, traffic channel/source, city, summary metrics, and comparison differences.', 'analytics-report-ai' ); ?>
+					<?php echo esc_html__( 'This preview focuses on report conditions, data availability, warnings, and generation readiness.', 'analytics-report-ai' ); ?>
+				</p>
+
+				<p>
+					<?php echo esc_html__( 'Use the status and warning information below to decide whether to generate a report.', 'analytics-report-ai' ); ?>
+				</p>
+
+				<p>
+					<?php echo esc_html__( 'The reviewed report data can include host name, page path, traffic channel/source, city, summary metrics, and comparison differences.', 'analytics-report-ai' ); ?>
 				</p>
 
 				<p>
@@ -951,6 +959,10 @@ final class Analytics_Report_AI_Report_Builder {
 
 				<p>
 					<?php echo esc_html__( 'Page paths and traffic sources can still be sensitive business analytics information, so review the payload before sending it.', 'analytics-report-ai' ); ?>
+				</p>
+
+				<p>
+					<?php echo esc_html__( 'For support, share status labels, warning messages, or error categories only. Do not share credentials, raw payloads, raw responses, or generated report text.', 'analytics-report-ai' ); ?>
 				</p>
 			</div>
 
@@ -970,11 +982,11 @@ final class Analytics_Report_AI_Report_Builder {
 				<h3><?php echo esc_html__( 'Data sent to OpenAI API', 'analytics-report-ai' ); ?></h3>
 
 				<p>
-					<?php echo esc_html__( 'When you click Generate AI Report, the content shown in the payload preview is sent to the OpenAI API.', 'analytics-report-ai' ); ?>
+					<?php echo esc_html__( 'When you click Generate AI Report, the reviewed report data is sent to the OpenAI API.', 'analytics-report-ai' ); ?>
 				</p>
 
 				<p>
-					<?php echo esc_html__( 'Generating a report sends the reviewed payload to OpenAI API and may consume API usage.', 'analytics-report-ai' ); ?>
+					<?php echo esc_html__( 'Generating a report sends the reviewed data to OpenAI API and may consume API usage.', 'analytics-report-ai' ); ?>
 				</p>
 
 				<p>
@@ -1007,8 +1019,8 @@ final class Analytics_Report_AI_Report_Builder {
 			<p class="description">
 				<?php
 				echo $generation_allowed
-					? esc_html__( 'Use Generate AI Report only after reviewing the Payload Preview.', 'analytics-report-ai' )
-					: esc_html__( 'Generate AI Report is blocked because this payload does not contain reportable current-period data.', 'analytics-report-ai' );
+					? esc_html__( 'Use Generate AI Report only after reviewing the structured Payload Preview and any status-level warnings.', 'analytics-report-ai' )
+					: esc_html__( 'Generation is blocked because the current-period data is not reportable for the selected conditions.', 'analytics-report-ai' );
 				?>
 			</p>
 		</div>
@@ -1038,12 +1050,13 @@ final class Analytics_Report_AI_Report_Builder {
 		}
 		?>
 		<div class="notice notice-warning inline">
-			<p><strong><?php echo esc_html__( 'Review these GA4 data warnings before generating a report.', 'analytics-report-ai' ); ?></strong></p>
+			<p><strong><?php echo esc_html__( 'Review these status-level GA4 data warnings before generating a report.', 'analytics-report-ai' ); ?></strong></p>
 			<ul>
 				<?php foreach ( $warnings as $warning ) : ?>
 					<li><?php echo esc_html( $warning ); ?></li>
 				<?php endforeach; ?>
 			</ul>
+			<p><?php echo esc_html__( 'Generation is available, but warnings may limit what the generated draft should claim.', 'analytics-report-ai' ); ?></p>
 		</div>
 		<?php
 	}
@@ -1060,7 +1073,7 @@ final class Analytics_Report_AI_Report_Builder {
 			: '';
 
 		if ( 'current_period_no_data' === $reason ) {
-			return __( 'GA4 returned no reportable current-period data for the selected conditions. Change the date range or scope and fetch GA4 data again.', 'analytics-report-ai' );
+			return __( 'Generation is blocked because the current-period data is not reportable for the selected conditions. Change the date range or scope and fetch GA4 data again.', 'analytics-report-ai' );
 		}
 
 		return __( 'AI generation is blocked because the saved payload is not reportable. Fetch GA4 data again before generating a report.', 'analytics-report-ai' );
@@ -1178,11 +1191,19 @@ final class Analytics_Report_AI_Report_Builder {
 			<h2><?php echo esc_html__( 'Generated Report Draft', 'analytics-report-ai' ); ?></h2>
 
 			<p class="description">
-				<?php echo esc_html__( 'The generated report text is not saved. You can edit it freely and copy the current textarea content.', 'analytics-report-ai' ); ?>
+				<?php echo esc_html__( 'Review and edit the generated draft before using it.', 'analytics-report-ai' ); ?>
+			</p>
+
+			<p class="description">
+				<?php echo esc_html__( 'The plugin does not save generated report text.', 'analytics-report-ai' ); ?>
 			</p>
 
 			<p class="description">
 				<?php echo esc_html__( 'This AI-generated text is a draft. Review and edit it before publishing, sharing, or sending it.', 'analytics-report-ai' ); ?>
+			</p>
+
+			<p class="description">
+				<?php echo esc_html__( 'Copying the report text is a user-initiated action.', 'analytics-report-ai' ); ?>
 			</p>
 
 			<textarea
