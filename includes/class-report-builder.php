@@ -910,10 +910,6 @@ final class Analytics_Report_AI_Report_Builder {
 		$payload    = $submission_result['payload'];
 		$expiration = isset( $submission_result['expiration'] ) ? absint( $submission_result['expiration'] ) : analytics_report_ai_get_payload_transient_expiration();
 		$generation_allowed = analytics_report_ai_payload_allows_generation( $payload );
-		$json       = wp_json_encode(
-			$payload,
-			JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
-		);
 		?>
 		<div class="analytics-report-ai-card">
 			<h2><?php echo esc_html__( 'AI Payload Preview', 'analytics-report-ai' ); ?></h2>
@@ -972,11 +968,6 @@ final class Analytics_Report_AI_Report_Builder {
 			<?php $this->render_list_preview_table( __( 'Traffic Channels', 'analytics-report-ai' ), isset( $payload['traffic_channels'] ) ? $payload['traffic_channels'] : array() ); ?>
 			<?php $this->render_list_preview_table( __( 'Traffic Sources', 'analytics-report-ai' ), isset( $payload['traffic_sources'] ) ? $payload['traffic_sources'] : array() ); ?>
 			<?php $this->render_list_preview_table( __( 'Regional Trends', 'analytics-report-ai' ), isset( $payload['regional_trends'] ) ? $payload['regional_trends'] : array() ); ?>
-
-			<details class="analytics-report-ai-json-preview">
-				<summary><?php echo esc_html__( 'Show payload JSON', 'analytics-report-ai' ); ?></summary>
-				<pre><code><?php echo esc_html( $json ); ?></code></pre>
-			</details>
 
 			<div class="analytics-report-ai-info-block">
 				<h3><?php echo esc_html__( 'Data sent to OpenAI API', 'analytics-report-ai' ); ?></h3>
