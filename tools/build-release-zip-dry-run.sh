@@ -101,7 +101,11 @@ REPO_ROOT="$(CDPATH= cd -- "$SCRIPT_DIR/.." && pwd)"
 MAIN_FILE="$REPO_ROOT/$PLUGIN_SLUG.php"
 README_FILE="$REPO_ROOT/readme.txt"
 DISTIGNORE_FILE="$REPO_ROOT/.distignore"
-BUILD_ROOT="$REPO_ROOT/build/release-dry-run"
+BUILD_ROOT="${ANALYTICS_REPORT_AI_RELEASE_BUILD_ROOT:-${TMPDIR:-/tmp}/$PLUGIN_SLUG-release-dry-run}"
+BUILD_PARENT="$(dirname -- "$BUILD_ROOT")"
+BUILD_BASENAME="$(basename -- "$BUILD_ROOT")"
+mkdir -p "$BUILD_PARENT"
+BUILD_ROOT="$(CDPATH= cd -- "$BUILD_PARENT" && pwd -P)/$BUILD_BASENAME"
 STAGE_PARENT="$BUILD_ROOT/stage"
 STAGE_DIR="$STAGE_PARENT/$PLUGIN_SLUG"
 ZIP_CONTENTS_FILE="$BUILD_ROOT/zip-contents.txt"
@@ -125,16 +129,15 @@ STABLE_TAG="$(extract_stable_tag "$README_FILE")"
 [[ -n "$STABLE_TAG" ]] || fail "Could not read readme Stable tag."
 [[ "$VERSION" == "$STABLE_TAG" ]] || fail "Plugin header Version ($VERSION) does not match readme Stable tag ($STABLE_TAG)."
 
-ZIP_FILE="$BUILD_ROOT/$PLUGIN_SLUG-$VERSION.zip"
-
-case "$BUILD_ROOT" in
-	"$REPO_ROOT"/build/release-dry-run) ;;
-	*) fail "Unsafe build directory: $BUILD_ROOT" ;;
+case "$BUILD_ROOT/" in
+	"$REPO_ROOT"/*) fail "Build output must be outside the plugin source tree: $BUILD_ROOT" ;;
 esac
 
-if [[ -e "$REPO_ROOT/build" && -L "$REPO_ROOT/build" ]]; then
-	fail "Refusing to write build output through a symlink: $REPO_ROOT/build"
+if [[ -e "$BUILD_ROOT" && -L "$BUILD_ROOT" ]]; then
+	fail "Refusing to write build output through a symlink: $BUILD_ROOT"
 fi
+
+ZIP_FILE="$BUILD_ROOT/$PLUGIN_SLUG-$VERSION.zip"
 
 info "Creating dry-run release package for $PLUGIN_SLUG $VERSION."
 info "This artifact is for local inspection only; it is not a formal release."
