@@ -8,17 +8,17 @@ Stable tag: 0.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Creates AI-assisted Japanese report drafts from GA4 data with admin review, editing, and copy tools.
+Creates AI-assisted Japanese report drafts from GA4 data with structured preview, editing, and copy tools.
 
 == Description ==
 
-Analytics Report AI helps administrators fetch selected GA4 report data, review an AI payload, generate a Japanese report draft with OpenAI, edit the draft, and copy the final text.
+Analytics Report AI helps administrators fetch selected GA4 report data, review a structured pre-send preview, generate a Japanese report draft with OpenAI, edit the draft, and copy the final text.
 
 This MVP version is intended for development and verification.
 
 == External Services ==
 
-Analytics Report AI uses third-party services only when an administrator starts a report action. Viewing the plugin screens does not, by itself, send data to these services.
+Analytics Report AI uses third-party services only when an administrator starts a report action. Viewing the plugin screens does not, by itself, send data to Google or OpenAI.
 
 = Google Analytics Data API =
 
@@ -56,7 +56,7 @@ Google terms and privacy information:
 
 = OpenAI API =
 
-When an administrator clicks Generate AI Report, the plugin sends a request to the OpenAI API to generate a Japanese report draft from the reviewed payload.
+When an administrator clicks Generate AI Report, the plugin sends a request to the OpenAI API to generate a Japanese report draft from the reviewed report data.
 
 Service URL: https://api.openai.com/v1/responses
 
@@ -65,9 +65,11 @@ Data sent to OpenAI may include:
 * OpenAI API Key in the Authorization header.
 * Selected model name.
 * Fixed system instructions.
-* Reviewed AI payload shown in Payload Preview.
+* GA4-derived report data reviewed through the structured Payload Preview.
 
-The AI payload may include:
+When the administrator generates an AI report, report data derived from GA4 may be sent to OpenAI. The data is based on the selected date range, comparison setting, data scope, filters, and report presets.
+
+Report data sent to OpenAI may include:
 
 * Host name.
 * Date range and comparison information.
@@ -79,9 +81,11 @@ The AI payload may include:
 * Traffic sources.
 * City-level regional trends.
 
-The AI payload is designed not to include the Google Access Token, OpenAI API Key, GA4 property ID, WordPress user information, cookies, or IP addresses.
+The plugin shows a structured Payload Preview before AI generation. The normal admin UI does not expose a full raw AI payload JSON preview.
 
-OpenAI API usage may consume API credits or quota. The generated result is a draft, and users should review and edit it before publishing, sharing, or sending it.
+The report data sent to OpenAI is designed not to include the Google Access Token, OpenAI API Key, GA4 property ID, WordPress user information, cookies, or IP addresses.
+
+OpenAI API usage may consume API credits or quota. Generated report text is shown for user review, editing, and copying. The plugin does not save generated report text. Generated report text is a draft, and users should review and edit it before publishing, sharing, or sending it.
 
 OpenAI terms and privacy information:
 
@@ -92,7 +96,15 @@ OpenAI terms and privacy information:
 
 In the MVP, the Google Access Token and OpenAI API Key are saved in the WordPress database as plugin settings. Saved credential values are not displayed again in the admin screen. Database administrators, backups, server administrators, or code that can read WordPress options may be able to access stored credentials. This storage method is for MVP and developer verification, and it needs redesign before public or multi-user use.
 
-The plugin does not send the full raw GA4 response to OpenAI. It formats selected GA4 results into an AI payload, shows that payload in Payload Preview, and sends the reviewed payload only when Generate AI Report is clicked. The payload is stored temporarily in a user-scoped WordPress transient and expires automatically. Payload validation runs before transient storage and again before OpenAI generation; missing, expired, old, or invalid payloads are not sent to OpenAI.
+The plugin does not send the full raw GA4 response to OpenAI. It formats selected GA4 results into report-generation data, shows a structured Payload Preview before AI generation, and sends the reviewed report data only when Generate AI Report is clicked. The normal admin UI does not expose a full raw AI payload JSON preview.
+
+The reviewed report data is stored temporarily in a user-scoped WordPress transient and expires automatically. Payload validation runs before transient storage and again before OpenAI generation; missing, expired, old, or invalid payloads are not sent to OpenAI.
+
+= Support and Debug Evidence =
+
+Support requests should not include credentials, API keys, access tokens, Authorization headers, plugin settings option values, raw payloads, raw API responses, OpenAI request bodies, generated report text, GA4 property identifiers, hostnames, page paths, traffic source values, city values, or analytics metric values.
+
+For support, describe the issue using status-level information such as the screen, action, warning message, generic error category, generation allowed or blocked state, or redacted UI state.
 
 == Changelog ==
 
