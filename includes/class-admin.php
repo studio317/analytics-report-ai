@@ -149,10 +149,11 @@ final class Analytics_Report_AI_Admin {
 	}
 
 	/**
-	 * Handle the local Google OAuth connect skeleton.
+	 * Handle the Google OAuth connect action.
 	 *
-	 * This action intentionally does not redirect to Google, exchange tokens, or
-	 * store credentials. It only establishes the future admin action boundary.
+	 * This action redirects to Google authorization only after local capability,
+	 * nonce, client ID, and state boundaries pass. It intentionally does not
+	 * exchange tokens, store credentials, refresh tokens, or revoke access.
 	 *
 	 * @return void
 	 */
@@ -167,16 +168,74 @@ final class Analytics_Report_AI_Admin {
 
 		check_admin_referer( 'analytics_report_ai_google_oauth_connect', 'analytics_report_ai_google_oauth_nonce' );
 
-		$this->create_google_oauth_state_placeholder();
+		if ( '' === $this->get_google_oauth_client_id() ) {
+			wp_safe_redirect(
+				$this->get_settings_url(
+					array(
+						'analytics_report_ai_google_oauth_status' => 'google_oauth_redirect_client_config_missing',
+					)
+				)
+			);
+			exit;
+		}
+
+		$state             = $this->create_google_oauth_state_placeholder();
+		$authorization_url = $this->build_google_oauth_authorization_url( $state );
+
+		if ( '' === $authorization_url ) {
+			wp_safe_redirect(
+				$this->get_settings_url(
+					array(
+						'analytics_report_ai_google_oauth_status' => 'google_oauth_redirect_url_unavailable',
+					)
+				)
+			);
+			exit;
+		}
+
+		$this->redirect_to_google_oauth_authorization_url( $authorization_url );
+	}
+
+	/**
+	 * Redirect to the Google OAuth authorization URL.
+	 *
+	 * The URL is not displayed, logged, or stored. Only the Google authorization
+	 * host is temporarily allowed for this redirect boundary.
+	 *
+	 * @param string $authorization_url Authorization URL.
+	 * @return void
+	 */
+	private function redirect_to_google_oauth_authorization_url( $authorization_url ) {
+		add_filter( 'allowed_redirect_hosts', array( $this, 'allow_google_oauth_redirect_host' ) );
+
+		$redirected = wp_safe_redirect( $authorization_url );
+
+		remove_filter( 'allowed_redirect_hosts', array( $this, 'allow_google_oauth_redirect_host' ) );
+
+		if ( $redirected ) {
+			exit;
+		}
 
 		wp_safe_redirect(
 			$this->get_settings_url(
 				array(
-					'analytics_report_ai_google_oauth_status' => 'connect_state_prepared',
+					'analytics_report_ai_google_oauth_status' => 'google_oauth_redirect_url_unavailable',
 				)
 			)
 		);
 		exit;
+	}
+
+	/**
+	 * Allow the Google OAuth authorization host for the redirect boundary.
+	 *
+	 * @param string[] $hosts Allowed redirect hosts.
+	 * @return string[]
+	 */
+	public function allow_google_oauth_redirect_host( $hosts ) {
+		$hosts[] = 'accounts.google.com';
+
+		return array_values( array_unique( $hosts ) );
 	}
 
 	/**
@@ -227,17 +286,17 @@ final class Analytics_Report_AI_Admin {
 	/**
 	 * Create a temporary user-scoped OAuth state placeholder.
 	 *
-	 * The raw state value is intentionally not displayed, logged, or returned
-	 * from the local placeholder flow. A later OAuth redirect step can use this
-	 * boundary without storing OAuth tokens or credentials here.
+	 * The raw state value is intentionally not displayed or logged. It is
+	 * returned only to the current request so the authorization redirect URL can
+	 * be constructed without storing OAuth tokens or credentials here.
 	 *
-	 * @return void
+	 * @return string Raw state value for immediate redirect construction.
 	 */
 	private function create_google_oauth_state_placeholder() {
 		$user_id = get_current_user_id();
 
 		if ( $user_id <= 0 ) {
-			return;
+			return '';
 		}
 
 		$state = $this->generate_google_oauth_state_value();
@@ -250,6 +309,8 @@ final class Analytics_Report_AI_Admin {
 			),
 			self::GOOGLE_OAUTH_STATE_TTL
 		);
+
+		return $state;
 	}
 
 	/**
