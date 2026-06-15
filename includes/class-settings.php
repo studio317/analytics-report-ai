@@ -183,6 +183,7 @@ final class Analytics_Report_AI_Settings {
 			<h1><?php echo esc_html__( 'Analytics Report AI Settings', 'analytics-report-ai' ); ?></h1>
 
 			<?php settings_errors(); ?>
+			<?php $this->render_google_oauth_status_notice(); ?>
 
 			<div class="analytics-report-ai-card">
 				<h2><?php echo esc_html__( 'External service usage', 'analytics-report-ai' ); ?></h2>
@@ -225,6 +226,29 @@ final class Analytics_Report_AI_Settings {
 						<?php echo esc_html__( 'For OpenAI, use a Restricted API key with the minimum permissions needed for Responses API requests where possible.', 'analytics-report-ai' ); ?>
 					</li>
 				</ul>
+			</div>
+
+			<div class="analytics-report-ai-card">
+				<h2><?php echo esc_html__( 'Google OAuth Connection (Planned)', 'analytics-report-ai' ); ?></h2>
+
+				<p>
+					<?php echo esc_html__( 'A Google OAuth connection flow is planned for public release readiness, but it is not complete in this step.', 'analytics-report-ai' ); ?>
+				</p>
+
+				<ul class="analytics-report-ai-notice-list">
+					<li>
+						<?php echo esc_html__( 'This placeholder does not contact Google, exchange authorization codes, save tokens, refresh tokens, revoke access, or change GA4 fetch behavior.', 'analytics-report-ai' ); ?>
+					</li>
+					<li>
+						<?php echo esc_html__( 'The temporary manual Google Access Token field below remains available for controlled developer verification only.', 'analytics-report-ai' ); ?>
+					</li>
+				</ul>
+
+				<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+					<input type="hidden" name="action" value="analytics_report_ai_google_oauth_connect" />
+					<?php wp_nonce_field( 'analytics_report_ai_google_oauth_connect', 'analytics_report_ai_google_oauth_nonce' ); ?>
+					<?php submit_button( __( 'Review Local OAuth Placeholder', 'analytics-report-ai' ), 'secondary', 'submit', false ); ?>
+				</form>
 			</div>
 
 			<form method="post" action="options.php" class="analytics-report-ai-card">
@@ -401,6 +425,34 @@ final class Analytics_Report_AI_Settings {
 
 				<?php submit_button( __( 'Save Settings', 'analytics-report-ai' ) ); ?>
 			</form>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Render a status-level notice for local Google OAuth skeleton results.
+	 *
+	 * @return void
+	 */
+	private function render_google_oauth_status_notice() {
+		$status = filter_input( INPUT_GET, 'analytics_report_ai_google_oauth_status', FILTER_UNSAFE_RAW );
+		$status = is_string( $status ) ? sanitize_key( $status ) : '';
+
+		if ( '' === $status ) {
+			return;
+		}
+
+		$messages = array(
+			'connect_placeholder'  => __( 'Google OAuth connection is planned, but this placeholder did not contact Google, exchange a code, or save a token.', 'analytics-report-ai' ),
+			'callback_placeholder' => __( 'Google OAuth callback placeholder received a local return. No authorization code was exchanged and no token was saved.', 'analytics-report-ai' ),
+		);
+
+		if ( ! isset( $messages[ $status ] ) ) {
+			return;
+		}
+		?>
+		<div class="notice notice-info">
+			<p><?php echo esc_html( $messages[ $status ] ); ?></p>
 		</div>
 		<?php
 	}

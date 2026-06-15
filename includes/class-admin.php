@@ -39,6 +39,8 @@ final class Analytics_Report_AI_Admin {
 
 		add_action( 'admin_menu', array( $this, 'register_menus' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
+		add_action( 'admin_post_analytics_report_ai_google_oauth_connect', array( $this, 'handle_google_oauth_connect' ) );
+		add_action( 'admin_post_analytics_report_ai_google_oauth_callback', array( $this, 'handle_google_oauth_callback' ) );
 	}
 
 	/**
@@ -116,5 +118,78 @@ final class Analytics_Report_AI_Admin {
 				),
 			)
 		);
+	}
+
+	/**
+	 * Handle the local Google OAuth connect skeleton.
+	 *
+	 * This action intentionally does not redirect to Google, exchange tokens, or
+	 * store credentials. It only establishes the future admin action boundary.
+	 *
+	 * @return void
+	 */
+	public function handle_google_oauth_connect() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die(
+				esc_html__( 'You do not have permission to manage Analytics Report AI credentials.', 'analytics-report-ai' ),
+				esc_html__( 'Permission denied', 'analytics-report-ai' ),
+				array( 'response' => 403 )
+			);
+		}
+
+		check_admin_referer( 'analytics_report_ai_google_oauth_connect', 'analytics_report_ai_google_oauth_nonce' );
+
+		wp_safe_redirect(
+			$this->get_settings_url(
+				array(
+					'analytics_report_ai_google_oauth_status' => 'connect_placeholder',
+				)
+			)
+		);
+		exit;
+	}
+
+	/**
+	 * Handle the local Google OAuth callback skeleton.
+	 *
+	 * This callback intentionally ignores raw OAuth query values for now. Future
+	 * steps can add state validation, error handling, token exchange, and safe
+	 * status mapping without exposing codes, tokens, or raw provider responses.
+	 *
+	 * @return void
+	 */
+	public function handle_google_oauth_callback() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die(
+				esc_html__( 'You do not have permission to manage Analytics Report AI credentials.', 'analytics-report-ai' ),
+				esc_html__( 'Permission denied', 'analytics-report-ai' ),
+				array( 'response' => 403 )
+			);
+		}
+
+		wp_safe_redirect(
+			$this->get_settings_url(
+				array(
+					'analytics_report_ai_google_oauth_status' => 'callback_placeholder',
+				)
+			)
+		);
+		exit;
+	}
+
+	/**
+	 * Build the plugin Settings screen URL.
+	 *
+	 * @param array $args Optional query arguments.
+	 * @return string
+	 */
+	private function get_settings_url( $args = array() ) {
+		$url = admin_url( 'admin.php?page=analytics-report-ai-settings' );
+
+		if ( empty( $args ) ) {
+			return $url;
+		}
+
+		return add_query_arg( $args, $url );
 	}
 }
