@@ -17,6 +17,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 final class Analytics_Report_AI_Admin {
 
 	/**
+	 * Temporary OAuth state lifetime in seconds.
+	 *
+	 * @var int
+	 */
+	private const GOOGLE_OAUTH_STATE_TTL = 600;
+
+	/**
 	 * Settings screen instance.
 	 *
 	 * @var Analytics_Report_AI_Settings
@@ -139,10 +146,12 @@ final class Analytics_Report_AI_Admin {
 
 		check_admin_referer( 'analytics_report_ai_google_oauth_connect', 'analytics_report_ai_google_oauth_nonce' );
 
+		$this->create_google_oauth_state_placeholder();
+
 		wp_safe_redirect(
 			$this->get_settings_url(
 				array(
-					'analytics_report_ai_google_oauth_status' => 'connect_placeholder',
+					'analytics_report_ai_google_oauth_status' => 'connect_state_prepared',
 				)
 			)
 		);
@@ -152,9 +161,8 @@ final class Analytics_Report_AI_Admin {
 	/**
 	 * Handle the local Google OAuth callback skeleton.
 	 *
-	 * This callback intentionally ignores raw OAuth query values for now. Future
-	 * steps can add state validation, error handling, token exchange, and safe
-	 * status mapping without exposing codes, tokens, or raw provider responses.
+	 * This callback validates only the temporary state placeholder and classifies
+	 * query value presence without displaying or storing raw OAuth values.
 	 *
 	 * @return void
 	 */
@@ -167,10 +175,12 @@ final class Analytics_Report_AI_Admin {
 			);
 		}
 
+		$callback_status = $this->classify_google_oauth_callback();
+
 		wp_safe_redirect(
 			$this->get_settings_url(
 				array(
-					'analytics_report_ai_google_oauth_status' => 'callback_placeholder',
+					'analytics_report_ai_google_oauth_status' => $callback_status,
 				)
 			)
 		);
@@ -191,5 +201,101 @@ final class Analytics_Report_AI_Admin {
 		}
 
 		return add_query_arg( $args, $url );
+	}
+
+	/**
+	 * Create a temporary user-scoped OAuth state placeholder.
+	 *
+	 * The raw state value is intentionally not displayed, logged, or returned
+	 * from the local placeholder flow. A later OAuth redirect step can use this
+	 * boundary without storing OAuth tokens or credentials here.
+	 *
+	 * @return void
+	 */
+	private function create_google_oauth_state_placeholder() {
+		$user_id = get_current_user_id();
+
+		if ( $user_id <= 0 ) {
+			return;
+		}
+
+		$state = $this->generate_google_oauth_state_value();
+
+		set_transient(
+			$this->get_google_oauth_state_transient_key( $user_id ),
+			array(
+				'state_hash' => wp_hash( $state ),
+				'created_at'  => time(),
+			),
+			self::GOOGLE_OAUTH_STATE_TTL
+		);
+	}
+
+	/**
+	 * Generate a random OAuth state value for the local placeholder boundary.
+	 *
+	 * @return string
+	 */
+	private function generate_google_oauth_state_value() {
+		try {
+			return bin2hex( random_bytes( 32 ) );
+		} catch ( Exception $exception ) {
+			unset( $exception );
+
+			return wp_generate_password( 64, false, false );
+		}
+	}
+
+	/**
+	 * Classify a callback request without exposing raw OAuth query values.
+	 *
+	 * @return string
+	 */
+	private function classify_google_oauth_callback() {
+		$user_id       = get_current_user_id();
+		$state         = filter_input( INPUT_GET, 'state', FILTER_UNSAFE_RAW );
+		$has_state     = is_string( $state ) && '' !== $state;
+		$has_code      = filter_has_var( INPUT_GET, 'code' );
+		$has_error     = filter_has_var( INPUT_GET, 'error' );
+		$transient_key = $this->get_google_oauth_state_transient_key( $user_id );
+		$stored_state  = get_transient( $transient_key );
+
+		delete_transient( $transient_key );
+
+		if ( ! $has_state ) {
+			return 'callback_state_missing';
+		}
+
+		if ( false === $stored_state ) {
+			return 'callback_state_expired';
+		}
+
+		if ( ! is_array( $stored_state ) || empty( $stored_state['state_hash'] ) || ! is_string( $stored_state['state_hash'] ) ) {
+			return 'callback_state_invalid';
+		}
+
+		if ( ! hash_equals( $stored_state['state_hash'], wp_hash( $state ) ) ) {
+			return 'callback_state_invalid';
+		}
+
+		if ( $has_error ) {
+			return 'callback_state_valid_provider_error';
+		}
+
+		if ( $has_code ) {
+			return 'callback_state_valid_code_present';
+		}
+
+		return 'callback_state_valid_no_code';
+	}
+
+	/**
+	 * Get the transient key for the current user's temporary OAuth state.
+	 *
+	 * @param int $user_id User ID.
+	 * @return string
+	 */
+	private function get_google_oauth_state_transient_key( $user_id ) {
+		return 'analytics_report_ai_google_oauth_state_' . absint( $user_id );
 	}
 }

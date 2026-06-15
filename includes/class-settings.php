@@ -237,7 +237,7 @@ final class Analytics_Report_AI_Settings {
 
 				<ul class="analytics-report-ai-notice-list">
 					<li>
-						<?php echo esc_html__( 'This placeholder does not contact Google, exchange authorization codes, save tokens, refresh tokens, revoke access, or change GA4 fetch behavior.', 'analytics-report-ai' ); ?>
+						<?php echo esc_html__( 'This placeholder prepares a temporary local state value for future OAuth validation, but it does not display the state, contact Google, exchange authorization codes, save tokens, refresh tokens, revoke access, or change GA4 fetch behavior.', 'analytics-report-ai' ); ?>
 					</li>
 					<li>
 						<?php echo esc_html__( 'The temporary manual Google Access Token field below remains available for controlled developer verification only.', 'analytics-report-ai' ); ?>
@@ -247,7 +247,7 @@ final class Analytics_Report_AI_Settings {
 				<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
 					<input type="hidden" name="action" value="analytics_report_ai_google_oauth_connect" />
 					<?php wp_nonce_field( 'analytics_report_ai_google_oauth_connect', 'analytics_report_ai_google_oauth_nonce' ); ?>
-					<?php submit_button( __( 'Review Local OAuth Placeholder', 'analytics-report-ai' ), 'secondary', 'submit', false ); ?>
+					<?php submit_button( __( 'Prepare Local OAuth State Placeholder', 'analytics-report-ai' ), 'secondary', 'submit', false ); ?>
 				</form>
 			</div>
 
@@ -443,8 +443,15 @@ final class Analytics_Report_AI_Settings {
 		}
 
 		$messages = array(
-			'connect_placeholder'  => __( 'Google OAuth connection is planned, but this placeholder did not contact Google, exchange a code, or save a token.', 'analytics-report-ai' ),
-			'callback_placeholder' => __( 'Google OAuth callback placeholder received a local return. No authorization code was exchanged and no token was saved.', 'analytics-report-ai' ),
+			'connect_placeholder'                   => __( 'Google OAuth connection is planned, but this placeholder did not contact Google, exchange a code, or save a token.', 'analytics-report-ai' ),
+			'connect_state_prepared'                => __( 'A temporary local OAuth state placeholder was prepared. The state value is not displayed. Google was not contacted and no token was saved.', 'analytics-report-ai' ),
+			'callback_placeholder'                  => __( 'Google OAuth callback placeholder received a local return. No authorization code was exchanged and no token was saved.', 'analytics-report-ai' ),
+			'callback_state_missing'                => __( 'Google OAuth callback placeholder received no state value. No token exchange was attempted.', 'analytics-report-ai' ),
+			'callback_state_expired'                => __( 'Google OAuth callback placeholder could not find an active local state. No token exchange was attempted.', 'analytics-report-ai' ),
+			'callback_state_invalid'                => __( 'Google OAuth callback placeholder received a state value that did not match the local placeholder. No token exchange was attempted.', 'analytics-report-ai' ),
+			'callback_state_valid_provider_error'   => __( 'Google OAuth callback placeholder validated the local state and detected a provider error category. Raw error details were not displayed or saved.', 'analytics-report-ai' ),
+			'callback_state_valid_code_present'     => __( 'Google OAuth callback placeholder validated the local state and detected an authorization code, but no code was displayed, saved, or exchanged.', 'analytics-report-ai' ),
+			'callback_state_valid_no_code'          => __( 'Google OAuth callback placeholder validated the local state, but no authorization code was present. No token exchange was attempted.', 'analytics-report-ai' ),
 		);
 
 		if ( ! isset( $messages[ $status ] ) ) {
