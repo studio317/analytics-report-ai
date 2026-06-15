@@ -24,6 +24,27 @@ final class Analytics_Report_AI_Admin {
 	private const GOOGLE_OAUTH_STATE_TTL = 600;
 
 	/**
+	 * Google OAuth authorization endpoint.
+	 *
+	 * @var string
+	 */
+	private const GOOGLE_OAUTH_AUTHORIZATION_ENDPOINT = 'https://accounts.google.com/o/oauth2/v2/auth';
+
+	/**
+	 * Google OAuth client ID constant name.
+	 *
+	 * @var string
+	 */
+	private const GOOGLE_OAUTH_CLIENT_ID_CONSTANT = 'ANALYTICS_REPORT_AI_GOOGLE_OAUTH_CLIENT_ID';
+
+	/**
+	 * Google Analytics read-only OAuth scope.
+	 *
+	 * @var string
+	 */
+	private const GOOGLE_OAUTH_ANALYTICS_READONLY_SCOPE = 'https://www.googleapis.com/auth/analytics.readonly';
+
+	/**
 	 * Settings screen instance.
 	 *
 	 * @var Analytics_Report_AI_Settings
@@ -244,6 +265,67 @@ final class Analytics_Report_AI_Admin {
 
 			return wp_generate_password( 64, false, false );
 		}
+	}
+
+	/**
+	 * Build a Google OAuth authorization URL without executing a redirect.
+	 *
+	 * This helper intentionally does not call Google, exchange codes, store
+	 * tokens, refresh tokens, revoke access, or output the generated URL.
+	 *
+	 * @param string $state Raw OAuth state value for the future redirect request.
+	 * @return string
+	 */
+	private function build_google_oauth_authorization_url( $state ) {
+		$client_id = $this->get_google_oauth_client_id();
+		$state     = is_scalar( $state ) ? trim( (string) $state ) : '';
+
+		if ( '' === $client_id || '' === $state ) {
+			return '';
+		}
+
+		return add_query_arg(
+			array(
+				'client_id'     => $client_id,
+				'redirect_uri'  => $this->get_google_oauth_redirect_uri(),
+				'response_type' => 'code',
+				'scope'         => self::GOOGLE_OAUTH_ANALYTICS_READONLY_SCOPE,
+				'state'         => $state,
+			),
+			self::GOOGLE_OAUTH_AUTHORIZATION_ENDPOINT
+		);
+	}
+
+	/**
+	 * Get the configured Google OAuth client ID without outputting it.
+	 *
+	 * @return string
+	 */
+	private function get_google_oauth_client_id() {
+		if ( ! defined( self::GOOGLE_OAUTH_CLIENT_ID_CONSTANT ) ) {
+			return '';
+		}
+
+		$value = constant( self::GOOGLE_OAUTH_CLIENT_ID_CONSTANT );
+
+		if ( ! is_scalar( $value ) ) {
+			return '';
+		}
+
+		return trim( (string) $value );
+	}
+
+	/**
+	 * Get the Google OAuth callback redirect URI.
+	 *
+	 * @return string
+	 */
+	private function get_google_oauth_redirect_uri() {
+		return add_query_arg(
+			'action',
+			'analytics_report_ai_google_oauth_callback',
+			admin_url( 'admin-post.php' )
+		);
 	}
 
 	/**
