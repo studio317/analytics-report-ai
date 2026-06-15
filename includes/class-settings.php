@@ -17,6 +17,20 @@ if ( ! defined( 'ABSPATH' ) ) {
 final class Analytics_Report_AI_Settings {
 
 	/**
+	 * Google OAuth client ID constant name.
+	 *
+	 * @var string
+	 */
+	private const GOOGLE_OAUTH_CLIENT_ID_CONSTANT = 'ANALYTICS_REPORT_AI_GOOGLE_OAUTH_CLIENT_ID';
+
+	/**
+	 * Google OAuth client secret constant name.
+	 *
+	 * @var string
+	 */
+	private const GOOGLE_OAUTH_CLIENT_SECRET_CONSTANT = 'ANALYTICS_REPORT_AI_GOOGLE_OAUTH_CLIENT_SECRET';
+
+	/**
 	 * Settings group.
 	 *
 	 * @var string
@@ -178,6 +192,7 @@ final class Analytics_Report_AI_Settings {
 		$host_filter_enabled     = ! empty( $settings['host_filter_enabled'] );
 		$ga4_property_id         = isset( $settings['ga4_property_id'] ) ? $settings['ga4_property_id'] : '';
 		$host_name               = isset( $settings['host_name'] ) ? $settings['host_name'] : analytics_report_ai_get_default_host();
+		$google_oauth_client_config_status = $this->get_google_oauth_client_configuration_status();
 		?>
 		<div class="wrap analytics-report-ai-admin">
 			<h1><?php echo esc_html__( 'Analytics Report AI Settings', 'analytics-report-ai' ); ?></h1>
@@ -235,7 +250,30 @@ final class Analytics_Report_AI_Settings {
 					<?php echo esc_html__( 'A Google OAuth connection flow is planned for public release readiness, but it is not complete in this step.', 'analytics-report-ai' ); ?>
 				</p>
 
+				<p>
+					<strong><?php echo esc_html__( 'Client configuration status:', 'analytics-report-ai' ); ?></strong>
+					<code><?php echo esc_html( $google_oauth_client_config_status ); ?></code>
+				</p>
+
 				<ul class="analytics-report-ai-notice-list">
+					<li>
+						<?php echo esc_html__( 'Client configuration is detected only as status-level constant presence. Client ID and client secret values are not displayed.', 'analytics-report-ai' ); ?>
+					</li>
+					<li>
+						<?php
+						echo esc_html(
+							sprintf(
+								/* translators: 1: Google OAuth client ID constant name. 2: Google OAuth client secret constant name. */
+								__( 'Expected constants: %1$s for client ID and %2$s for client secret.', 'analytics-report-ai' ),
+								self::GOOGLE_OAUTH_CLIENT_ID_CONSTANT,
+								self::GOOGLE_OAUTH_CLIENT_SECRET_CONSTANT
+							)
+						);
+						?>
+					</li>
+					<li>
+						<?php echo esc_html__( 'The client secret is expected to be configured outside plugin settings by constant. This plugin does not save the client secret in Settings.', 'analytics-report-ai' ); ?>
+					</li>
 					<li>
 						<?php echo esc_html__( 'This placeholder prepares a temporary local state value for future OAuth validation, but it does not display the state, contact Google, exchange authorization codes, save tokens, refresh tokens, revoke access, or change GA4 fetch behavior.', 'analytics-report-ai' ); ?>
 					</li>
@@ -462,5 +500,45 @@ final class Analytics_Report_AI_Settings {
 			<p><?php echo esc_html( $messages[ $status ] ); ?></p>
 		</div>
 		<?php
+	}
+
+	/**
+	 * Get Google OAuth client configuration status without exposing values.
+	 *
+	 * @return string
+	 */
+	private function get_google_oauth_client_configuration_status() {
+		$has_client_id     = $this->is_non_empty_constant( self::GOOGLE_OAUTH_CLIENT_ID_CONSTANT );
+		$has_client_secret = $this->is_non_empty_constant( self::GOOGLE_OAUTH_CLIENT_SECRET_CONSTANT );
+
+		if ( $has_client_id && $has_client_secret ) {
+			return 'google_oauth_client_configured';
+		}
+
+		if ( $has_client_id ) {
+			return 'google_oauth_client_id_configured_secret_missing';
+		}
+
+		if ( $has_client_secret ) {
+			return 'google_oauth_client_id_missing_secret_configured';
+		}
+
+		return 'google_oauth_client_not_configured';
+	}
+
+	/**
+	 * Check whether a constant is defined and non-empty without returning value.
+	 *
+	 * @param string $constant_name Constant name.
+	 * @return bool
+	 */
+	private function is_non_empty_constant( $constant_name ) {
+		if ( ! defined( $constant_name ) ) {
+			return false;
+		}
+
+		$value = constant( $constant_name );
+
+		return is_scalar( $value ) && '' !== trim( (string) $value );
 	}
 }
