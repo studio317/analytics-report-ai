@@ -193,6 +193,7 @@ final class Analytics_Report_AI_Settings {
 		$ga4_property_id         = isset( $settings['ga4_property_id'] ) ? $settings['ga4_property_id'] : '';
 		$host_name               = isset( $settings['host_name'] ) ? $settings['host_name'] : analytics_report_ai_get_default_host();
 		$google_oauth_client_config_status = $this->get_google_oauth_client_configuration_status();
+		$google_oauth_redirect_uri         = $this->get_google_oauth_redirect_uri();
 		?>
 		<div class="wrap analytics-report-ai-admin">
 			<h1><?php echo esc_html__( 'Analytics Report AI Settings', 'analytics-report-ai' ); ?></h1>
@@ -255,6 +256,19 @@ final class Analytics_Report_AI_Settings {
 					<code><?php echo esc_html( $google_oauth_client_config_status ); ?></code>
 				</p>
 
+				<p>
+					<label for="analytics-report-ai-google-oauth-redirect-uri">
+						<strong><?php echo esc_html__( 'Redirect URI for future Google OAuth setup:', 'analytics-report-ai' ); ?></strong>
+					</label>
+					<input
+						type="text"
+						id="analytics-report-ai-google-oauth-redirect-uri"
+						value="<?php echo esc_attr( $google_oauth_redirect_uri ); ?>"
+						class="large-text code"
+						readonly="readonly"
+					/>
+				</p>
+
 				<ul class="analytics-report-ai-notice-list">
 					<li>
 						<?php echo esc_html__( 'Client configuration is detected only as status-level constant presence. Client ID and client secret values are not displayed.', 'analytics-report-ai' ); ?>
@@ -275,7 +289,10 @@ final class Analytics_Report_AI_Settings {
 						<?php echo esc_html__( 'The client secret is expected to be configured outside plugin settings by constant. This plugin does not save the client secret in Settings.', 'analytics-report-ai' ); ?>
 					</li>
 					<li>
-						<?php echo esc_html__( 'This placeholder prepares a temporary local state value for future OAuth validation, but it does not display the state, contact Google, exchange authorization codes, save tokens, refresh tokens, revoke access, or change GA4 fetch behavior.', 'analytics-report-ai' ); ?>
+						<?php echo esc_html__( 'The redirect URI is shown only for future Google OAuth client setup. Copy it into the Google OAuth client configuration when OAuth support is completed.', 'analytics-report-ai' ); ?>
+					</li>
+					<li>
+						<?php echo esc_html__( 'This placeholder prepares a temporary local state value for future OAuth validation, but it does not display the state, contact Google, generate an authorization URL, exchange authorization codes, save tokens, refresh tokens, revoke access, or change GA4 fetch behavior.', 'analytics-report-ai' ); ?>
 					</li>
 					<li>
 						<?php echo esc_html__( 'The temporary manual Google Access Token field below remains available for controlled developer verification only.', 'analytics-report-ai' ); ?>
@@ -524,6 +541,19 @@ final class Analytics_Report_AI_Settings {
 		}
 
 		return 'google_oauth_client_not_configured';
+	}
+
+	/**
+	 * Get the Google OAuth callback redirect URI for setup display.
+	 *
+	 * @return string
+	 */
+	private function get_google_oauth_redirect_uri() {
+		return add_query_arg(
+			'action',
+			'analytics_report_ai_google_oauth_callback',
+			admin_url( 'admin-post.php' )
+		);
 	}
 
 	/**
