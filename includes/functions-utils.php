@@ -225,6 +225,95 @@ if ( ! function_exists( 'analytics_report_ai_get_google_oauth_connection_state' 
 	}
 }
 
+if ( ! function_exists( 'analytics_report_ai_resolve_google_ga4_credential_source' ) ) {
+	/**
+	 * Resolve the request-local credential source for GA4 requests.
+	 *
+	 * Token values are returned only for immediate runtime use by GA4 client
+	 * calls. Admin UI, docs, logs, and support evidence should use the status
+	 * labels instead.
+	 *
+	 * @param array|null $settings Plugin settings.
+	 * @return array
+	 */
+	function analytics_report_ai_resolve_google_ga4_credential_source( $settings = null ) {
+		if ( ! is_array( $settings ) ) {
+			$settings = analytics_report_ai_get_settings();
+		}
+
+		$manual_access_token = '';
+
+		if ( isset( $settings['google_tokens']['access_token'] ) && is_scalar( $settings['google_tokens']['access_token'] ) ) {
+			$manual_access_token = analytics_report_ai_sanitize_credential_value( (string) $settings['google_tokens']['access_token'] );
+		}
+
+		$tokens           = get_option( ANALYTICS_REPORT_AI_GOOGLE_OAUTH_TOKEN_OPTION_NAME, false );
+		$has_oauth_store = false !== $tokens;
+
+		$result = array(
+			'status'           => 'credential_source_missing',
+			'access_token'     => '',
+			'connection_state' => 'not_connected',
+			'fallback_used'    => false,
+		);
+
+		if ( is_array( $tokens ) && isset( $tokens['access_token'] ) && is_scalar( $tokens['access_token'] ) ) {
+			$oauth_access_token = analytics_report_ai_sanitize_credential_value( (string) $tokens['access_token'] );
+
+			if ( '' !== $oauth_access_token ) {
+				$expires_at = isset( $tokens['expires_at'] ) && is_numeric( $tokens['expires_at'] ) ? absint( $tokens['expires_at'] ) : 0;
+
+				if ( $expires_at > 0 && $expires_at <= time() ) {
+					$connection_state = empty( $tokens['refresh_token'] ) ? 'reconnect_required' : 'token_expired_or_refresh_needed';
+
+					if ( '' !== $manual_access_token ) {
+						return array(
+							'status'           => 'manual_token_fallback_used',
+							'access_token'     => $manual_access_token,
+							'connection_state' => $connection_state,
+							'fallback_used'    => true,
+						);
+					}
+
+					return array(
+						'status'           => 'credential_source_oauth_refresh_needed',
+						'access_token'     => '',
+						'connection_state' => $connection_state,
+						'fallback_used'    => false,
+					);
+				}
+
+				return array(
+					'status'           => 'credential_source_oauth_connected',
+					'access_token'     => $oauth_access_token,
+					'connection_state' => 'connected',
+					'fallback_used'    => false,
+				);
+			}
+		}
+
+		if ( '' !== $manual_access_token ) {
+			return array(
+				'status'           => $has_oauth_store ? 'manual_token_fallback_used' : 'credential_source_manual_token',
+				'access_token'     => $manual_access_token,
+				'connection_state' => $has_oauth_store ? 'oauth_error_category' : 'not_connected',
+				'fallback_used'    => $has_oauth_store,
+			);
+		}
+
+		if ( $has_oauth_store ) {
+			return array(
+				'status'           => 'credential_source_oauth_error_category',
+				'access_token'     => '',
+				'connection_state' => 'oauth_error_category',
+				'fallback_used'    => false,
+			);
+		}
+
+		return $result;
+	}
+}
+
 if ( ! function_exists( 'analytics_report_ai_is_valid_ga4_property_id' ) ) {
 	/**
 	 * Check whether GA4 property ID is valid.

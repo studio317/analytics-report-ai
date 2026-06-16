@@ -45,7 +45,10 @@ final class Analytics_Report_AI_Report_Builder {
 		$ga4_property_id         = isset( $settings['ga4_property_id'] ) ? $settings['ga4_property_id'] : '';
 		$host_filter_enabled     = ! empty( $settings['host_filter_enabled'] );
 		$host_name               = isset( $settings['host_name'] ) ? $settings['host_name'] : '';
-		$has_google_access_token = ! empty( $settings['google_tokens']['access_token'] );
+		$credential_source       = analytics_report_ai_resolve_google_ga4_credential_source( $settings );
+		$credential_source_label = isset( $credential_source['status'] ) && is_scalar( $credential_source['status'] )
+			? (string) $credential_source['status']
+			: 'credential_source_missing';
 		$has_openai_api_key      = ! empty( $settings['openai_api_key'] );
 		$max_report_days         = analytics_report_ai_get_max_report_days();
 		?>
@@ -94,14 +97,14 @@ final class Analytics_Report_AI_Report_Builder {
 							</td>
 						</tr>
 						<tr>
-							<th scope="row"><?php echo esc_html__( 'Google Access Token', 'analytics-report-ai' ); ?></th>
+							<th scope="row"><?php echo esc_html__( 'GA4 Credential Source', 'analytics-report-ai' ); ?></th>
 							<td>
-								<?php if ( $has_google_access_token ) : ?>
-									<?php echo esc_html__( 'Saved', 'analytics-report-ai' ); ?>
-								<?php else : ?>
+								<?php if ( 'credential_source_missing' === $credential_source_label || 'credential_source_oauth_refresh_needed' === $credential_source_label || 'credential_source_oauth_error_category' === $credential_source_label ) : ?>
 									<span class="analytics-report-ai-status-warning">
-										<?php echo esc_html__( 'Not saved', 'analytics-report-ai' ); ?>
+										<code><?php echo esc_html( $credential_source_label ); ?></code>
 									</span>
+								<?php else : ?>
+									<code><?php echo esc_html( $credential_source_label ); ?></code>
 								<?php endif; ?>
 							</td>
 						</tr>
@@ -380,8 +383,21 @@ final class Analytics_Report_AI_Report_Builder {
 		$conditions = $validation_result['conditions'];
 		$settings   = analytics_report_ai_get_settings();
 
-		$property_id  = isset( $settings['ga4_property_id'] ) ? (string) $settings['ga4_property_id'] : '';
-		$access_token = isset( $settings['google_tokens']['access_token'] ) ? (string) $settings['google_tokens']['access_token'] : '';
+		$property_id       = isset( $settings['ga4_property_id'] ) ? (string) $settings['ga4_property_id'] : '';
+		$credential_source = analytics_report_ai_resolve_google_ga4_credential_source( $settings );
+		$access_token      = isset( $credential_source['access_token'] ) && is_scalar( $credential_source['access_token'] )
+			? (string) $credential_source['access_token']
+			: '';
+
+		if ( '' === $access_token ) {
+			return array(
+				'status'      => 'error',
+				'errors'      => array(
+					$this->get_ga4_credential_source_error_message( $credential_source ),
+				),
+				'form_values' => $validation_result['form_values'],
+			);
+		}
 
 		$current_summary = Analytics_Report_AI_GA4_Client::run_summary_report(
 			$property_id,
@@ -574,6 +590,28 @@ final class Analytics_Report_AI_Report_Builder {
 			'warnings'           => $this->get_payload_warning_messages( $payload ),
 			'form_values'        => $validation_result['form_values'],
 		);
+	}
+
+	/**
+	 * Get a safe credential source error message for GA4 fetching.
+	 *
+	 * @param array $credential_source Credential source result.
+	 * @return string
+	 */
+	private function get_ga4_credential_source_error_message( $credential_source ) {
+		$status = isset( $credential_source['status'] ) && is_scalar( $credential_source['status'] )
+			? (string) $credential_source['status']
+			: 'credential_source_missing';
+
+		if ( 'credential_source_oauth_refresh_needed' === $status ) {
+			return __( 'Google OAuth connection is expired or needs refresh. Reconnect Google OAuth or save a temporary Google Access Token in Settings.', 'analytics-report-ai' );
+		}
+
+		if ( 'credential_source_oauth_error_category' === $status ) {
+			return __( 'Google OAuth credential source is not usable. Reconnect Google OAuth or save a temporary Google Access Token in Settings.', 'analytics-report-ai' );
+		}
+
+		return __( 'No Google credential is available for GA4 Fetch. Connect Google OAuth or save a temporary Google Access Token in Settings.', 'analytics-report-ai' );
 	}
 
 	/**
