@@ -144,6 +144,87 @@ if ( ! function_exists( 'analytics_report_ai_sanitize_credential_value' ) ) {
 	}
 }
 
+if ( ! function_exists( 'analytics_report_ai_store_google_oauth_tokens' ) ) {
+	/**
+	 * Store Google OAuth token material in the dedicated non-autoloaded option.
+	 *
+	 * Token values are never returned or displayed by this helper.
+	 *
+	 * @param array $token_response Token response data.
+	 * @return bool
+	 */
+	function analytics_report_ai_store_google_oauth_tokens( $token_response ) {
+		if ( ! is_array( $token_response ) ) {
+			return false;
+		}
+
+		$access_token = isset( $token_response['access_token'] ) && is_scalar( $token_response['access_token'] )
+			? analytics_report_ai_sanitize_credential_value( (string) $token_response['access_token'] )
+			: '';
+
+		if ( '' === $access_token ) {
+			return false;
+		}
+
+		$refresh_token = isset( $token_response['refresh_token'] ) && is_scalar( $token_response['refresh_token'] )
+			? analytics_report_ai_sanitize_credential_value( (string) $token_response['refresh_token'] )
+			: '';
+
+		$expires_in = isset( $token_response['expires_in'] ) && is_numeric( $token_response['expires_in'] )
+			? absint( $token_response['expires_in'] )
+			: 0;
+
+		$stored_tokens = array(
+			'access_token'     => $access_token,
+			'expires_at'       => $expires_in > 0 ? time() + $expires_in : 0,
+			'connection_state' => 'connected',
+			'created_at'       => time(),
+			'updated_at'       => time(),
+		);
+
+		if ( '' !== $refresh_token ) {
+			$stored_tokens['refresh_token'] = $refresh_token;
+		}
+
+		if ( false === get_option( ANALYTICS_REPORT_AI_GOOGLE_OAUTH_TOKEN_OPTION_NAME, false ) ) {
+			return add_option( ANALYTICS_REPORT_AI_GOOGLE_OAUTH_TOKEN_OPTION_NAME, $stored_tokens, '', false );
+		}
+
+		$updated = update_option( ANALYTICS_REPORT_AI_GOOGLE_OAUTH_TOKEN_OPTION_NAME, $stored_tokens, false );
+
+		if ( $updated ) {
+			return true;
+		}
+
+		$current_tokens = get_option( ANALYTICS_REPORT_AI_GOOGLE_OAUTH_TOKEN_OPTION_NAME, array() );
+
+		return is_array( $current_tokens ) && $current_tokens === $stored_tokens;
+	}
+}
+
+if ( ! function_exists( 'analytics_report_ai_get_google_oauth_connection_state' ) ) {
+	/**
+	 * Get Google OAuth connection state without exposing token values.
+	 *
+	 * @return string
+	 */
+	function analytics_report_ai_get_google_oauth_connection_state() {
+		$tokens = get_option( ANALYTICS_REPORT_AI_GOOGLE_OAUTH_TOKEN_OPTION_NAME, array() );
+
+		if ( ! is_array( $tokens ) || empty( $tokens['access_token'] ) || ! is_scalar( $tokens['access_token'] ) ) {
+			return 'not_connected';
+		}
+
+		$expires_at = isset( $tokens['expires_at'] ) && is_numeric( $tokens['expires_at'] ) ? absint( $tokens['expires_at'] ) : 0;
+
+		if ( $expires_at > 0 && $expires_at <= time() ) {
+			return empty( $tokens['refresh_token'] ) ? 'reconnect_required' : 'token_expired_or_refresh_needed';
+		}
+
+		return 'connected';
+	}
+}
+
 if ( ! function_exists( 'analytics_report_ai_is_valid_ga4_property_id' ) ) {
 	/**
 	 * Check whether GA4 property ID is valid.

@@ -38,6 +38,20 @@ final class Analytics_Report_AI_Admin {
 	private const GOOGLE_OAUTH_CLIENT_ID_CONSTANT = 'ANALYTICS_REPORT_AI_GOOGLE_OAUTH_CLIENT_ID';
 
 	/**
+	 * Google OAuth client secret constant name.
+	 *
+	 * @var string
+	 */
+	private const GOOGLE_OAUTH_CLIENT_SECRET_CONSTANT = 'ANALYTICS_REPORT_AI_GOOGLE_OAUTH_CLIENT_SECRET';
+
+	/**
+	 * Google OAuth token endpoint.
+	 *
+	 * @var string
+	 */
+	private const GOOGLE_OAUTH_TOKEN_ENDPOINT = 'https://oauth2.googleapis.com/token';
+
+	/**
 	 * Google Analytics read-only OAuth scope.
 	 *
 	 * @var string
@@ -152,8 +166,8 @@ final class Analytics_Report_AI_Admin {
 	 * Handle the Google OAuth connect action.
 	 *
 	 * This action redirects to Google authorization only after local capability,
-	 * nonce, client ID, and state boundaries pass. It intentionally does not
-	 * exchange tokens, store credentials, refresh tokens, or revoke access.
+	 * nonce, client ID, and state boundaries pass. It intentionally does not run
+	 * token exchange, token storage, refresh, or revoke during the connect step.
 	 *
 	 * @return void
 	 */
@@ -255,7 +269,22 @@ final class Analytics_Report_AI_Admin {
 			);
 		}
 
-		$callback_status = $this->classify_google_oauth_callback();
+		$callback_result = $this->classify_google_oauth_callback();
+		$callback_status = isset( $callback_result['status'] ) && is_string( $callback_result['status'] )
+			? $callback_result['status']
+			: 'callback_state_invalid';
+
+		if ( 'callback_state_valid_code_present' === $callback_status ) {
+			$authorization_code = isset( $callback_result['authorization_code'] ) && is_string( $callback_result['authorization_code'] )
+				? $callback_result['authorization_code']
+				: '';
+
+			$callback_status = $this->exchange_google_oauth_authorization_code_for_tokens( $authorization_code );
+
+			unset( $authorization_code );
+		}
+
+		unset( $callback_result );
 
 		wp_safe_redirect(
 			$this->get_settings_url(
@@ -377,6 +406,25 @@ final class Analytics_Report_AI_Admin {
 	}
 
 	/**
+	 * Get the configured Google OAuth client secret without outputting it.
+	 *
+	 * @return string
+	 */
+	private function get_google_oauth_client_secret() {
+		if ( ! defined( self::GOOGLE_OAUTH_CLIENT_SECRET_CONSTANT ) ) {
+			return '';
+		}
+
+		$value = constant( self::GOOGLE_OAUTH_CLIENT_SECRET_CONSTANT );
+
+		if ( ! is_scalar( $value ) ) {
+			return '';
+		}
+
+		return trim( (string) $value );
+	}
+
+	/**
 	 * Get the Google OAuth callback redirect URI.
 	 *
 	 * @return string
@@ -392,12 +440,14 @@ final class Analytics_Report_AI_Admin {
 	/**
 	 * Classify a callback request without exposing raw OAuth query values.
 	 *
-	 * @return string
+	 * @return array{status:string,authorization_code:string}
 	 */
 	private function classify_google_oauth_callback() {
 		$user_id       = get_current_user_id();
 		$state         = filter_input( INPUT_GET, 'state', FILTER_UNSAFE_RAW );
 		$has_state     = is_string( $state ) && '' !== $state;
+		$code          = filter_input( INPUT_GET, 'code', FILTER_UNSAFE_RAW );
+		$code          = is_string( $code ) ? analytics_report_ai_sanitize_credential_value( $code ) : '';
 		$has_code      = filter_has_var( INPUT_GET, 'code' );
 		$has_error     = filter_has_var( INPUT_GET, 'error' );
 		$transient_key = $this->get_google_oauth_state_transient_key( $user_id );
@@ -406,30 +456,180 @@ final class Analytics_Report_AI_Admin {
 		delete_transient( $transient_key );
 
 		if ( ! $has_state ) {
-			return 'callback_state_missing';
+			return array(
+				'status'             => 'callback_state_missing',
+				'authorization_code' => '',
+			);
 		}
 
 		if ( false === $stored_state ) {
-			return 'callback_state_expired';
+			return array(
+				'status'             => 'callback_state_expired',
+				'authorization_code' => '',
+			);
 		}
 
 		if ( ! is_array( $stored_state ) || empty( $stored_state['state_hash'] ) || ! is_string( $stored_state['state_hash'] ) ) {
-			return 'callback_state_invalid';
+			return array(
+				'status'             => 'callback_state_invalid',
+				'authorization_code' => '',
+			);
 		}
 
 		if ( ! hash_equals( $stored_state['state_hash'], wp_hash( $state ) ) ) {
-			return 'callback_state_invalid';
+			return array(
+				'status'             => 'callback_state_invalid',
+				'authorization_code' => '',
+			);
 		}
 
 		if ( $has_error ) {
-			return 'callback_state_valid_provider_error';
+			return array(
+				'status'             => 'callback_state_valid_provider_error',
+				'authorization_code' => '',
+			);
 		}
 
-		if ( $has_code ) {
-			return 'callback_state_valid_code_present';
+		if ( $has_code && '' !== $code ) {
+			return array(
+				'status'             => 'callback_state_valid_code_present',
+				'authorization_code' => $code,
+			);
 		}
 
-		return 'callback_state_valid_no_code';
+		return array(
+			'status'             => 'callback_state_valid_no_code',
+			'authorization_code' => '',
+		);
+	}
+
+	/**
+	 * Exchange a request-local authorization code and store resulting tokens.
+	 *
+	 * Raw code and token values are not returned, displayed, logged, or saved in
+	 * admin notices.
+	 *
+	 * @param string $authorization_code Request-local authorization code.
+	 * @return string Safe status category.
+	 */
+	private function exchange_google_oauth_authorization_code_for_tokens( $authorization_code ) {
+		$authorization_code = analytics_report_ai_sanitize_credential_value( $authorization_code );
+
+		if ( '' === $authorization_code ) {
+			return 'token_exchange_not_executed';
+		}
+
+		$client_id     = $this->get_google_oauth_client_id();
+		$client_secret = $this->get_google_oauth_client_secret();
+
+		if ( '' === $client_id || '' === $client_secret ) {
+			unset( $client_id, $client_secret );
+
+			return 'token_exchange_not_executed';
+		}
+
+		$exchange_result = $this->request_google_oauth_tokens( $authorization_code, $client_id, $client_secret );
+
+		unset( $authorization_code, $client_id, $client_secret );
+
+		$status = isset( $exchange_result['status'] ) && is_string( $exchange_result['status'] )
+			? $exchange_result['status']
+			: 'token_exchange_malformed_response_category';
+
+		if ( 'token_exchange_success_category' !== $status ) {
+			unset( $exchange_result );
+
+			return $status;
+		}
+
+		$tokens = isset( $exchange_result['tokens'] ) && is_array( $exchange_result['tokens'] )
+			? $exchange_result['tokens']
+			: array();
+
+		$stored = analytics_report_ai_store_google_oauth_tokens( $tokens );
+
+		unset( $exchange_result, $tokens );
+
+		if ( ! $stored ) {
+			return 'token_storage_unavailable_category';
+		}
+
+		return 'token_exchange_success_category';
+	}
+
+	/**
+	 * Request Google OAuth tokens with the WordPress HTTP API.
+	 *
+	 * The response body is classified in memory only and is never returned raw.
+	 *
+	 * @param string $authorization_code Request-local authorization code.
+	 * @param string $client_id          Google OAuth client ID.
+	 * @param string $client_secret      Google OAuth client secret.
+	 * @return array{status:string,tokens?:array}
+	 */
+	private function request_google_oauth_tokens( $authorization_code, $client_id, $client_secret ) {
+		$response = wp_remote_post(
+			self::GOOGLE_OAUTH_TOKEN_ENDPOINT,
+			array(
+				'timeout'     => 15,
+				'redirection' => 0,
+				'headers'     => array(
+					'Accept' => 'application/json',
+				),
+				'body'        => array(
+					'code'          => $authorization_code,
+					'client_id'     => $client_id,
+					'client_secret' => $client_secret,
+					'redirect_uri'  => $this->get_google_oauth_redirect_uri(),
+					'grant_type'    => 'authorization_code',
+				),
+			)
+		);
+
+		unset( $authorization_code, $client_id, $client_secret );
+
+		if ( is_wp_error( $response ) ) {
+			unset( $response );
+
+			return array(
+				'status' => 'token_exchange_network_error_category',
+			);
+		}
+
+		$status_code = (int) wp_remote_retrieve_response_code( $response );
+		$body        = wp_remote_retrieve_body( $response );
+		$data        = is_string( $body ) && '' !== $body ? json_decode( $body, true ) : null;
+
+		unset( $body, $response );
+
+		if ( ! is_array( $data ) ) {
+			return array(
+				'status' => 'token_exchange_malformed_response_category',
+			);
+		}
+
+		if ( $status_code < 200 || $status_code >= 300 ) {
+			$error_code = isset( $data['error'] ) && is_scalar( $data['error'] ) ? (string) $data['error'] : '';
+
+			unset( $data );
+
+			return array(
+				'status' => 'invalid_grant' === $error_code ? 'token_exchange_invalid_grant_category' : 'token_exchange_provider_error_category',
+			);
+		}
+
+		if ( empty( $data['access_token'] ) || ! is_scalar( $data['access_token'] ) ) {
+			unset( $data );
+
+			return array(
+				'status' => 'token_exchange_missing_token_category',
+			);
+		}
+
+		return array(
+			'status' => 'token_exchange_success_category',
+			'tokens' => $data,
+		);
 	}
 
 	/**

@@ -193,6 +193,7 @@ final class Analytics_Report_AI_Settings {
 		$ga4_property_id         = isset( $settings['ga4_property_id'] ) ? $settings['ga4_property_id'] : '';
 		$host_name               = isset( $settings['host_name'] ) ? $settings['host_name'] : analytics_report_ai_get_default_host();
 		$google_oauth_client_config_status = $this->get_google_oauth_client_configuration_status();
+		$google_oauth_connection_state     = analytics_report_ai_get_google_oauth_connection_state();
 		$google_oauth_redirect_uri         = $this->get_google_oauth_redirect_uri();
 		?>
 		<div class="wrap analytics-report-ai-admin">
@@ -245,15 +246,20 @@ final class Analytics_Report_AI_Settings {
 			</div>
 
 			<div class="analytics-report-ai-card">
-				<h2><?php echo esc_html__( 'Google OAuth Connection (Planned)', 'analytics-report-ai' ); ?></h2>
+				<h2><?php echo esc_html__( 'Google OAuth Connection (MVP)', 'analytics-report-ai' ); ?></h2>
 
 				<p>
-					<?php echo esc_html__( 'A Google OAuth authorization redirect is being prepared for public release readiness, but token exchange and token storage are not complete in this step.', 'analytics-report-ai' ); ?>
+					<?php echo esc_html__( 'Google OAuth authorization can now attempt token exchange after callback state validation. Token values are not displayed, and refresh, revoke, and reconnect controls are not implemented yet.', 'analytics-report-ai' ); ?>
 				</p>
 
 				<p>
 					<strong><?php echo esc_html__( 'Client configuration status:', 'analytics-report-ai' ); ?></strong>
 					<code><?php echo esc_html( $google_oauth_client_config_status ); ?></code>
+				</p>
+
+				<p>
+					<strong><?php echo esc_html__( 'OAuth connection state:', 'analytics-report-ai' ); ?></strong>
+					<code><?php echo esc_html( $google_oauth_connection_state ); ?></code>
 				</p>
 
 				<p>
@@ -292,7 +298,10 @@ final class Analytics_Report_AI_Settings {
 						<?php echo esc_html__( 'The redirect URI is shown only for future Google OAuth client setup. Copy it into the Google OAuth client configuration when OAuth support is completed.', 'analytics-report-ai' ); ?>
 					</li>
 					<li>
-						<?php echo esc_html__( 'Starting OAuth authorization can redirect the browser to Google, but this plugin still does not display the state, exchange authorization codes, save tokens, refresh tokens, revoke access, or change GA4 fetch behavior.', 'analytics-report-ai' ); ?>
+						<?php echo esc_html__( 'Starting OAuth authorization can redirect the browser to Google. If the callback validates, this plugin can attempt token exchange and store OAuth tokens in a dedicated non-autoloaded option.', 'analytics-report-ai' ); ?>
+					</li>
+					<li>
+						<?php echo esc_html__( 'The plugin still does not display OAuth state, authorization codes, token values, token endpoint responses, or option values. Refresh, revoke, and reconnect controls are not implemented yet.', 'analytics-report-ai' ); ?>
 					</li>
 					<li>
 						<?php echo esc_html__( 'The temporary manual Google Access Token field below remains available for controlled developer verification only.', 'analytics-report-ai' ); ?>
@@ -509,6 +518,14 @@ final class Analytics_Report_AI_Settings {
 			'callback_state_valid_provider_error'   => __( 'Google OAuth callback placeholder validated the local state and detected a provider error category. Raw error details were not displayed or saved.', 'analytics-report-ai' ),
 			'callback_state_valid_code_present'     => __( 'Google OAuth callback placeholder validated the local state and detected an authorization code, but no code was displayed, saved, or exchanged.', 'analytics-report-ai' ),
 			'callback_state_valid_no_code'          => __( 'Google OAuth callback placeholder validated the local state, but no authorization code was present. No token exchange was attempted.', 'analytics-report-ai' ),
+			'token_exchange_success_category'       => __( 'Google OAuth token exchange completed and the OAuth connection state was updated. Token values are not displayed.', 'analytics-report-ai' ),
+			'token_exchange_invalid_grant_category' => __( 'Google OAuth token exchange was not completed because the authorization result was rejected. No token value was displayed.', 'analytics-report-ai' ),
+			'token_exchange_provider_error_category' => __( 'Google OAuth token exchange was not completed because the provider returned an error category. Raw provider details are not displayed.', 'analytics-report-ai' ),
+			'token_exchange_network_error_category' => __( 'Google OAuth token exchange was not completed because the token endpoint request failed. Request and response details are not displayed.', 'analytics-report-ai' ),
+			'token_exchange_malformed_response_category' => __( 'Google OAuth token exchange was not completed because the token response could not be classified safely. Raw response details are not displayed.', 'analytics-report-ai' ),
+			'token_exchange_missing_token_category' => __( 'Google OAuth token exchange was not completed because the response did not include the required token category. Raw response details are not displayed.', 'analytics-report-ai' ),
+			'token_exchange_not_executed'           => __( 'Google OAuth token exchange was not executed because the callback preconditions were not complete.', 'analytics-report-ai' ),
+			'token_storage_unavailable_category'    => __( 'Google OAuth token exchange completed, but token storage did not complete. No token value is displayed.', 'analytics-report-ai' ),
 		);
 
 		if ( ! isset( $messages[ $status ] ) ) {
