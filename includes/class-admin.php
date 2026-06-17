@@ -31,20 +31,6 @@ final class Analytics_Report_AI_Admin {
 	private const GOOGLE_OAUTH_AUTHORIZATION_ENDPOINT = 'https://accounts.google.com/o/oauth2/v2/auth';
 
 	/**
-	 * Google OAuth client ID constant name.
-	 *
-	 * @var string
-	 */
-	private const GOOGLE_OAUTH_CLIENT_ID_CONSTANT = 'ANALYTICS_REPORT_AI_GOOGLE_OAUTH_CLIENT_ID';
-
-	/**
-	 * Google OAuth client secret constant name.
-	 *
-	 * @var string
-	 */
-	private const GOOGLE_OAUTH_CLIENT_SECRET_CONSTANT = 'ANALYTICS_REPORT_AI_GOOGLE_OAUTH_CLIENT_SECRET';
-
-	/**
 	 * Google OAuth token endpoint.
 	 *
 	 * @var string
@@ -182,11 +168,13 @@ final class Analytics_Report_AI_Admin {
 
 		check_admin_referer( 'analytics_report_ai_google_oauth_connect', 'analytics_report_ai_google_oauth_nonce' );
 
-		if ( '' === $this->get_google_oauth_client_id() ) {
+		$client_configuration = analytics_report_ai_resolve_google_oauth_client_configuration();
+
+		if ( empty( $client_configuration['can_start_oauth'] ) ) {
 			wp_safe_redirect(
 				$this->get_settings_url(
 					array(
-						'analytics_report_ai_google_oauth_status' => 'google_oauth_redirect_client_config_missing',
+						'analytics_report_ai_google_oauth_status' => 'google_oauth_redirect_client_config_unavailable',
 					)
 				)
 			);
@@ -194,7 +182,9 @@ final class Analytics_Report_AI_Admin {
 		}
 
 		$state             = $this->create_google_oauth_state_placeholder();
-		$authorization_url = $this->build_google_oauth_authorization_url( $state );
+		$authorization_url = $this->build_google_oauth_authorization_url( $state, $client_configuration );
+
+		unset( $client_configuration );
 
 		if ( '' === $authorization_url ) {
 			wp_safe_redirect(
@@ -363,11 +353,18 @@ final class Analytics_Report_AI_Admin {
 	 * This helper intentionally does not call Google, exchange codes, store
 	 * tokens, refresh tokens, revoke access, or output the generated URL.
 	 *
-	 * @param string $state Raw OAuth state value for the future redirect request.
+	 * @param string     $state                Raw OAuth state value for the future redirect request.
+	 * @param array|null $client_configuration Resolved client configuration.
 	 * @return string
 	 */
-	private function build_google_oauth_authorization_url( $state ) {
-		$client_id = $this->get_google_oauth_client_id();
+	private function build_google_oauth_authorization_url( $state, $client_configuration = null ) {
+		if ( ! is_array( $client_configuration ) ) {
+			$client_configuration = analytics_report_ai_resolve_google_oauth_client_configuration();
+		}
+
+		$client_id = isset( $client_configuration['client_id'] ) && is_scalar( $client_configuration['client_id'] )
+			? analytics_report_ai_sanitize_credential_value( (string) $client_configuration['client_id'] )
+			: '';
 		$state     = is_scalar( $state ) ? trim( (string) $state ) : '';
 
 		if ( '' === $client_id || '' === $state ) {
@@ -384,44 +381,6 @@ final class Analytics_Report_AI_Admin {
 			),
 			self::GOOGLE_OAUTH_AUTHORIZATION_ENDPOINT
 		);
-	}
-
-	/**
-	 * Get the configured Google OAuth client ID without outputting it.
-	 *
-	 * @return string
-	 */
-	private function get_google_oauth_client_id() {
-		if ( ! defined( self::GOOGLE_OAUTH_CLIENT_ID_CONSTANT ) ) {
-			return '';
-		}
-
-		$value = constant( self::GOOGLE_OAUTH_CLIENT_ID_CONSTANT );
-
-		if ( ! is_scalar( $value ) ) {
-			return '';
-		}
-
-		return trim( (string) $value );
-	}
-
-	/**
-	 * Get the configured Google OAuth client secret without outputting it.
-	 *
-	 * @return string
-	 */
-	private function get_google_oauth_client_secret() {
-		if ( ! defined( self::GOOGLE_OAUTH_CLIENT_SECRET_CONSTANT ) ) {
-			return '';
-		}
-
-		$value = constant( self::GOOGLE_OAUTH_CLIENT_SECRET_CONSTANT );
-
-		if ( ! is_scalar( $value ) ) {
-			return '';
-		}
-
-		return trim( (string) $value );
 	}
 
 	/**
@@ -519,18 +478,23 @@ final class Analytics_Report_AI_Admin {
 			return 'token_exchange_not_executed';
 		}
 
-		$client_id     = $this->get_google_oauth_client_id();
-		$client_secret = $this->get_google_oauth_client_secret();
+		$client_configuration = analytics_report_ai_resolve_google_oauth_client_configuration();
+		$client_id            = isset( $client_configuration['client_id'] ) && is_scalar( $client_configuration['client_id'] )
+			? analytics_report_ai_sanitize_credential_value( (string) $client_configuration['client_id'] )
+			: '';
+		$client_secret        = isset( $client_configuration['client_secret'] ) && is_scalar( $client_configuration['client_secret'] )
+			? analytics_report_ai_sanitize_credential_value( (string) $client_configuration['client_secret'] )
+			: '';
 
-		if ( '' === $client_id || '' === $client_secret ) {
-			unset( $client_id, $client_secret );
+		if ( empty( $client_configuration['can_start_oauth'] ) || '' === $client_id || '' === $client_secret ) {
+			unset( $client_configuration, $client_id, $client_secret );
 
 			return 'token_exchange_not_executed';
 		}
 
 		$exchange_result = $this->request_google_oauth_tokens( $authorization_code, $client_id, $client_secret );
 
-		unset( $authorization_code, $client_id, $client_secret );
+		unset( $authorization_code, $client_configuration, $client_id, $client_secret );
 
 		$status = isset( $exchange_result['status'] ) && is_string( $exchange_result['status'] )
 			? $exchange_result['status']

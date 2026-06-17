@@ -17,20 +17,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 final class Analytics_Report_AI_Settings {
 
 	/**
-	 * Google OAuth client ID constant name.
-	 *
-	 * @var string
-	 */
-	private const GOOGLE_OAUTH_CLIENT_ID_CONSTANT = 'ANALYTICS_REPORT_AI_GOOGLE_OAUTH_CLIENT_ID';
-
-	/**
-	 * Google OAuth client secret constant name.
-	 *
-	 * @var string
-	 */
-	private const GOOGLE_OAUTH_CLIENT_SECRET_CONSTANT = 'ANALYTICS_REPORT_AI_GOOGLE_OAUTH_CLIENT_SECRET';
-
-	/**
 	 * Settings group.
 	 *
 	 * @var string
@@ -124,6 +110,56 @@ final class Analytics_Report_AI_Settings {
 		$settings['host_name'] = $host_name;
 
 		/*
+		 * Google OAuth client configuration fallback.
+		 *
+		 * Empty input keeps the existing Settings fallback values.
+		 */
+		$google_oauth_client = isset( $existing['google_oauth_client'] ) && is_array( $existing['google_oauth_client'] ) ? $existing['google_oauth_client'] : array();
+
+		$google_oauth_client_id = isset( $google_oauth_client['client_id'] ) && is_scalar( $google_oauth_client['client_id'] )
+			? analytics_report_ai_sanitize_credential_value( (string) $google_oauth_client['client_id'] )
+			: '';
+
+		$google_oauth_client_secret = isset( $google_oauth_client['client_secret'] ) && is_scalar( $google_oauth_client['client_secret'] )
+			? analytics_report_ai_sanitize_credential_value( (string) $google_oauth_client['client_secret'] )
+			: '';
+
+		$clear_google_oauth_client_fallback = ! empty( $input['clear_google_oauth_client_fallback'] );
+
+		if ( $clear_google_oauth_client_fallback ) {
+			$google_oauth_client_id     = '';
+			$google_oauth_client_secret = '';
+
+			add_settings_error(
+				ANALYTICS_REPORT_AI_OPTION_NAME,
+				'analytics_report_ai_google_oauth_client_fallback_deleted',
+				__( 'Settings fallback Google OAuth client configuration was deleted. Status: oauth_client_settings_fallback_status: deleted. Constants, OAuth tokens, provider access, and the manual Google access token fallback were not changed.', 'analytics-report-ai' ),
+				'updated'
+			);
+		} elseif ( isset( $input['google_oauth_client'] ) && is_array( $input['google_oauth_client'] ) ) {
+			$input_google_oauth_client_id = isset( $input['google_oauth_client']['client_id'] ) && is_scalar( $input['google_oauth_client']['client_id'] )
+				? analytics_report_ai_sanitize_credential_value( (string) $input['google_oauth_client']['client_id'] )
+				: '';
+
+			$input_google_oauth_client_secret = isset( $input['google_oauth_client']['client_secret'] ) && is_scalar( $input['google_oauth_client']['client_secret'] )
+				? analytics_report_ai_sanitize_credential_value( (string) $input['google_oauth_client']['client_secret'] )
+				: '';
+
+			if ( '' !== $input_google_oauth_client_id ) {
+				$google_oauth_client_id = $input_google_oauth_client_id;
+			}
+
+			if ( '' !== $input_google_oauth_client_secret ) {
+				$google_oauth_client_secret = $input_google_oauth_client_secret;
+			}
+		}
+
+		$settings['google_oauth_client'] = array(
+			'client_id'     => $google_oauth_client_id,
+			'client_secret' => $google_oauth_client_secret,
+		);
+
+		/*
 		 * OpenAI API key.
 		 *
 		 * Empty input keeps the existing key.
@@ -192,7 +228,15 @@ final class Analytics_Report_AI_Settings {
 		$host_filter_enabled     = ! empty( $settings['host_filter_enabled'] );
 		$ga4_property_id         = isset( $settings['ga4_property_id'] ) ? $settings['ga4_property_id'] : '';
 		$host_name               = isset( $settings['host_name'] ) ? $settings['host_name'] : analytics_report_ai_get_default_host();
-		$google_oauth_client_config_status = $this->get_google_oauth_client_configuration_status();
+		$google_oauth_client_configuration      = analytics_report_ai_resolve_google_oauth_client_configuration( $settings );
+		$google_oauth_client_source_category    = isset( $google_oauth_client_configuration['source_category'] ) ? $google_oauth_client_configuration['source_category'] : 'missing';
+		$google_oauth_client_fallback_status    = isset( $google_oauth_client_configuration['settings_fallback_status'] ) ? $google_oauth_client_configuration['settings_fallback_status'] : 'not_saved';
+		$google_oauth_client_value_hidden_status = isset( $google_oauth_client_configuration['value_hidden_status'] ) ? $google_oauth_client_configuration['value_hidden_status'] : 'hidden';
+		$google_oauth_client_settings_status    = isset( $google_oauth_client_configuration['settings_status'] ) ? $google_oauth_client_configuration['settings_status'] : 'missing';
+		$google_oauth_client_constant_names     = analytics_report_ai_get_google_oauth_client_constant_names();
+		$has_google_oauth_client_fallback_id    = ! empty( $settings['google_oauth_client']['client_id'] );
+		$has_google_oauth_client_fallback_secret = ! empty( $settings['google_oauth_client']['client_secret'] );
+		$has_google_oauth_client_fallback       = 'missing' !== $google_oauth_client_settings_status;
 		$google_oauth_connection_state     = analytics_report_ai_get_google_oauth_connection_state();
 		$google_oauth_redirect_uri         = $this->get_google_oauth_redirect_uri();
 		?>
@@ -257,8 +301,18 @@ final class Analytics_Report_AI_Settings {
 				</p>
 
 				<p>
-					<strong><?php echo esc_html__( 'Client configuration status:', 'analytics-report-ai' ); ?></strong>
-					<code><?php echo esc_html( $google_oauth_client_config_status ); ?></code>
+					<strong><?php echo esc_html__( 'OAuth client source:', 'analytics-report-ai' ); ?></strong>
+					<code><?php echo esc_html( 'oauth_client_source_category: ' . $google_oauth_client_source_category ); ?></code>
+				</p>
+
+				<p>
+					<strong><?php echo esc_html__( 'Settings fallback status:', 'analytics-report-ai' ); ?></strong>
+					<code><?php echo esc_html( 'oauth_client_settings_fallback_status: ' . $google_oauth_client_fallback_status ); ?></code>
+				</p>
+
+				<p>
+					<strong><?php echo esc_html__( 'Value display status:', 'analytics-report-ai' ); ?></strong>
+					<code><?php echo esc_html( 'oauth_client_value_hidden_status: ' . $google_oauth_client_value_hidden_status ); ?></code>
 				</p>
 
 				<p>
@@ -281,7 +335,7 @@ final class Analytics_Report_AI_Settings {
 
 				<ul class="analytics-report-ai-notice-list">
 					<li>
-						<?php echo esc_html__( 'Client configuration is detected only as status-level constant presence. Client ID and client secret values are not displayed.', 'analytics-report-ai' ); ?>
+						<?php echo esc_html__( 'OAuth client configuration uses constants first. Settings fallback is used only when constants are missing and the Settings fallback is complete.', 'analytics-report-ai' ); ?>
 					</li>
 					<li>
 						<?php
@@ -289,17 +343,20 @@ final class Analytics_Report_AI_Settings {
 							sprintf(
 								/* translators: 1: Google OAuth client ID constant name. 2: Google OAuth client secret constant name. */
 								__( 'Expected constants: %1$s for client ID and %2$s for client secret.', 'analytics-report-ai' ),
-								self::GOOGLE_OAUTH_CLIENT_ID_CONSTANT,
-								self::GOOGLE_OAUTH_CLIENT_SECRET_CONSTANT
+								$google_oauth_client_constant_names['client_id'],
+								$google_oauth_client_constant_names['client_secret']
 							)
 						);
 						?>
 					</li>
 					<li>
-						<?php echo esc_html__( 'The client secret is expected to be configured outside plugin settings by constant. This plugin does not save the client secret in Settings.', 'analytics-report-ai' ); ?>
+						<?php echo esc_html__( 'If constants are partially configured, OAuth authorization is blocked as a safe configuration conflict. The plugin does not combine client ID and client secret values from different sources.', 'analytics-report-ai' ); ?>
 					</li>
 					<li>
-						<?php echo esc_html__( 'The redirect URI is shown only for future Google OAuth client setup. Copy it into the Google OAuth client configuration when OAuth support is completed.', 'analytics-report-ai' ); ?>
+						<?php echo esc_html__( 'Settings fallback values are saved only when entered below, are never displayed again, and are inactive whenever complete constants are available.', 'analytics-report-ai' ); ?>
+					</li>
+					<li>
+						<?php echo esc_html__( 'The redirect URI is shown only for Google OAuth client setup. Copy it into the Google OAuth client configuration when preparing OAuth support.', 'analytics-report-ai' ); ?>
 					</li>
 					<li>
 						<?php echo esc_html__( 'Starting OAuth authorization can redirect the browser to Google. If the callback validates, this plugin can attempt token exchange and store OAuth tokens in a dedicated non-autoloaded option.', 'analytics-report-ai' ); ?>
@@ -344,6 +401,99 @@ final class Analytics_Report_AI_Settings {
 								<p class="description">
 									<?php echo esc_html__( 'Enter the numeric GA4 property ID. Measurement IDs such as G-XXXXXXXXXX are not supported.', 'analytics-report-ai' ); ?>
 								</p>
+							</td>
+						</tr>
+
+						<tr>
+							<th scope="row">
+								<?php echo esc_html__( 'Google OAuth Client Fallback Status', 'analytics-report-ai' ); ?>
+							</th>
+							<td>
+								<p>
+									<strong><?php echo esc_html__( 'Active source:', 'analytics-report-ai' ); ?></strong>
+									<code><?php echo esc_html( 'oauth_client_source_category: ' . $google_oauth_client_source_category ); ?></code>
+								</p>
+
+								<p>
+									<strong><?php echo esc_html__( 'Settings fallback:', 'analytics-report-ai' ); ?></strong>
+									<code><?php echo esc_html( 'oauth_client_settings_fallback_status: ' . $google_oauth_client_fallback_status ); ?></code>
+								</p>
+
+								<p class="description">
+									<?php echo esc_html__( 'Constants take precedence. Settings fallback values are stored only for OAuth client configuration fallback and are never displayed again.', 'analytics-report-ai' ); ?>
+								</p>
+							</td>
+						</tr>
+
+						<tr>
+							<th scope="row">
+								<label for="analytics-report-ai-google-oauth-client-id">
+									<?php echo esc_html__( 'OAuth Client ID Fallback (Settings)', 'analytics-report-ai' ); ?>
+								</label>
+							</th>
+							<td>
+								<input
+									type="password"
+									id="analytics-report-ai-google-oauth-client-id"
+									name="<?php echo esc_attr( ANALYTICS_REPORT_AI_OPTION_NAME ); ?>[google_oauth_client][client_id]"
+									value=""
+									class="regular-text"
+									autocomplete="off"
+									placeholder="<?php echo esc_attr( $has_google_oauth_client_fallback_id ? __( 'Saved. Enter a new value only when replacing it.', 'analytics-report-ai' ) : __( 'Not saved.', 'analytics-report-ai' ) ); ?>"
+								/>
+
+								<p class="description">
+									<?php
+									echo $has_google_oauth_client_fallback_id
+										? esc_html__( 'A Settings fallback OAuth client ID is currently saved. Leave this field empty to keep the existing fallback value.', 'analytics-report-ai' )
+										: esc_html__( 'No Settings fallback OAuth client ID is currently saved.', 'analytics-report-ai' );
+									?>
+								</p>
+							</td>
+						</tr>
+
+						<tr>
+							<th scope="row">
+								<label for="analytics-report-ai-google-oauth-client-secret">
+									<?php echo esc_html__( 'OAuth Client Secret Fallback (Settings)', 'analytics-report-ai' ); ?>
+								</label>
+							</th>
+							<td>
+								<input
+									type="password"
+									id="analytics-report-ai-google-oauth-client-secret"
+									name="<?php echo esc_attr( ANALYTICS_REPORT_AI_OPTION_NAME ); ?>[google_oauth_client][client_secret]"
+									value=""
+									class="regular-text"
+									autocomplete="off"
+									placeholder="<?php echo esc_attr( $has_google_oauth_client_fallback_secret ? __( 'Saved. Enter a new value only when replacing it.', 'analytics-report-ai' ) : __( 'Not saved.', 'analytics-report-ai' ) ); ?>"
+								/>
+
+								<p class="description">
+									<?php
+									echo $has_google_oauth_client_fallback_secret
+										? esc_html__( 'A Settings fallback OAuth client secret is currently saved. Leave this field empty to keep the existing fallback value.', 'analytics-report-ai' )
+										: esc_html__( 'No Settings fallback OAuth client secret is currently saved.', 'analytics-report-ai' );
+									?>
+								</p>
+
+								<p class="description">
+									<?php echo esc_html__( 'Do not share OAuth client values in support requests. Share only the source, fallback, and value-hidden status labels.', 'analytics-report-ai' ); ?>
+								</p>
+
+								<?php if ( $has_google_oauth_client_fallback ) : ?>
+									<p>
+										<label for="analytics-report-ai-clear-google-oauth-client-fallback">
+											<input
+												type="checkbox"
+												id="analytics-report-ai-clear-google-oauth-client-fallback"
+												name="<?php echo esc_attr( ANALYTICS_REPORT_AI_OPTION_NAME ); ?>[clear_google_oauth_client_fallback]"
+												value="1"
+											/>
+											<?php echo esc_html__( 'Delete the saved Settings fallback OAuth client configuration. Constants, OAuth tokens, provider access, and the manual Google access token fallback are not changed.', 'analytics-report-ai' ); ?>
+										</label>
+									</p>
+								<?php endif; ?>
 							</td>
 						</tr>
 
@@ -514,6 +664,7 @@ final class Analytics_Report_AI_Settings {
 			'connect_placeholder'                   => __( 'Google OAuth connection is planned, but this placeholder did not contact Google, exchange a code, or save a token.', 'analytics-report-ai' ),
 			'connect_state_prepared'                => __( 'A temporary local OAuth state placeholder was prepared. The state value is not displayed. Google was not contacted and no token was saved.', 'analytics-report-ai' ),
 			'google_oauth_redirect_client_config_missing' => __( 'Google OAuth authorization cannot start because the client ID constant is not configured. Google was not contacted and no token was saved.', 'analytics-report-ai' ),
+			'google_oauth_redirect_client_config_unavailable' => __( 'Google OAuth authorization cannot start because the OAuth client source is missing, incomplete, or in conflict. Google was not contacted and no token was saved.', 'analytics-report-ai' ),
 			'google_oauth_redirect_url_unavailable' => __( 'Google OAuth authorization could not be prepared. Google was not contacted and no token was saved.', 'analytics-report-ai' ),
 			'callback_placeholder'                  => __( 'Google OAuth callback placeholder received a local return. No authorization code was exchanged and no token was saved.', 'analytics-report-ai' ),
 			'callback_state_missing'                => __( 'Google OAuth callback placeholder received no state value. No token exchange was attempted.', 'analytics-report-ai' ),
@@ -543,30 +694,6 @@ final class Analytics_Report_AI_Settings {
 	}
 
 	/**
-	 * Get Google OAuth client configuration status without exposing values.
-	 *
-	 * @return string
-	 */
-	private function get_google_oauth_client_configuration_status() {
-		$has_client_id     = $this->is_non_empty_constant( self::GOOGLE_OAUTH_CLIENT_ID_CONSTANT );
-		$has_client_secret = $this->is_non_empty_constant( self::GOOGLE_OAUTH_CLIENT_SECRET_CONSTANT );
-
-		if ( $has_client_id && $has_client_secret ) {
-			return 'google_oauth_client_configured';
-		}
-
-		if ( $has_client_id ) {
-			return 'google_oauth_client_id_configured_secret_missing';
-		}
-
-		if ( $has_client_secret ) {
-			return 'google_oauth_client_id_missing_secret_configured';
-		}
-
-		return 'google_oauth_client_not_configured';
-	}
-
-	/**
 	 * Get the Google OAuth callback redirect URI for setup display.
 	 *
 	 * @return string
@@ -577,21 +704,5 @@ final class Analytics_Report_AI_Settings {
 			'analytics_report_ai_google_oauth_callback',
 			admin_url( 'admin-post.php' )
 		);
-	}
-
-	/**
-	 * Check whether a constant is defined and non-empty without returning value.
-	 *
-	 * @param string $constant_name Constant name.
-	 * @return bool
-	 */
-	private function is_non_empty_constant( $constant_name ) {
-		if ( ! defined( $constant_name ) ) {
-			return false;
-		}
-
-		$value = constant( $constant_name );
-
-		return is_scalar( $value ) && '' !== trim( (string) $value );
 	}
 }

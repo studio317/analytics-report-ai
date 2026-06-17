@@ -62,6 +62,7 @@ if ( ! function_exists( 'analytics_report_ai_get_default_settings' ) ) {
 			'host_filter_enabled' => 1,
 			'host_name'           => analytics_report_ai_get_default_host(),
 			'google_tokens'       => array(),
+			'google_oauth_client' => array(),
 			'openai_api_key'      => '',
 		);
 	}
@@ -86,6 +87,18 @@ if ( ! function_exists( 'analytics_report_ai_get_settings' ) ) {
 		if ( ! isset( $settings['google_tokens'] ) || ! is_array( $settings['google_tokens'] ) ) {
 			$settings['google_tokens'] = array();
 		}
+
+		if ( ! isset( $settings['google_oauth_client'] ) || ! is_array( $settings['google_oauth_client'] ) ) {
+			$settings['google_oauth_client'] = array();
+		}
+
+		$settings['google_oauth_client']['client_id'] = isset( $settings['google_oauth_client']['client_id'] ) && is_scalar( $settings['google_oauth_client']['client_id'] )
+			? analytics_report_ai_sanitize_credential_value( (string) $settings['google_oauth_client']['client_id'] )
+			: '';
+
+		$settings['google_oauth_client']['client_secret'] = isset( $settings['google_oauth_client']['client_secret'] ) && is_scalar( $settings['google_oauth_client']['client_secret'] )
+			? analytics_report_ai_sanitize_credential_value( (string) $settings['google_oauth_client']['client_secret'] )
+			: '';
 
 		$settings['openai_api_key'] = isset( $settings['openai_api_key'] ) && is_scalar( $settings['openai_api_key'] )
 			? (string) $settings['openai_api_key']
@@ -141,6 +154,155 @@ if ( ! function_exists( 'analytics_report_ai_sanitize_credential_value' ) ) {
 		}
 
 		return $credential;
+	}
+}
+
+if ( ! function_exists( 'analytics_report_ai_get_google_oauth_client_constant_names' ) ) {
+	/**
+	 * Get Google OAuth client constant names without reading values.
+	 *
+	 * @return array
+	 */
+	function analytics_report_ai_get_google_oauth_client_constant_names() {
+		return array(
+			'client_id'     => 'ANALYTICS_REPORT_AI_GOOGLE_OAUTH_CLIENT_ID',
+			'client_secret' => 'ANALYTICS_REPORT_AI_GOOGLE_OAUTH_CLIENT_SECRET',
+		);
+	}
+}
+
+if ( ! function_exists( 'analytics_report_ai_get_non_empty_constant_value' ) ) {
+	/**
+	 * Get a scalar constant value for request-local use only.
+	 *
+	 * @param string $constant_name Constant name.
+	 * @return string
+	 */
+	function analytics_report_ai_get_non_empty_constant_value( $constant_name ) {
+		if ( ! defined( $constant_name ) ) {
+			return '';
+		}
+
+		$value = constant( $constant_name );
+
+		if ( ! is_scalar( $value ) ) {
+			return '';
+		}
+
+		return analytics_report_ai_sanitize_credential_value( (string) $value );
+	}
+}
+
+if ( ! function_exists( 'analytics_report_ai_get_google_oauth_client_pair_status' ) ) {
+	/**
+	 * Classify a client ID / client secret pair without exposing values.
+	 *
+	 * @param string $client_id     OAuth client ID.
+	 * @param string $client_secret OAuth client secret.
+	 * @return string
+	 */
+	function analytics_report_ai_get_google_oauth_client_pair_status( $client_id, $client_secret ) {
+		$has_client_id     = '' !== analytics_report_ai_sanitize_credential_value( $client_id );
+		$has_client_secret = '' !== analytics_report_ai_sanitize_credential_value( $client_secret );
+
+		if ( $has_client_id && $has_client_secret ) {
+			return 'complete';
+		}
+
+		if ( $has_client_id || $has_client_secret ) {
+			return 'incomplete';
+		}
+
+		return 'missing';
+	}
+}
+
+if ( ! function_exists( 'analytics_report_ai_resolve_google_oauth_client_configuration' ) ) {
+	/**
+	 * Resolve the active Google OAuth client source without exposing values.
+	 *
+	 * Client values are returned only for immediate request-local OAuth runtime
+	 * use. Admin UI, docs, logs, and support evidence must use status/category
+	 * labels instead.
+	 *
+	 * @param array|null $settings Plugin settings.
+	 * @return array
+	 */
+	function analytics_report_ai_resolve_google_oauth_client_configuration( $settings = null ) {
+		if ( ! is_array( $settings ) ) {
+			$settings = analytics_report_ai_get_settings();
+		}
+
+		$constant_names = analytics_report_ai_get_google_oauth_client_constant_names();
+
+		$constant_client_id     = analytics_report_ai_get_non_empty_constant_value( $constant_names['client_id'] );
+		$constant_client_secret = analytics_report_ai_get_non_empty_constant_value( $constant_names['client_secret'] );
+		$constant_status        = analytics_report_ai_get_google_oauth_client_pair_status( $constant_client_id, $constant_client_secret );
+
+		$settings_client = isset( $settings['google_oauth_client'] ) && is_array( $settings['google_oauth_client'] )
+			? $settings['google_oauth_client']
+			: array();
+
+		$settings_client_id = isset( $settings_client['client_id'] ) && is_scalar( $settings_client['client_id'] )
+			? analytics_report_ai_sanitize_credential_value( (string) $settings_client['client_id'] )
+			: '';
+
+		$settings_client_secret = isset( $settings_client['client_secret'] ) && is_scalar( $settings_client['client_secret'] )
+			? analytics_report_ai_sanitize_credential_value( (string) $settings_client['client_secret'] )
+			: '';
+
+		$settings_status          = analytics_report_ai_get_google_oauth_client_pair_status( $settings_client_id, $settings_client_secret );
+		$settings_fallback_status = 'complete' === $settings_status ? 'saved' : 'not_saved';
+
+		if ( 'incomplete' === $settings_status ) {
+			$settings_fallback_status = 'incomplete';
+		}
+
+		$result = array(
+			'source_category'          => 'missing',
+			'constants_status'         => $constant_status,
+			'settings_status'          => $settings_status,
+			'settings_fallback_status' => $settings_fallback_status,
+			'value_hidden_status'      => 'hidden',
+			'client_id'                => '',
+			'client_secret'            => '',
+			'can_start_oauth'          => false,
+			'has_conflict'             => false,
+		);
+
+		if ( 'complete' === $constant_status ) {
+			$result['source_category'] = 'constants';
+			$result['client_id']       = $constant_client_id;
+			$result['client_secret']   = $constant_client_secret;
+			$result['can_start_oauth'] = true;
+			$result['has_conflict']    = 'missing' !== $settings_status;
+
+			return $result;
+		}
+
+		if ( 'incomplete' === $constant_status && 'complete' === $settings_status ) {
+			$result['source_category'] = 'conflict';
+			$result['has_conflict']    = true;
+
+			return $result;
+		}
+
+		if ( 'missing' === $constant_status && 'complete' === $settings_status ) {
+			$result['source_category'] = 'settings';
+			$result['client_id']       = $settings_client_id;
+			$result['client_secret']   = $settings_client_secret;
+			$result['can_start_oauth'] = true;
+
+			return $result;
+		}
+
+		if ( 'missing' === $constant_status && 'missing' === $settings_status ) {
+			return $result;
+		}
+
+		$result['source_category'] = 'incomplete';
+
+		return $result;
 	}
 }
 
