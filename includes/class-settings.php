@@ -243,6 +243,10 @@ final class Analytics_Report_AI_Settings {
 						<?php echo esc_html__( 'For OpenAI, use a Restricted API key with the minimum permissions needed for Responses API requests where possible.', 'analytics-report-ai' ); ?>
 					</li>
 				</ul>
+
+				<p class="description">
+					<?php echo esc_html__( 'For support, share status or category labels only. Do not share credentials, API keys, tokens, option values, OAuth client values, request or response bodies, AI payload JSON, generated report text, screenshots, or browser Network evidence.', 'analytics-report-ai' ); ?>
+				</p>
 			</div>
 
 			<div class="analytics-report-ai-card">

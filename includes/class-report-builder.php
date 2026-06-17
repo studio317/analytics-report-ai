@@ -999,7 +999,7 @@ final class Analytics_Report_AI_Report_Builder {
 				</p>
 
 				<p>
-					<?php echo esc_html__( 'For support, share status labels, warning messages, or error categories only. Do not share credentials, raw payloads, raw responses, or generated report text.', 'analytics-report-ai' ); ?>
+					<?php echo esc_html__( 'For support, share status/category labels, warning messages, or error categories only. Do not share credentials, option values, request or response bodies, AI payload JSON, generated report text, screenshots, or browser Network evidence.', 'analytics-report-ai' ); ?>
 				</p>
 			</div>
 
