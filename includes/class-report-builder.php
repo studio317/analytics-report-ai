@@ -106,6 +106,9 @@ final class Analytics_Report_AI_Report_Builder {
 								<?php else : ?>
 									<code><?php echo esc_html( $credential_source_label ); ?></code>
 								<?php endif; ?>
+								<p class="description">
+									<?php echo esc_html__( 'This status is a safe category label. OAuth is the preferred Google credential source; the manual Google Access Token is an MVP maturation fallback, and credential values are hidden.', 'analytics-report-ai' ); ?>
+								</p>
 							</td>
 						</tr>
 						<tr>
@@ -604,14 +607,14 @@ final class Analytics_Report_AI_Report_Builder {
 			: 'credential_source_missing';
 
 		if ( 'credential_source_oauth_refresh_needed' === $status ) {
-			return __( 'Google OAuth connection is expired or needs refresh. Reconnect Google OAuth or save a temporary Google Access Token in Settings.', 'analytics-report-ai' );
+			return __( 'Google OAuth credential source needs refresh or reconnect. Reconnect Google OAuth or use the temporary manual Google Access Token MVP fallback in Settings. Credential values are not displayed.', 'analytics-report-ai' );
 		}
 
 		if ( 'credential_source_oauth_error_category' === $status ) {
-			return __( 'Google OAuth credential source is not usable. Reconnect Google OAuth or save a temporary Google Access Token in Settings.', 'analytics-report-ai' );
+			return __( 'Google OAuth credential source is not usable. Reconnect Google OAuth or use the temporary manual Google Access Token MVP fallback in Settings. Credential values are not displayed.', 'analytics-report-ai' );
 		}
 
-		return __( 'No Google credential is available for GA4 Fetch. Connect Google OAuth or save a temporary Google Access Token in Settings.', 'analytics-report-ai' );
+		return __( 'Missing Google credential. Connect Google OAuth or configure the temporary manual Google Access Token MVP fallback in Settings. Credential values are not displayed.', 'analytics-report-ai' );
 	}
 
 	/**

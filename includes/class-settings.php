@@ -211,7 +211,7 @@ final class Analytics_Report_AI_Settings {
 
 				<ul class="analytics-report-ai-notice-list">
 					<li>
-						<?php echo esc_html__( 'Google Analytics Data API requests use the saved Google Access Token.', 'analytics-report-ai' ); ?>
+						<?php echo esc_html__( 'Google Analytics Data API requests use the resolved Google credential source. OAuth is preferred; the temporary manual Google Access Token remains an MVP maturation fallback.', 'analytics-report-ai' ); ?>
 					</li>
 					<li>
 						<?php echo esc_html__( 'OpenAI API requests use the saved OpenAI API Key.', 'analytics-report-ai' ); ?>
@@ -223,7 +223,7 @@ final class Analytics_Report_AI_Settings {
 				<h2><?php echo esc_html__( 'Credential Storage (MVP)', 'analytics-report-ai' ); ?></h2>
 
 				<p>
-					<?php echo esc_html__( 'In the current MVP, the Google Access Token and OpenAI API Key are saved in the WordPress database as plugin settings.', 'analytics-report-ai' ); ?>
+					<?php echo esc_html__( 'In the current MVP, the temporary manual Google Access Token and OpenAI API Key are saved in the WordPress database as plugin settings.', 'analytics-report-ai' ); ?>
 				</p>
 
 				<ul class="analytics-report-ai-notice-list">
@@ -237,7 +237,7 @@ final class Analytics_Report_AI_Settings {
 						<?php echo esc_html__( 'This storage method is for MVP and developer verification. Public or multi-user use needs a redesigned credential flow.', 'analytics-report-ai' ); ?>
 					</li>
 					<li>
-						<?php echo esc_html__( 'The manual Google Access Token field is temporary and needs OAuth connection, expiry handling, scope checks, and revoke or reconnect controls before public use.', 'analytics-report-ai' ); ?>
+						<?php echo esc_html__( 'The manual Google Access Token field is an MVP maturation fallback. Public or multi-user use needs OAuth lifecycle controls, including expiry handling, scope checks, and revoke or reconnect paths.', 'analytics-report-ai' ); ?>
 					</li>
 					<li>
 						<?php echo esc_html__( 'For OpenAI, use a Restricted API key with the minimum permissions needed for Responses API requests where possible.', 'analytics-report-ai' ); ?>
@@ -249,7 +249,7 @@ final class Analytics_Report_AI_Settings {
 				<h2><?php echo esc_html__( 'Google OAuth Connection (MVP)', 'analytics-report-ai' ); ?></h2>
 
 				<p>
-					<?php echo esc_html__( 'Google OAuth authorization can now attempt token exchange after callback state validation. Token values are not displayed, and refresh, revoke, and reconnect controls are not implemented yet.', 'analytics-report-ai' ); ?>
+					<?php echo esc_html__( 'Google OAuth is the preferred GA4 credential source. Authorization can attempt token exchange after callback state validation. Token values are not displayed, and refresh, revoke, and reconnect controls are not implemented yet.', 'analytics-report-ai' ); ?>
 				</p>
 
 				<p>
@@ -301,10 +301,10 @@ final class Analytics_Report_AI_Settings {
 						<?php echo esc_html__( 'Starting OAuth authorization can redirect the browser to Google. If the callback validates, this plugin can attempt token exchange and store OAuth tokens in a dedicated non-autoloaded option.', 'analytics-report-ai' ); ?>
 					</li>
 					<li>
-						<?php echo esc_html__( 'The plugin still does not display OAuth state, authorization codes, token values, token endpoint responses, or option values. Refresh, revoke, and reconnect controls are not implemented yet.', 'analytics-report-ai' ); ?>
+						<?php echo esc_html__( 'The plugin displays only status-level OAuth state. It does not display authorization codes, token values, token endpoint responses, or option values. Refresh, revoke, and reconnect controls are not implemented yet.', 'analytics-report-ai' ); ?>
 					</li>
 					<li>
-						<?php echo esc_html__( 'The temporary manual Google Access Token field below remains available for controlled developer verification only.', 'analytics-report-ai' ); ?>
+						<?php echo esc_html__( 'The temporary manual Google Access Token field below remains available as an MVP maturation fallback for controlled developer verification only.', 'analytics-report-ai' ); ?>
 					</li>
 				</ul>
 
@@ -345,12 +345,12 @@ final class Analytics_Report_AI_Settings {
 
 						<tr>
 							<th scope="row">
-								<?php echo esc_html__( 'Google Access Token Status', 'analytics-report-ai' ); ?>
+								<?php echo esc_html__( 'Manual Google Access Token Status', 'analytics-report-ai' ); ?>
 							</th>
 							<td>
 								<code><?php echo esc_html( $google_auth_status ); ?></code>
 								<p class="description">
-									<?php echo esc_html__( 'This status is based on whether a temporary Google Access Token is saved. The token value is not displayed.', 'analytics-report-ai' ); ?>
+									<?php echo esc_html__( 'This value-hidden status only indicates whether the temporary manual token fallback is saved. The token value is not displayed.', 'analytics-report-ai' ); ?>
 								</p>
 							</td>
 						</tr>
@@ -358,7 +358,7 @@ final class Analytics_Report_AI_Settings {
 						<tr>
 							<th scope="row">
 								<label for="analytics-report-ai-google-access-token">
-									<?php echo esc_html__( 'Google Access Token', 'analytics-report-ai' ); ?>
+									<?php echo esc_html__( 'Manual Google Access Token', 'analytics-report-ai' ); ?>
 								</label>
 							</th>
 							<td>
@@ -375,13 +375,13 @@ final class Analytics_Report_AI_Settings {
 								<p class="description">
 									<?php
 									echo $has_google_access_token
-										? esc_html__( 'A Google access token is currently saved. Leave this field empty to keep the existing token.', 'analytics-report-ai' )
-										: esc_html__( 'No Google access token is currently saved.', 'analytics-report-ai' );
+										? esc_html__( 'A manual Google access token fallback is currently saved. Leave this field empty to keep the existing token.', 'analytics-report-ai' )
+										: esc_html__( 'No manual Google access token fallback is currently saved.', 'analytics-report-ai' );
 									?>
 								</p>
 
 								<p class="description">
-									<?php echo esc_html__( 'This temporary MVP/developer verification field must contain a token with GA4 read access. The token may expire in about one hour.', 'analytics-report-ai' ); ?>
+									<?php echo esc_html__( 'This field is an MVP maturation fallback for controlled developer verification. OAuth is the preferred GA4 credential source.', 'analytics-report-ai' ); ?>
 								</p>
 
 								<?php if ( $has_google_access_token ) : ?>
@@ -393,7 +393,7 @@ final class Analytics_Report_AI_Settings {
 												name="<?php echo esc_attr( ANALYTICS_REPORT_AI_OPTION_NAME ); ?>[clear_google_access_token]"
 												value="1"
 											/>
-											<?php echo esc_html__( 'Delete the saved Google access token.', 'analytics-report-ai' ); ?>
+											<?php echo esc_html__( 'Delete the saved manual Google access token fallback.', 'analytics-report-ai' ); ?>
 										</label>
 									</p>
 								<?php endif; ?>
