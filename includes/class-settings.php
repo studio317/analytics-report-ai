@@ -112,7 +112,7 @@ final class Analytics_Report_AI_Settings {
 		/*
 		 * Google OAuth client configuration fallback.
 		 *
-		 * Empty input keeps the existing Settings fallback values.
+		 * Empty input keeps the existing Settings fallback entries.
 		 */
 		$google_oauth_client = isset( $existing['google_oauth_client'] ) && is_array( $existing['google_oauth_client'] ) ? $existing['google_oauth_client'] : array();
 
@@ -289,7 +289,7 @@ final class Analytics_Report_AI_Settings {
 				</ul>
 
 				<p class="description">
-					<?php echo esc_html__( 'For support, share status or category labels only. Do not share credentials, API keys, tokens, option values, OAuth client values, request or response bodies, AI payload JSON, generated report text, screenshots, or browser Network evidence.', 'analytics-report-ai' ); ?>
+					<?php echo esc_html__( 'For support, share status or category labels only. Do not share credentials, API keys, tokens, option values, OAuth client identifiers or secrets, request or response bodies, AI payload JSON, generated report text, screenshots, or browser Network evidence.', 'analytics-report-ai' ); ?>
 				</p>
 			</div>
 
@@ -350,10 +350,10 @@ final class Analytics_Report_AI_Settings {
 						?>
 					</li>
 					<li>
-						<?php echo esc_html__( 'If constants are partially configured, OAuth authorization is blocked as a safe configuration conflict. The plugin does not combine client ID and client secret values from different sources.', 'analytics-report-ai' ); ?>
+						<?php echo esc_html__( 'If constants are partially configured, OAuth authorization is blocked as a safe configuration conflict. The plugin does not combine client ID and client secret configuration from different sources.', 'analytics-report-ai' ); ?>
 					</li>
 					<li>
-						<?php echo esc_html__( 'Settings fallback values are saved only when entered below, are never displayed again, and are inactive whenever complete constants are available.', 'analytics-report-ai' ); ?>
+						<?php echo esc_html__( 'Settings fallback configuration is saved only when entered below, is never displayed again, and is inactive whenever complete constants are available.', 'analytics-report-ai' ); ?>
 					</li>
 					<li>
 						<?php echo esc_html__( 'The redirect URI is shown only for Google OAuth client setup. Copy it into the Google OAuth client configuration when preparing OAuth support.', 'analytics-report-ai' ); ?>
@@ -420,7 +420,7 @@ final class Analytics_Report_AI_Settings {
 								</p>
 
 								<p class="description">
-									<?php echo esc_html__( 'Constants take precedence. Settings fallback values are stored only for OAuth client configuration fallback and are never displayed again.', 'analytics-report-ai' ); ?>
+									<?php echo esc_html__( 'Constants take precedence. Settings fallback configuration is stored only for OAuth client configuration fallback and is never displayed again.', 'analytics-report-ai' ); ?>
 								</p>
 							</td>
 						</tr>
@@ -439,14 +439,14 @@ final class Analytics_Report_AI_Settings {
 									value=""
 									class="regular-text"
 									autocomplete="off"
-									placeholder="<?php echo esc_attr( $has_google_oauth_client_fallback_id ? __( 'Saved. Enter a new value only when replacing it.', 'analytics-report-ai' ) : __( 'Not saved.', 'analytics-report-ai' ) ); ?>"
+									placeholder="<?php echo esc_attr( $has_google_oauth_client_fallback_id ? __( 'Saved fallback is hidden. Leave blank unless changing this setting.', 'analytics-report-ai' ) : __( 'No Settings fallback saved.', 'analytics-report-ai' ) ); ?>"
 								/>
 
 								<p class="description">
 									<?php
 									echo $has_google_oauth_client_fallback_id
-										? esc_html__( 'A Settings fallback OAuth client ID is currently saved. Leave this field empty to keep the existing fallback value.', 'analytics-report-ai' )
-										: esc_html__( 'No Settings fallback OAuth client ID is currently saved.', 'analytics-report-ai' );
+										? esc_html__( 'Settings fallback OAuth client ID configuration is currently saved and hidden. Leave this field empty to keep the saved fallback.', 'analytics-report-ai' )
+										: esc_html__( 'No Settings fallback OAuth client ID configuration is currently saved.', 'analytics-report-ai' );
 									?>
 								</p>
 							</td>
@@ -466,19 +466,19 @@ final class Analytics_Report_AI_Settings {
 									value=""
 									class="regular-text"
 									autocomplete="off"
-									placeholder="<?php echo esc_attr( $has_google_oauth_client_fallback_secret ? __( 'Saved. Enter a new value only when replacing it.', 'analytics-report-ai' ) : __( 'Not saved.', 'analytics-report-ai' ) ); ?>"
+									placeholder="<?php echo esc_attr( $has_google_oauth_client_fallback_secret ? __( 'Saved fallback is hidden. Leave blank unless changing this setting.', 'analytics-report-ai' ) : __( 'No Settings fallback saved.', 'analytics-report-ai' ) ); ?>"
 								/>
 
 								<p class="description">
 									<?php
 									echo $has_google_oauth_client_fallback_secret
-										? esc_html__( 'A Settings fallback OAuth client secret is currently saved. Leave this field empty to keep the existing fallback value.', 'analytics-report-ai' )
-										: esc_html__( 'No Settings fallback OAuth client secret is currently saved.', 'analytics-report-ai' );
+										? esc_html__( 'Settings fallback OAuth client secret configuration is currently saved and hidden. Leave this field empty to keep the saved fallback.', 'analytics-report-ai' )
+										: esc_html__( 'No Settings fallback OAuth client secret configuration is currently saved.', 'analytics-report-ai' );
 									?>
 								</p>
 
 								<p class="description">
-									<?php echo esc_html__( 'Do not share OAuth client values in support requests. Share only the source, fallback, and value-hidden status labels.', 'analytics-report-ai' ); ?>
+									<?php echo esc_html__( 'For support, share only the OAuth client source category, Settings fallback status, and value-hidden status labels. Do not share OAuth client identifiers or secrets.', 'analytics-report-ai' ); ?>
 								</p>
 
 								<?php if ( $has_google_oauth_client_fallback ) : ?>
