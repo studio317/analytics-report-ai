@@ -237,8 +237,14 @@ final class Analytics_Report_AI_Settings {
 		$has_google_oauth_client_fallback_id    = ! empty( $settings['google_oauth_client']['client_id'] );
 		$has_google_oauth_client_fallback_secret = ! empty( $settings['google_oauth_client']['client_secret'] );
 		$has_google_oauth_client_fallback       = 'missing' !== $google_oauth_client_settings_status;
-		$google_oauth_connection_state     = analytics_report_ai_get_google_oauth_connection_state();
-		$google_oauth_redirect_uri         = $this->get_google_oauth_redirect_uri();
+		$google_oauth_lifecycle_categories      = analytics_report_ai_get_google_oauth_token_lifecycle_categories();
+		$google_oauth_connection_state          = isset( $google_oauth_lifecycle_categories['oauth_connection_status_category'] ) ? $google_oauth_lifecycle_categories['oauth_connection_status_category'] : analytics_report_ai_get_google_oauth_connection_state();
+		$google_oauth_token_lifecycle_status    = isset( $google_oauth_lifecycle_categories['token_lifecycle_status_category'] ) ? $google_oauth_lifecycle_categories['token_lifecycle_status_category'] : 'reconnect_required';
+		$google_oauth_token_refresh_status      = isset( $google_oauth_lifecycle_categories['token_refresh_status_category'] ) ? $google_oauth_lifecycle_categories['token_refresh_status_category'] : 'unavailable';
+		$google_oauth_token_disconnect_status   = isset( $google_oauth_lifecycle_categories['token_disconnect_status_category'] ) ? $google_oauth_lifecycle_categories['token_disconnect_status_category'] : 'not_requested';
+		$google_oauth_token_revoke_status       = isset( $google_oauth_lifecycle_categories['token_revoke_status_category'] ) ? $google_oauth_lifecycle_categories['token_revoke_status_category'] : 'deferred';
+		$has_google_oauth_token_storage         = analytics_report_ai_google_oauth_token_storage_exists();
+		$google_oauth_redirect_uri              = $this->get_google_oauth_redirect_uri();
 		?>
 		<div class="wrap analytics-report-ai-admin">
 			<h1><?php echo esc_html__( 'Analytics Report AI Settings', 'analytics-report-ai' ); ?></h1>
@@ -297,7 +303,7 @@ final class Analytics_Report_AI_Settings {
 				<h2><?php echo esc_html__( 'Google OAuth Connection (MVP)', 'analytics-report-ai' ); ?></h2>
 
 				<p>
-					<?php echo esc_html__( 'Google OAuth is the preferred GA4 credential source. Authorization can attempt token exchange after callback state validation. Token values are not displayed, and refresh, revoke, and reconnect controls are not implemented yet.', 'analytics-report-ai' ); ?>
+					<?php echo esc_html__( 'Google OAuth is the preferred GA4 credential source. Authorization can attempt token exchange after callback state validation. Token values are not displayed. Refresh requests and provider-side revoke requests are deferred in this MVP boundary.', 'analytics-report-ai' ); ?>
 				</p>
 
 				<p>
@@ -317,7 +323,27 @@ final class Analytics_Report_AI_Settings {
 
 				<p>
 					<strong><?php echo esc_html__( 'OAuth connection state:', 'analytics-report-ai' ); ?></strong>
-					<code><?php echo esc_html( $google_oauth_connection_state ); ?></code>
+					<code><?php echo esc_html( 'oauth_connection_status_category: ' . $google_oauth_connection_state ); ?></code>
+				</p>
+
+				<p>
+					<strong><?php echo esc_html__( 'Token lifecycle status:', 'analytics-report-ai' ); ?></strong>
+					<code><?php echo esc_html( 'token_lifecycle_status_category: ' . $google_oauth_token_lifecycle_status ); ?></code>
+				</p>
+
+				<p>
+					<strong><?php echo esc_html__( 'Refresh status:', 'analytics-report-ai' ); ?></strong>
+					<code><?php echo esc_html( 'token_refresh_status_category: ' . $google_oauth_token_refresh_status ); ?></code>
+				</p>
+
+				<p>
+					<strong><?php echo esc_html__( 'Local disconnect status:', 'analytics-report-ai' ); ?></strong>
+					<code><?php echo esc_html( 'token_disconnect_status_category: ' . $google_oauth_token_disconnect_status ); ?></code>
+				</p>
+
+				<p>
+					<strong><?php echo esc_html__( 'Provider revoke status:', 'analytics-report-ai' ); ?></strong>
+					<code><?php echo esc_html( 'token_revoke_status_category: ' . $google_oauth_token_revoke_status ); ?></code>
 				</p>
 
 				<p>
@@ -362,10 +388,13 @@ final class Analytics_Report_AI_Settings {
 						<?php echo esc_html__( 'Starting OAuth authorization can redirect the browser to Google. If the callback validates, this plugin can attempt token exchange and store OAuth tokens in a dedicated non-autoloaded option.', 'analytics-report-ai' ); ?>
 					</li>
 					<li>
-						<?php echo esc_html__( 'The plugin displays only status-level OAuth state. It does not display authorization codes, token values, token endpoint responses, or option values. Refresh, revoke, and reconnect controls are not implemented yet.', 'analytics-report-ai' ); ?>
+						<?php echo esc_html__( 'The plugin displays only status-level OAuth state. It does not display authorization codes, token values, token endpoint responses, or option values. Refresh requests and provider-side revoke requests are deferred.', 'analytics-report-ai' ); ?>
 					</li>
 					<li>
 						<?php echo esc_html__( 'The temporary manual Google Access Token field below remains available as an MVP maturation fallback for controlled developer verification only.', 'analytics-report-ai' ); ?>
+					</li>
+					<li>
+						<?php echo esc_html__( 'Local disconnect deletes only local OAuth token data. It does not contact Google, revoke provider access, delete the manual Google Access Token fallback, or delete the OpenAI API key.', 'analytics-report-ai' ); ?>
 					</li>
 				</ul>
 
@@ -374,6 +403,18 @@ final class Analytics_Report_AI_Settings {
 					<?php wp_nonce_field( 'analytics_report_ai_google_oauth_connect', 'analytics_report_ai_google_oauth_nonce' ); ?>
 					<?php submit_button( __( 'Start Google OAuth Authorization', 'analytics-report-ai' ), 'secondary', 'submit', false ); ?>
 				</form>
+
+				<?php if ( $has_google_oauth_token_storage ) : ?>
+					<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+						<input type="hidden" name="action" value="analytics_report_ai_google_oauth_disconnect" />
+						<?php wp_nonce_field( 'analytics_report_ai_google_oauth_disconnect', 'analytics_report_ai_google_oauth_disconnect_nonce' ); ?>
+						<?php submit_button( __( 'Disconnect Local Google OAuth Tokens', 'analytics-report-ai' ), 'secondary', 'submit', false ); ?>
+					</form>
+
+					<p class="description">
+						<?php echo esc_html__( 'This deletes only local OAuth token data saved by this plugin. It does not revoke provider-side access, delete the temporary manual Google Access Token fallback, or delete the OpenAI API key.', 'analytics-report-ai' ); ?>
+					</p>
+				<?php endif; ?>
 			</div>
 
 			<form method="post" action="options.php" class="analytics-report-ai-card">
@@ -681,6 +722,8 @@ final class Analytics_Report_AI_Settings {
 			'token_exchange_missing_token_category' => __( 'Google OAuth token exchange was not completed because the response did not include the required token category. Raw response details are not displayed.', 'analytics-report-ai' ),
 			'token_exchange_not_executed'           => __( 'Google OAuth token exchange was not executed because the callback preconditions were not complete.', 'analytics-report-ai' ),
 			'token_storage_unavailable_category'    => __( 'Google OAuth token exchange completed, but token storage did not complete. No token value is displayed.', 'analytics-report-ai' ),
+			'google_oauth_local_disconnect_success' => __( 'Local Google OAuth token data was deleted. Status: token_disconnect_status_category: local_tokens_deleted. Google was not contacted, provider-side access was not revoked, and the manual Google Access Token fallback and OpenAI API key were not changed.', 'analytics-report-ai' ),
+			'google_oauth_local_disconnect_failed'  => __( 'Local Google OAuth token disconnect did not complete. Status: token_disconnect_status_category: failed. Token values and option values are not displayed, and provider-side revoke was not requested.', 'analytics-report-ai' ),
 		);
 
 		if ( ! isset( $messages[ $status ] ) ) {

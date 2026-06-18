@@ -69,6 +69,7 @@ final class Analytics_Report_AI_Admin {
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 		add_action( 'admin_post_analytics_report_ai_google_oauth_connect', array( $this, 'handle_google_oauth_connect' ) );
 		add_action( 'admin_post_analytics_report_ai_google_oauth_callback', array( $this, 'handle_google_oauth_callback' ) );
+		add_action( 'admin_post_analytics_report_ai_google_oauth_disconnect', array( $this, 'handle_google_oauth_disconnect' ) );
 	}
 
 	/**
@@ -280,6 +281,39 @@ final class Analytics_Report_AI_Admin {
 			$this->get_settings_url(
 				array(
 					'analytics_report_ai_google_oauth_status' => $callback_status,
+				)
+			)
+		);
+		exit;
+	}
+
+	/**
+	 * Handle local Google OAuth token disconnect.
+	 *
+	 * This deletes only local OAuth token data. It does not contact Google,
+	 * refresh tokens, revoke provider-side access, delete the manual Google
+	 * Access Token fallback, or delete the OpenAI API key.
+	 *
+	 * @return void
+	 */
+	public function handle_google_oauth_disconnect() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die(
+				esc_html__( 'You do not have permission to manage Analytics Report AI credentials.', 'analytics-report-ai' ),
+				esc_html__( 'Permission denied', 'analytics-report-ai' ),
+				array( 'response' => 403 )
+			);
+		}
+
+		check_admin_referer( 'analytics_report_ai_google_oauth_disconnect', 'analytics_report_ai_google_oauth_disconnect_nonce' );
+
+		$deleted = analytics_report_ai_delete_google_oauth_tokens();
+		$status  = $deleted ? 'google_oauth_local_disconnect_success' : 'google_oauth_local_disconnect_failed';
+
+		wp_safe_redirect(
+			$this->get_settings_url(
+				array(
+					'analytics_report_ai_google_oauth_status' => $status,
 				)
 			)
 		);

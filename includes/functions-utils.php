@@ -364,6 +364,91 @@ if ( ! function_exists( 'analytics_report_ai_store_google_oauth_tokens' ) ) {
 	}
 }
 
+if ( ! function_exists( 'analytics_report_ai_google_oauth_token_storage_exists' ) ) {
+	/**
+	 * Check whether the dedicated OAuth token option exists without exposing values.
+	 *
+	 * @return bool
+	 */
+	function analytics_report_ai_google_oauth_token_storage_exists() {
+		return false !== get_option( ANALYTICS_REPORT_AI_GOOGLE_OAUTH_TOKEN_OPTION_NAME, false );
+	}
+}
+
+if ( ! function_exists( 'analytics_report_ai_get_google_oauth_token_lifecycle_categories' ) ) {
+	/**
+	 * Get safe OAuth token lifecycle categories without exposing token values.
+	 *
+	 * This helper does not refresh, revoke, or call any external endpoint.
+	 *
+	 * @param array|false|null $tokens Optional token option data for request-local classification.
+	 * @return array
+	 */
+	function analytics_report_ai_get_google_oauth_token_lifecycle_categories( $tokens = null ) {
+		if ( null === $tokens ) {
+			$tokens = get_option( ANALYTICS_REPORT_AI_GOOGLE_OAUTH_TOKEN_OPTION_NAME, false );
+		}
+
+		$has_oauth_store = false !== $tokens;
+		$result          = array(
+			'oauth_connection_status_category'    => 'not_connected',
+			'token_lifecycle_status_category'     => 'reconnect_required',
+			'token_refresh_status_category'       => 'unavailable',
+			'token_disconnect_status_category'    => 'not_requested',
+			'token_revoke_status_category'        => 'deferred',
+			'oauth_token_storage_status_category' => $has_oauth_store ? 'stored' : 'not_stored',
+		);
+
+		if ( ! is_array( $tokens ) || empty( $tokens['access_token'] ) || ! is_scalar( $tokens['access_token'] ) ) {
+			return $result;
+		}
+
+		$access_token = analytics_report_ai_sanitize_credential_value( (string) $tokens['access_token'] );
+
+		if ( '' === $access_token ) {
+			return $result;
+		}
+
+		$expires_at        = isset( $tokens['expires_at'] ) && is_numeric( $tokens['expires_at'] ) ? absint( $tokens['expires_at'] ) : 0;
+		$has_refresh_token = isset( $tokens['refresh_token'] ) && is_scalar( $tokens['refresh_token'] ) && '' !== analytics_report_ai_sanitize_credential_value( (string) $tokens['refresh_token'] );
+
+		unset( $access_token );
+
+		if ( $expires_at > 0 && $expires_at <= time() ) {
+			$result['oauth_connection_status_category'] = $has_refresh_token ? 'token_expired_or_refresh_needed' : 'reconnect_required';
+			$result['token_lifecycle_status_category']  = $has_refresh_token ? 'expired' : 'refresh_unavailable';
+			$result['token_refresh_status_category']    = $has_refresh_token ? 'deferred' : 'unavailable';
+
+			return $result;
+		}
+
+		$result['oauth_connection_status_category'] = 'connected';
+		$result['token_lifecycle_status_category']  = 'usable';
+		$result['token_refresh_status_category']    = 'not_attempted';
+
+		return $result;
+	}
+}
+
+if ( ! function_exists( 'analytics_report_ai_delete_google_oauth_tokens' ) ) {
+	/**
+	 * Delete local Google OAuth token data without contacting Google.
+	 *
+	 * This helper deletes only the dedicated local OAuth token option. It does
+	 * not revoke provider-side access, delete the manual Google Access Token
+	 * fallback, or delete the OpenAI API key.
+	 *
+	 * @return bool
+	 */
+	function analytics_report_ai_delete_google_oauth_tokens() {
+		if ( ! analytics_report_ai_google_oauth_token_storage_exists() ) {
+			return true;
+		}
+
+		return delete_option( ANALYTICS_REPORT_AI_GOOGLE_OAUTH_TOKEN_OPTION_NAME );
+	}
+}
+
 if ( ! function_exists( 'analytics_report_ai_get_google_oauth_connection_state' ) ) {
 	/**
 	 * Get Google OAuth connection state without exposing token values.
@@ -371,19 +456,9 @@ if ( ! function_exists( 'analytics_report_ai_get_google_oauth_connection_state' 
 	 * @return string
 	 */
 	function analytics_report_ai_get_google_oauth_connection_state() {
-		$tokens = get_option( ANALYTICS_REPORT_AI_GOOGLE_OAUTH_TOKEN_OPTION_NAME, array() );
+		$categories = analytics_report_ai_get_google_oauth_token_lifecycle_categories();
 
-		if ( ! is_array( $tokens ) || empty( $tokens['access_token'] ) || ! is_scalar( $tokens['access_token'] ) ) {
-			return 'not_connected';
-		}
-
-		$expires_at = isset( $tokens['expires_at'] ) && is_numeric( $tokens['expires_at'] ) ? absint( $tokens['expires_at'] ) : 0;
-
-		if ( $expires_at > 0 && $expires_at <= time() ) {
-			return empty( $tokens['refresh_token'] ) ? 'reconnect_required' : 'token_expired_or_refresh_needed';
-		}
-
-		return 'connected';
+		return isset( $categories['oauth_connection_status_category'] ) ? $categories['oauth_connection_status_category'] : 'not_connected';
 	}
 }
 
@@ -409,66 +484,76 @@ if ( ! function_exists( 'analytics_report_ai_resolve_google_ga4_credential_sourc
 			$manual_access_token = analytics_report_ai_sanitize_credential_value( (string) $settings['google_tokens']['access_token'] );
 		}
 
-		$tokens           = get_option( ANALYTICS_REPORT_AI_GOOGLE_OAUTH_TOKEN_OPTION_NAME, false );
-		$has_oauth_store = false !== $tokens;
+		$tokens               = get_option( ANALYTICS_REPORT_AI_GOOGLE_OAUTH_TOKEN_OPTION_NAME, false );
+		$has_oauth_store     = false !== $tokens;
+		$lifecycle_categories = analytics_report_ai_get_google_oauth_token_lifecycle_categories( $tokens );
+		$lifecycle_categories['connection_state'] = isset( $lifecycle_categories['oauth_connection_status_category'] )
+			? $lifecycle_categories['oauth_connection_status_category']
+			: 'not_connected';
 
 		$result = array(
-			'status'           => 'credential_source_missing',
-			'access_token'     => '',
-			'connection_state' => 'not_connected',
-			'fallback_used'    => false,
+			'status'        => 'credential_source_missing',
+			'access_token'  => '',
+			'fallback_used' => false,
 		);
+		$result = array_merge( $result, $lifecycle_categories );
 
 		if ( is_array( $tokens ) && isset( $tokens['access_token'] ) && is_scalar( $tokens['access_token'] ) ) {
 			$oauth_access_token = analytics_report_ai_sanitize_credential_value( (string) $tokens['access_token'] );
 
 			if ( '' !== $oauth_access_token ) {
-				$expires_at = isset( $tokens['expires_at'] ) && is_numeric( $tokens['expires_at'] ) ? absint( $tokens['expires_at'] ) : 0;
-
-				if ( $expires_at > 0 && $expires_at <= time() ) {
-					$connection_state = empty( $tokens['refresh_token'] ) ? 'reconnect_required' : 'token_expired_or_refresh_needed';
-
+				if ( 'connected' !== $lifecycle_categories['oauth_connection_status_category'] ) {
 					if ( '' !== $manual_access_token ) {
-						return array(
-							'status'           => 'manual_token_fallback_used',
-							'access_token'     => $manual_access_token,
-							'connection_state' => $connection_state,
-							'fallback_used'    => true,
+						return array_merge(
+							$lifecycle_categories,
+							array(
+								'status'        => 'manual_token_fallback_used',
+								'access_token'  => $manual_access_token,
+								'fallback_used' => true,
+							)
 						);
 					}
 
-					return array(
-						'status'           => 'credential_source_oauth_refresh_needed',
-						'access_token'     => '',
-						'connection_state' => $connection_state,
-						'fallback_used'    => false,
+					return array_merge(
+						$lifecycle_categories,
+						array(
+							'status'        => 'credential_source_oauth_refresh_needed',
+							'access_token'  => '',
+							'fallback_used' => false,
+						)
 					);
 				}
 
-				return array(
-					'status'           => 'credential_source_oauth_connected',
-					'access_token'     => $oauth_access_token,
-					'connection_state' => 'connected',
-					'fallback_used'    => false,
+				return array_merge(
+					$lifecycle_categories,
+					array(
+						'status'        => 'credential_source_oauth_connected',
+						'access_token'  => $oauth_access_token,
+						'fallback_used' => false,
+					)
 				);
 			}
 		}
 
 		if ( '' !== $manual_access_token ) {
-			return array(
-				'status'           => $has_oauth_store ? 'manual_token_fallback_used' : 'credential_source_manual_token',
-				'access_token'     => $manual_access_token,
-				'connection_state' => $has_oauth_store ? 'oauth_error_category' : 'not_connected',
-				'fallback_used'    => $has_oauth_store,
+			return array_merge(
+				$lifecycle_categories,
+				array(
+					'status'        => $has_oauth_store ? 'manual_token_fallback_used' : 'credential_source_manual_token',
+					'access_token'  => $manual_access_token,
+					'fallback_used' => $has_oauth_store,
+				)
 			);
 		}
 
 		if ( $has_oauth_store ) {
-			return array(
-				'status'           => 'credential_source_oauth_error_category',
-				'access_token'     => '',
-				'connection_state' => 'oauth_error_category',
-				'fallback_used'    => false,
+			return array_merge(
+				$lifecycle_categories,
+				array(
+					'status'        => 'credential_source_oauth_error_category',
+					'access_token'  => '',
+					'fallback_used' => false,
+				)
 			);
 		}
 

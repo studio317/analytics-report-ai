@@ -49,6 +49,15 @@ final class Analytics_Report_AI_Report_Builder {
 		$credential_source_label = isset( $credential_source['status'] ) && is_scalar( $credential_source['status'] )
 			? (string) $credential_source['status']
 			: 'credential_source_missing';
+		$credential_connection_status = isset( $credential_source['oauth_connection_status_category'] ) && is_scalar( $credential_source['oauth_connection_status_category'] )
+			? (string) $credential_source['oauth_connection_status_category']
+			: 'not_connected';
+		$credential_lifecycle_status = isset( $credential_source['token_lifecycle_status_category'] ) && is_scalar( $credential_source['token_lifecycle_status_category'] )
+			? (string) $credential_source['token_lifecycle_status_category']
+			: 'reconnect_required';
+		$credential_refresh_status = isset( $credential_source['token_refresh_status_category'] ) && is_scalar( $credential_source['token_refresh_status_category'] )
+			? (string) $credential_source['token_refresh_status_category']
+			: 'unavailable';
 		$has_openai_api_key      = ! empty( $settings['openai_api_key'] );
 		$max_report_days         = analytics_report_ai_get_max_report_days();
 		?>
@@ -108,6 +117,13 @@ final class Analytics_Report_AI_Report_Builder {
 								<?php endif; ?>
 								<p class="description">
 									<?php echo esc_html__( 'This status is a safe category label. OAuth is the preferred Google credential source; the manual Google Access Token is an MVP maturation fallback, and credential values are hidden.', 'analytics-report-ai' ); ?>
+								</p>
+								<p class="description">
+									<code><?php echo esc_html( 'oauth_connection_status_category: ' . $credential_connection_status ); ?></code>
+									<br>
+									<code><?php echo esc_html( 'token_lifecycle_status_category: ' . $credential_lifecycle_status ); ?></code>
+									<br>
+									<code><?php echo esc_html( 'token_refresh_status_category: ' . $credential_refresh_status ); ?></code>
 								</p>
 							</td>
 						</tr>
@@ -605,13 +621,29 @@ final class Analytics_Report_AI_Report_Builder {
 		$status = isset( $credential_source['status'] ) && is_scalar( $credential_source['status'] )
 			? (string) $credential_source['status']
 			: 'credential_source_missing';
+		$lifecycle_status = isset( $credential_source['token_lifecycle_status_category'] ) && is_scalar( $credential_source['token_lifecycle_status_category'] )
+			? (string) $credential_source['token_lifecycle_status_category']
+			: 'reconnect_required';
+		$refresh_status   = isset( $credential_source['token_refresh_status_category'] ) && is_scalar( $credential_source['token_refresh_status_category'] )
+			? (string) $credential_source['token_refresh_status_category']
+			: 'unavailable';
 
 		if ( 'credential_source_oauth_refresh_needed' === $status ) {
-			return __( 'Google OAuth credential source needs refresh or reconnect. Reconnect Google OAuth or use the temporary manual Google Access Token MVP fallback in Settings. Credential values are not displayed.', 'analytics-report-ai' );
+			return sprintf(
+				/* translators: 1: token lifecycle status category. 2: token refresh status category. */
+				__( 'Google OAuth credential source needs reconnect before OAuth credential use. Status: token_lifecycle_status_category: %1$s; token_refresh_status_category: %2$s. Refresh requests are deferred in this MVP boundary. Use the temporary manual Google Access Token MVP fallback in Settings only for controlled developer verification. Credential values are not displayed.', 'analytics-report-ai' ),
+				$lifecycle_status,
+				$refresh_status
+			);
 		}
 
 		if ( 'credential_source_oauth_error_category' === $status ) {
-			return __( 'Google OAuth credential source is not usable. Reconnect Google OAuth or use the temporary manual Google Access Token MVP fallback in Settings. Credential values are not displayed.', 'analytics-report-ai' );
+			return sprintf(
+				/* translators: 1: token lifecycle status category. 2: token refresh status category. */
+				__( 'Google OAuth credential source is not usable. Status: token_lifecycle_status_category: %1$s; token_refresh_status_category: %2$s. Reconnect Google OAuth or use the temporary manual Google Access Token MVP fallback in Settings only for controlled developer verification. Credential values are not displayed.', 'analytics-report-ai' ),
+				$lifecycle_status,
+				$refresh_status
+			);
 		}
 
 		return __( 'Missing Google credential. Connect Google OAuth or configure the temporary manual Google Access Token MVP fallback in Settings. Credential values are not displayed.', 'analytics-report-ai' );
