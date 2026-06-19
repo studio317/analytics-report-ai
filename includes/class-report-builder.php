@@ -58,7 +58,16 @@ final class Analytics_Report_AI_Report_Builder {
 		$credential_refresh_status = isset( $credential_source['token_refresh_status_category'] ) && is_scalar( $credential_source['token_refresh_status_category'] )
 			? (string) $credential_source['token_refresh_status_category']
 			: 'unavailable';
-		$has_openai_api_key      = ! empty( $settings['openai_api_key'] );
+		$openai_api_key_categories = analytics_report_ai_get_openai_api_key_lifecycle_categories( $settings );
+		$openai_api_key_source_category = isset( $openai_api_key_categories['openai_api_key_source_category'] )
+			? $openai_api_key_categories['openai_api_key_source_category']
+			: 'missing';
+		$openai_api_key_settings_fallback_status = isset( $openai_api_key_categories['openai_api_key_settings_fallback_status'] )
+			? $openai_api_key_categories['openai_api_key_settings_fallback_status']
+			: 'not_saved';
+		$openai_api_key_value_visibility = isset( $openai_api_key_categories['openai_api_key_value_visibility'] )
+			? $openai_api_key_categories['openai_api_key_value_visibility']
+			: 'hidden';
 		$max_report_days         = analytics_report_ai_get_max_report_days();
 		?>
 		<div class="wrap analytics-report-ai-admin">
@@ -128,15 +137,23 @@ final class Analytics_Report_AI_Report_Builder {
 							</td>
 						</tr>
 						<tr>
-							<th scope="row"><?php echo esc_html__( 'OpenAI API Key', 'analytics-report-ai' ); ?></th>
+							<th scope="row"><?php echo esc_html__( 'OpenAI API Key Source', 'analytics-report-ai' ); ?></th>
 							<td>
-								<?php if ( $has_openai_api_key ) : ?>
-									<?php echo esc_html__( 'Saved', 'analytics-report-ai' ); ?>
-								<?php else : ?>
+								<?php if ( 'missing' === $openai_api_key_source_category ) : ?>
 									<span class="analytics-report-ai-status-warning">
-										<?php echo esc_html__( 'Not saved', 'analytics-report-ai' ); ?>
+										<code><?php echo esc_html( 'openai_api_key_source_category: ' . $openai_api_key_source_category ); ?></code>
 									</span>
+								<?php else : ?>
+									<code><?php echo esc_html( 'openai_api_key_source_category: ' . $openai_api_key_source_category ); ?></code>
 								<?php endif; ?>
+								<p class="description">
+									<?php echo esc_html__( 'This status is a safe category label. Constant-based configuration is preferred, Settings fallback remains lower priority, and credential values are hidden.', 'analytics-report-ai' ); ?>
+								</p>
+								<p class="description">
+									<code><?php echo esc_html( 'openai_api_key_settings_fallback_status: ' . $openai_api_key_settings_fallback_status ); ?></code>
+									<br>
+									<code><?php echo esc_html( 'openai_api_key_value_visibility: ' . $openai_api_key_value_visibility ); ?></code>
+								</p>
 							</td>
 						</tr>
 					</tbody>

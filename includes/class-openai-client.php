@@ -24,12 +24,12 @@ final class Analytics_Report_AI_OpenAI_Client {
 	 * @return string|WP_Error
 	 */
 	public static function generate_report( $payload, $settings ) {
-		$api_key = isset( $settings['openai_api_key'] ) ? trim( (string) $settings['openai_api_key'] ) : '';
+		$api_key = analytics_report_ai_resolve_openai_api_key( $settings );
 
 		if ( '' === $api_key ) {
 			return new WP_Error(
 				'analytics_report_ai_openai_api_key_missing',
-				__( 'OpenAI API key is not saved. Please save an API key in Settings.', 'analytics-report-ai' )
+				__( 'OpenAI API key is not configured. Configure the OpenAI API key constant or save a Settings fallback key.', 'analytics-report-ai' )
 			);
 		}
 

@@ -189,6 +189,110 @@ if ( ! function_exists( 'analytics_report_ai_get_non_empty_constant_value' ) ) {
 	}
 }
 
+if ( ! function_exists( 'analytics_report_ai_get_openai_api_key_constant_name' ) ) {
+	/**
+	 * Get the OpenAI API key constant name without reading its value.
+	 *
+	 * @return string
+	 */
+	function analytics_report_ai_get_openai_api_key_constant_name() {
+		return 'ANALYTICS_REPORT_AI_OPENAI_API_KEY';
+	}
+}
+
+if ( ! function_exists( 'analytics_report_ai_get_openai_api_key_source' ) ) {
+	/**
+	 * Resolve the active OpenAI API key source category without exposing values.
+	 *
+	 * Credential values are intentionally not returned by this helper. Use
+	 * analytics_report_ai_resolve_openai_api_key() only at request runtime.
+	 *
+	 * @param array|null $settings Plugin settings.
+	 * @return array
+	 */
+	function analytics_report_ai_get_openai_api_key_source( $settings = null ) {
+		if ( ! is_array( $settings ) ) {
+			$settings = analytics_report_ai_get_settings();
+		}
+
+		$constant_api_key = analytics_report_ai_get_non_empty_constant_value( analytics_report_ai_get_openai_api_key_constant_name() );
+		$settings_api_key = isset( $settings['openai_api_key'] ) && is_scalar( $settings['openai_api_key'] )
+			? analytics_report_ai_sanitize_credential_value( (string) $settings['openai_api_key'] )
+			: '';
+
+		$has_constant_api_key = '' !== $constant_api_key;
+		$has_settings_api_key = '' !== $settings_api_key;
+
+		$result = array(
+			'source_category'          => 'missing',
+			'constant_status'          => $has_constant_api_key ? 'configured' : 'not_configured',
+			'settings_fallback_status' => $has_settings_api_key ? 'saved' : 'not_saved',
+			'value_hidden_status'      => 'hidden',
+			'has_constant'             => $has_constant_api_key,
+			'has_settings_fallback'    => $has_settings_api_key,
+		);
+
+		if ( $has_constant_api_key ) {
+			$result['source_category'] = 'constant_configured';
+
+			return $result;
+		}
+
+		if ( $has_settings_api_key ) {
+			$result['source_category'] = 'settings_saved';
+		}
+
+		return $result;
+	}
+}
+
+if ( ! function_exists( 'analytics_report_ai_resolve_openai_api_key' ) ) {
+	/**
+	 * Resolve the request-local OpenAI API key value.
+	 *
+	 * The returned value is credential material for immediate OpenAI request
+	 * use only. It must not be displayed, logged, stored back into settings, or
+	 * used as support/debug evidence.
+	 *
+	 * @param array|null $settings Plugin settings.
+	 * @return string
+	 */
+	function analytics_report_ai_resolve_openai_api_key( $settings = null ) {
+		if ( ! is_array( $settings ) ) {
+			$settings = analytics_report_ai_get_settings();
+		}
+
+		$constant_api_key = analytics_report_ai_get_non_empty_constant_value( analytics_report_ai_get_openai_api_key_constant_name() );
+
+		if ( '' !== $constant_api_key ) {
+			return $constant_api_key;
+		}
+
+		return isset( $settings['openai_api_key'] ) && is_scalar( $settings['openai_api_key'] )
+			? analytics_report_ai_sanitize_credential_value( (string) $settings['openai_api_key'] )
+			: '';
+	}
+}
+
+if ( ! function_exists( 'analytics_report_ai_get_openai_api_key_lifecycle_categories' ) ) {
+	/**
+	 * Get status/category labels for OpenAI API key source UI.
+	 *
+	 * @param array|null $settings Plugin settings.
+	 * @return array
+	 */
+	function analytics_report_ai_get_openai_api_key_lifecycle_categories( $settings = null ) {
+		$source = analytics_report_ai_get_openai_api_key_source( $settings );
+
+		return array(
+			'openai_api_key_source_category'          => $source['source_category'],
+			'openai_api_key_constant_status'          => $source['constant_status'],
+			'openai_api_key_settings_fallback_status' => $source['settings_fallback_status'],
+			'openai_api_key_value_visibility'         => $source['value_hidden_status'],
+		);
+	}
+}
+
 if ( ! function_exists( 'analytics_report_ai_get_google_oauth_client_pair_status' ) ) {
 	/**
 	 * Classify a client ID / client secret pair without exposing values.
