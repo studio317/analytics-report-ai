@@ -29,7 +29,7 @@ Service URL: https://analyticsdata.googleapis.com/
 Data sent to Google may include:
 
 * GA4 property ID.
-* Google Access Token in the Authorization header.
+* Google OAuth access token in the Authorization header.
 * Selected date range.
 * Comparison setting and comparison date range, when comparison is enabled.
 * HostName filter, when enabled.
@@ -47,7 +47,7 @@ Data received from Google may include:
 
 The Google Analytics Data API request body is designed not to include the OpenAI API Key, WordPress user information, cookies, or IP addresses.
 
-The current MVP uses manual Google Access Token entry for developer verification. This is temporary and must be redesigned with an OAuth flow, expiry handling, scope checks, and revoke or reconnect controls before public use.
+Google OAuth is the normal GA4 credential source. The retired manual Google Access Token fallback is not a normal public-release credential path. Refresh request execution and provider-side revoke remain separate deferred tracks and are not described as implemented behavior.
 
 Google terms and privacy information:
 
@@ -94,11 +94,13 @@ OpenAI terms and privacy information:
 
 = Credential Storage and Payload Review =
 
-In the MVP, the Google Access Token and OpenAI API Key are saved in the WordPress database as plugin settings. Saved credential values are not displayed again in the admin screen. Database administrators, backups, server administrators, or code that can read WordPress options may be able to access stored credentials. This storage method is for MVP and developer verification, and it needs redesign before public or multi-user use.
+In the MVP, Google OAuth token data is stored in a dedicated plugin-owned option. OAuth client Settings fallback configuration and the OpenAI API Key can be saved in plugin settings. Saved credential values are not displayed again in the admin screen. Database administrators, backups, server administrators, or code that can read WordPress options may be able to access stored credential categories. This storage posture is for MVP and developer verification, and OpenAI API key storage and OAuth client Settings fallback storage remain separate public-release decisions.
 
 The plugin does not send the full raw GA4 response to OpenAI. It formats selected GA4 results into report-generation data, shows a structured Payload Preview before AI generation, and sends the reviewed report data only when Generate AI Report is clicked. The normal admin UI does not expose a full raw AI payload JSON preview.
 
 The reviewed report data is stored temporarily in a user-scoped WordPress transient and expires automatically. Payload validation runs before transient storage and again before OpenAI generation; missing, expired, old, or invalid payloads are not sent to OpenAI.
+
+Local-only Google OAuth disconnect deletes local OAuth token data only. It does not perform provider-side revoke, execute refresh requests, delete OAuth client Settings fallback values, or delete the OpenAI API key. Plugin uninstall cleanup is a separate plugin-owned option cleanup boundary and does not mean provider-side revoke.
 
 = Support and Debug Evidence =
 
