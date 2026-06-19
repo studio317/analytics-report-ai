@@ -133,7 +133,7 @@ final class Analytics_Report_AI_Settings {
 			add_settings_error(
 				ANALYTICS_REPORT_AI_OPTION_NAME,
 				'analytics_report_ai_google_oauth_client_fallback_deleted',
-				__( 'Settings fallback Google OAuth client configuration was deleted. Status: oauth_client_settings_fallback_status: deleted. Constants, OAuth tokens, provider access, and the manual Google access token fallback were not changed.', 'analytics-report-ai' ),
+				__( 'Settings fallback Google OAuth client configuration was deleted. Status: oauth_client_settings_fallback_status: deleted. Constants, OAuth tokens, and provider access were not changed.', 'analytics-report-ai' ),
 				'updated'
 			);
 		} elseif ( isset( $input['google_oauth_client'] ) && is_array( $input['google_oauth_client'] ) ) {
@@ -178,35 +178,13 @@ final class Analytics_Report_AI_Settings {
 		}
 
 		/*
-		 * Google access token for MVP development.
+		 * Retired manual Google Access Token fallback.
 		 *
-		 * Empty input keeps the existing token.
+		 * Settings save no longer accepts manual token input and clears the
+		 * plugin-owned fallback category without reading or displaying values.
 		 */
-		$google_tokens = isset( $existing['google_tokens'] ) && is_array( $existing['google_tokens'] ) ? $existing['google_tokens'] : array();
-
-		$clear_google_access_token = ! empty( $input['clear_google_access_token'] );
-		$google_access_token       = isset( $input['google_access_token'] ) && is_scalar( $input['google_access_token'] ) ? trim( (string) $input['google_access_token'] ) : '';
-
-		if (
-			'' === $google_access_token
-			&& isset( $input['google_tokens']['access_token'] )
-			&& is_scalar( $input['google_tokens']['access_token'] )
-		) {
-			$google_access_token = trim( (string) $input['google_tokens']['access_token'] );
-		}
-
-		if ( $clear_google_access_token ) {
-			unset( $google_tokens['access_token'] );
-		} elseif ( '' !== $google_access_token ) {
-			$sanitized_google_access_token = analytics_report_ai_sanitize_credential_value( $google_access_token );
-
-			if ( '' !== $sanitized_google_access_token ) {
-				$google_tokens['access_token'] = $sanitized_google_access_token;
-			}
-		}
-
-		$settings['google_tokens']      = $google_tokens;
-		$settings['google_auth_status'] = ! empty( $google_tokens['access_token'] ) ? 'connected' : 'not_connected';
+		$settings['google_tokens']      = array();
+		$settings['google_auth_status'] = 'not_connected';
 
 		return $settings;
 	}
@@ -223,8 +201,6 @@ final class Analytics_Report_AI_Settings {
 
 		$settings                = analytics_report_ai_get_settings();
 		$has_openai_api_key      = ! empty( $settings['openai_api_key'] );
-		$google_auth_status      = isset( $settings['google_auth_status'] ) ? $settings['google_auth_status'] : 'not_connected';
-		$has_google_access_token = ! empty( $settings['google_tokens']['access_token'] );
 		$host_filter_enabled     = ! empty( $settings['host_filter_enabled'] );
 		$ga4_property_id         = isset( $settings['ga4_property_id'] ) ? $settings['ga4_property_id'] : '';
 		$host_name               = isset( $settings['host_name'] ) ? $settings['host_name'] : analytics_report_ai_get_default_host();
@@ -261,7 +237,7 @@ final class Analytics_Report_AI_Settings {
 
 				<ul class="analytics-report-ai-notice-list">
 					<li>
-						<?php echo esc_html__( 'Google Analytics Data API requests use the resolved Google credential source. OAuth is preferred; the temporary manual Google Access Token remains an MVP maturation fallback.', 'analytics-report-ai' ); ?>
+						<?php echo esc_html__( 'Google Analytics Data API requests use the resolved Google OAuth credential source.', 'analytics-report-ai' ); ?>
 					</li>
 					<li>
 						<?php echo esc_html__( 'OpenAI API requests use the saved OpenAI API Key.', 'analytics-report-ai' ); ?>
@@ -273,7 +249,7 @@ final class Analytics_Report_AI_Settings {
 				<h2><?php echo esc_html__( 'Credential Storage (MVP)', 'analytics-report-ai' ); ?></h2>
 
 				<p>
-					<?php echo esc_html__( 'In the current MVP, the temporary manual Google Access Token and OpenAI API Key are saved in the WordPress database as plugin settings.', 'analytics-report-ai' ); ?>
+					<?php echo esc_html__( 'In the current MVP, the OpenAI API Key and OAuth client Settings fallback can be saved in the WordPress database as plugin settings. Google OAuth tokens are stored in a dedicated plugin option.', 'analytics-report-ai' ); ?>
 				</p>
 
 				<ul class="analytics-report-ai-notice-list">
@@ -287,7 +263,7 @@ final class Analytics_Report_AI_Settings {
 						<?php echo esc_html__( 'This storage method is for MVP and developer verification. Public or multi-user use needs a redesigned credential flow.', 'analytics-report-ai' ); ?>
 					</li>
 					<li>
-						<?php echo esc_html__( 'The manual Google Access Token field is an MVP maturation fallback. Public or multi-user use needs OAuth lifecycle controls, including expiry handling, scope checks, and revoke or reconnect paths.', 'analytics-report-ai' ); ?>
+						<?php echo esc_html__( 'The manual Google Access Token fallback is retired from the normal Settings UI and is no longer a normal GA4 credential source.', 'analytics-report-ai' ); ?>
 					</li>
 					<li>
 						<?php echo esc_html__( 'For OpenAI, use a Restricted API key with the minimum permissions needed for Responses API requests where possible.', 'analytics-report-ai' ); ?>
@@ -391,10 +367,10 @@ final class Analytics_Report_AI_Settings {
 						<?php echo esc_html__( 'The plugin displays only status-level OAuth state. It does not display authorization codes, token values, token endpoint responses, or option values. Refresh requests and provider-side revoke requests are deferred.', 'analytics-report-ai' ); ?>
 					</li>
 					<li>
-						<?php echo esc_html__( 'The temporary manual Google Access Token field below remains available as an MVP maturation fallback for controlled developer verification only.', 'analytics-report-ai' ); ?>
+						<?php echo esc_html__( 'The manual Google Access Token fallback is retired from normal public-release behavior. Use Google OAuth as the GA4 credential source.', 'analytics-report-ai' ); ?>
 					</li>
 					<li>
-						<?php echo esc_html__( 'Local disconnect deletes only local OAuth token data. It does not contact Google, revoke provider access, delete the manual Google Access Token fallback, or delete the OpenAI API key.', 'analytics-report-ai' ); ?>
+						<?php echo esc_html__( 'Local disconnect deletes only local OAuth token data. It does not contact Google, revoke provider access, delete OAuth client Settings fallback values, or delete the OpenAI API key.', 'analytics-report-ai' ); ?>
 					</li>
 				</ul>
 
@@ -412,7 +388,7 @@ final class Analytics_Report_AI_Settings {
 					</form>
 
 					<p class="description">
-						<?php echo esc_html__( 'This deletes only local OAuth token data saved by this plugin. It does not revoke provider-side access, delete the temporary manual Google Access Token fallback, or delete the OpenAI API key.', 'analytics-report-ai' ); ?>
+						<?php echo esc_html__( 'This deletes only local OAuth token data saved by this plugin. It does not revoke provider-side access, delete OAuth client Settings fallback values, or delete the OpenAI API key.', 'analytics-report-ai' ); ?>
 					</p>
 				<?php endif; ?>
 			</div>
@@ -531,64 +507,7 @@ final class Analytics_Report_AI_Settings {
 												name="<?php echo esc_attr( ANALYTICS_REPORT_AI_OPTION_NAME ); ?>[clear_google_oauth_client_fallback]"
 												value="1"
 											/>
-											<?php echo esc_html__( 'Delete the saved Settings fallback OAuth client configuration. Constants, OAuth tokens, provider access, and the manual Google access token fallback are not changed.', 'analytics-report-ai' ); ?>
-										</label>
-									</p>
-								<?php endif; ?>
-							</td>
-						</tr>
-
-						<tr>
-							<th scope="row">
-								<?php echo esc_html__( 'Manual Google Access Token Status', 'analytics-report-ai' ); ?>
-							</th>
-							<td>
-								<code><?php echo esc_html( $google_auth_status ); ?></code>
-								<p class="description">
-									<?php echo esc_html__( 'This value-hidden status only indicates whether the temporary manual token fallback is saved. The token value is not displayed.', 'analytics-report-ai' ); ?>
-								</p>
-							</td>
-						</tr>
-
-						<tr>
-							<th scope="row">
-								<label for="analytics-report-ai-google-access-token">
-									<?php echo esc_html__( 'Manual Google Access Token', 'analytics-report-ai' ); ?>
-								</label>
-							</th>
-							<td>
-								<input
-									type="password"
-									id="analytics-report-ai-google-access-token"
-									name="<?php echo esc_attr( ANALYTICS_REPORT_AI_OPTION_NAME ); ?>[google_access_token]"
-									value=""
-									class="regular-text"
-									autocomplete="off"
-									placeholder="<?php echo esc_attr( $has_google_access_token ? __( 'Saved. Enter a new token only when replacing it.', 'analytics-report-ai' ) : __( 'Not saved.', 'analytics-report-ai' ) ); ?>"
-								/>
-
-								<p class="description">
-									<?php
-									echo $has_google_access_token
-										? esc_html__( 'A manual Google access token fallback is currently saved. Leave this field empty to keep the existing token.', 'analytics-report-ai' )
-										: esc_html__( 'No manual Google access token fallback is currently saved.', 'analytics-report-ai' );
-									?>
-								</p>
-
-								<p class="description">
-									<?php echo esc_html__( 'This field is an MVP maturation fallback for controlled developer verification. OAuth is the preferred GA4 credential source.', 'analytics-report-ai' ); ?>
-								</p>
-
-								<?php if ( $has_google_access_token ) : ?>
-									<p>
-										<label for="analytics-report-ai-clear-google-access-token">
-											<input
-												type="checkbox"
-												id="analytics-report-ai-clear-google-access-token"
-												name="<?php echo esc_attr( ANALYTICS_REPORT_AI_OPTION_NAME ); ?>[clear_google_access_token]"
-												value="1"
-											/>
-											<?php echo esc_html__( 'Delete the saved manual Google access token fallback.', 'analytics-report-ai' ); ?>
+											<?php echo esc_html__( 'Delete the saved Settings fallback OAuth client configuration. Constants, OAuth tokens, and provider access are not changed.', 'analytics-report-ai' ); ?>
 										</label>
 									</p>
 								<?php endif; ?>
@@ -722,7 +641,7 @@ final class Analytics_Report_AI_Settings {
 			'token_exchange_missing_token_category' => __( 'Google OAuth token exchange was not completed because the response did not include the required token category. Raw response details are not displayed.', 'analytics-report-ai' ),
 			'token_exchange_not_executed'           => __( 'Google OAuth token exchange was not executed because the callback preconditions were not complete.', 'analytics-report-ai' ),
 			'token_storage_unavailable_category'    => __( 'Google OAuth token exchange completed, but token storage did not complete. No token value is displayed.', 'analytics-report-ai' ),
-			'google_oauth_local_disconnect_success' => __( 'Local Google OAuth token data was deleted. Status: token_disconnect_status_category: local_tokens_deleted. Google was not contacted, provider-side access was not revoked, and the manual Google Access Token fallback and OpenAI API key were not changed.', 'analytics-report-ai' ),
+			'google_oauth_local_disconnect_success' => __( 'Local Google OAuth token data was deleted. Status: token_disconnect_status_category: local_tokens_deleted. Google was not contacted, provider-side access was not revoked, and OAuth client Settings fallback values and the OpenAI API key were not changed.', 'analytics-report-ai' ),
 			'google_oauth_local_disconnect_failed'  => __( 'Local Google OAuth token disconnect did not complete. Status: token_disconnect_status_category: failed. Token values and option values are not displayed, and provider-side revoke was not requested.', 'analytics-report-ai' ),
 		);
 

@@ -104,13 +104,9 @@ if ( ! function_exists( 'analytics_report_ai_get_settings' ) ) {
 			? (string) $settings['openai_api_key']
 			: '';
 
-		if ( isset( $settings['google_tokens']['access_token'] ) && is_scalar( $settings['google_tokens']['access_token'] ) ) {
-			$settings['google_tokens']['access_token'] = (string) $settings['google_tokens']['access_token'];
-		} else {
-			unset( $settings['google_tokens']['access_token'] );
-		}
+		unset( $settings['google_tokens']['access_token'] );
 
-		$settings['google_auth_status'] = ! empty( $settings['google_tokens']['access_token'] ) ? 'connected' : 'not_connected';
+		$settings['google_auth_status'] = 'not_connected';
 
 		return $settings;
 	}
@@ -435,8 +431,8 @@ if ( ! function_exists( 'analytics_report_ai_delete_google_oauth_tokens' ) ) {
 	 * Delete local Google OAuth token data without contacting Google.
 	 *
 	 * This helper deletes only the dedicated local OAuth token option. It does
-	 * not revoke provider-side access, delete the manual Google Access Token
-	 * fallback, or delete the OpenAI API key.
+	 * not revoke provider-side access, delete OAuth client Settings fallback
+	 * values, or delete the OpenAI API key.
 	 *
 	 * @return bool
 	 */
@@ -467,8 +463,9 @@ if ( ! function_exists( 'analytics_report_ai_resolve_google_ga4_credential_sourc
 	 * Resolve the request-local credential source for GA4 requests.
 	 *
 	 * Token values are returned only for immediate runtime use by GA4 client
-	 * calls. Admin UI, docs, logs, and support evidence should use the status
-	 * labels instead.
+	 * calls. The retired manual Settings fallback is not used as a normal GA4
+	 * credential source. Admin UI, docs, logs, and support evidence should use
+	 * the status labels instead.
 	 *
 	 * @param array|null $settings Plugin settings.
 	 * @return array
@@ -476,12 +473,6 @@ if ( ! function_exists( 'analytics_report_ai_resolve_google_ga4_credential_sourc
 	function analytics_report_ai_resolve_google_ga4_credential_source( $settings = null ) {
 		if ( ! is_array( $settings ) ) {
 			$settings = analytics_report_ai_get_settings();
-		}
-
-		$manual_access_token = '';
-
-		if ( isset( $settings['google_tokens']['access_token'] ) && is_scalar( $settings['google_tokens']['access_token'] ) ) {
-			$manual_access_token = analytics_report_ai_sanitize_credential_value( (string) $settings['google_tokens']['access_token'] );
 		}
 
 		$tokens               = get_option( ANALYTICS_REPORT_AI_GOOGLE_OAUTH_TOKEN_OPTION_NAME, false );
@@ -503,17 +494,6 @@ if ( ! function_exists( 'analytics_report_ai_resolve_google_ga4_credential_sourc
 
 			if ( '' !== $oauth_access_token ) {
 				if ( 'connected' !== $lifecycle_categories['oauth_connection_status_category'] ) {
-					if ( '' !== $manual_access_token ) {
-						return array_merge(
-							$lifecycle_categories,
-							array(
-								'status'        => 'manual_token_fallback_used',
-								'access_token'  => $manual_access_token,
-								'fallback_used' => true,
-							)
-						);
-					}
-
 					return array_merge(
 						$lifecycle_categories,
 						array(
@@ -533,17 +513,6 @@ if ( ! function_exists( 'analytics_report_ai_resolve_google_ga4_credential_sourc
 					)
 				);
 			}
-		}
-
-		if ( '' !== $manual_access_token ) {
-			return array_merge(
-				$lifecycle_categories,
-				array(
-					'status'        => $has_oauth_store ? 'manual_token_fallback_used' : 'credential_source_manual_token',
-					'access_token'  => $manual_access_token,
-					'fallback_used' => $has_oauth_store,
-				)
-			);
 		}
 
 		if ( $has_oauth_store ) {
