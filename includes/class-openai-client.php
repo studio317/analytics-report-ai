@@ -29,7 +29,7 @@ final class Analytics_Report_AI_OpenAI_Client {
 		if ( '' === $api_key ) {
 			return new WP_Error(
 				'analytics_report_ai_openai_api_key_missing',
-				__( 'OpenAI API key is not configured. Configure the OpenAI API key constant or save a Settings fallback key.', 'analytics-report-ai' )
+				__( 'OpenAI API key source is missing. Configure the preferred OpenAI API key constant source or save a current MVP Settings fallback key.', 'analytics-report-ai' )
 			);
 		}
 
@@ -128,7 +128,7 @@ final class Analytics_Report_AI_OpenAI_Client {
 		}
 
 		if ( 401 === $status_code ) {
-			return __( 'OpenAI API key is invalid or missing. Check the API key in Settings.', 'analytics-report-ai' );
+			return __( 'OpenAI API authentication failed. Review the configured OpenAI API key source without sharing key values.', 'analytics-report-ai' );
 		}
 
 		if ( 403 === $status_code ) {
@@ -152,7 +152,7 @@ final class Analytics_Report_AI_OpenAI_Client {
 		}
 
 		if ( self::has_api_error_value( $data, 'type', array( 'authentication_error' ) ) ) {
-			return __( 'OpenAI API key is invalid or missing. Check the API key in Settings.', 'analytics-report-ai' );
+			return __( 'OpenAI API authentication failed. Review the configured OpenAI API key source without sharing key values.', 'analytics-report-ai' );
 		}
 
 		if (
@@ -173,7 +173,7 @@ final class Analytics_Report_AI_OpenAI_Client {
 			return __( 'OpenAI API rate limit or quota may have been exceeded. Check your OpenAI Platform usage and billing.', 'analytics-report-ai' );
 		}
 
-		return __( 'OpenAI API returned an unexpected error. Check the settings and try again.', 'analytics-report-ai' );
+		return __( 'OpenAI API returned an unexpected error. Review the OpenAI configuration and try again without sharing request or response details.', 'analytics-report-ai' );
 	}
 
 	/**

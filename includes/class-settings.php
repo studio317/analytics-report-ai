@@ -607,7 +607,7 @@ final class Analytics_Report_AI_Settings {
 									} elseif ( $has_openai_api_key_settings_fallback ) {
 										echo esc_html__( 'A Settings fallback OpenAI API key is currently saved and hidden. Leave this field empty to keep the saved fallback.', 'analytics-report-ai' );
 									} else {
-										echo esc_html__( 'No OpenAI API key source is currently configured.', 'analytics-report-ai' );
+										echo esc_html__( 'No OpenAI API key source is currently configured. Configure the preferred constant source or save a current MVP Settings fallback.', 'analytics-report-ai' );
 									}
 									?>
 								</p>

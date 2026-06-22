@@ -149,6 +149,11 @@ final class Analytics_Report_AI_Report_Builder {
 								<p class="description">
 									<?php echo esc_html__( 'This status is a safe category label. Constant-based configuration is preferred, Settings fallback remains lower priority, and credential values are hidden.', 'analytics-report-ai' ); ?>
 								</p>
+								<?php if ( 'missing' === $openai_api_key_source_category ) : ?>
+									<p class="description">
+										<?php echo esc_html__( 'OpenAI report generation needs an OpenAI API key source. Configure the preferred constant source or save the current MVP Settings fallback before generating.', 'analytics-report-ai' ); ?>
+									</p>
+								<?php endif; ?>
 								<p class="description">
 									<code><?php echo esc_html( 'openai_api_key_settings_fallback_status: ' . $openai_api_key_settings_fallback_status ); ?></code>
 									<br>
