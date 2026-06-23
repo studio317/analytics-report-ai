@@ -160,21 +160,16 @@ final class Analytics_Report_AI_Settings {
 		);
 
 		/*
-		 * OpenAI API key.
+		 * OpenAI API key Settings fallback.
 		 *
-		 * Empty input keeps the existing key.
+		 * The normal Settings UI no longer creates or replaces this legacy /
+		 * transitional fallback. Existing fallback values are preserved for
+		 * compatibility and can be removed only by the explicit clear control.
 		 */
 		$clear_openai_api_key = ! empty( $input['clear_openai_api_key'] );
-		$openai_api_key       = isset( $input['openai_api_key'] ) && is_scalar( $input['openai_api_key'] ) ? trim( (string) $input['openai_api_key'] ) : '';
 
 		if ( $clear_openai_api_key ) {
 			$settings['openai_api_key'] = '';
-		} elseif ( '' !== $openai_api_key ) {
-			$sanitized_openai_api_key = analytics_report_ai_sanitize_credential_value( $openai_api_key );
-
-			if ( '' !== $sanitized_openai_api_key ) {
-				$settings['openai_api_key'] = $sanitized_openai_api_key;
-			}
 		}
 
 		/*
@@ -260,7 +255,7 @@ final class Analytics_Report_AI_Settings {
 				<h2><?php echo esc_html__( 'Credential Storage (MVP)', 'analytics-report-ai' ); ?></h2>
 
 				<p>
-					<?php echo esc_html__( 'In the current MVP, the OpenAI API key can use a constant-based source or a Settings fallback. OAuth client Settings fallback can be saved in the WordPress database as plugin settings. Google OAuth tokens are stored in a dedicated plugin option.', 'analytics-report-ai' ); ?>
+					<?php echo esc_html__( 'In the current MVP, the OpenAI API key uses a constant-based source first. Existing Settings fallback keys remain a legacy / transitional compatibility state. OAuth client Settings fallback can be saved in the WordPress database as plugin settings. Google OAuth tokens are stored in a dedicated plugin option.', 'analytics-report-ai' ); ?>
 				</p>
 
 				<ul class="analytics-report-ai-notice-list">
@@ -271,7 +266,7 @@ final class Analytics_Report_AI_Settings {
 						<?php echo esc_html__( 'Database administrators, backups, server administrators, and code that can read WordPress options may be able to access saved credentials.', 'analytics-report-ai' ); ?>
 					</li>
 					<li>
-						<?php echo esc_html__( 'OpenAI API key constants take precedence over the Settings fallback. Settings fallback clear controls do not delete or change constants.', 'analytics-report-ai' ); ?>
+						<?php echo esc_html__( 'OpenAI API key constants take precedence over the legacy / transitional Settings fallback. Settings fallback clear controls do not delete or change constants.', 'analytics-report-ai' ); ?>
 					</li>
 					<li>
 						<?php echo esc_html__( 'This storage method is for MVP and developer verification. Public or multi-user use needs a redesigned credential flow.', 'analytics-report-ai' ); ?>
@@ -568,9 +563,7 @@ final class Analytics_Report_AI_Settings {
 
 						<tr>
 							<th scope="row">
-								<label for="analytics-report-ai-openai-api-key">
-									<?php echo esc_html__( 'OpenAI API Key Fallback (Settings)', 'analytics-report-ai' ); ?>
-								</label>
+								<?php echo esc_html__( 'OpenAI API Key Source', 'analytics-report-ai' ); ?>
 							</th>
 							<td>
 								<p>
@@ -588,28 +581,22 @@ final class Analytics_Report_AI_Settings {
 									<code><?php echo esc_html( 'openai_api_key_value_visibility: ' . $openai_api_key_value_visibility ); ?></code>
 								</p>
 
-								<input
-									type="password"
-									id="analytics-report-ai-openai-api-key"
-									name="<?php echo esc_attr( ANALYTICS_REPORT_AI_OPTION_NAME ); ?>[openai_api_key]"
-									value=""
-									class="regular-text"
-									autocomplete="off"
-									placeholder="<?php echo esc_attr( $has_openai_api_key_settings_fallback ? __( 'Settings fallback is saved and hidden. Leave blank unless changing this setting.', 'analytics-report-ai' ) : __( 'No Settings fallback saved.', 'analytics-report-ai' ) ); ?>"
-								/>
-
 								<p class="description">
 									<?php
 									if ( 'constant_configured' === $openai_api_key_source_category && $has_openai_api_key_settings_fallback ) {
-										echo esc_html__( 'A constant-based OpenAI API key is active. A Settings fallback key is also saved and hidden. Leave this field empty to keep the saved Settings fallback.', 'analytics-report-ai' );
+										echo esc_html__( 'A constant-based OpenAI API key is active. A legacy / transitional Settings fallback key is also saved and hidden for compatibility. Use the delete checkbox below only if you want to remove that Settings fallback.', 'analytics-report-ai' );
 									} elseif ( 'constant_configured' === $openai_api_key_source_category ) {
-										echo esc_html__( 'A constant-based OpenAI API key is active. This field saves only a lower-priority Settings fallback.', 'analytics-report-ai' );
+										echo esc_html__( 'A constant-based OpenAI API key is active. The normal Settings UI does not create a new Settings fallback because constant-based configuration is preferred.', 'analytics-report-ai' );
 									} elseif ( $has_openai_api_key_settings_fallback ) {
-										echo esc_html__( 'A Settings fallback OpenAI API key is currently saved and hidden. Leave this field empty to keep the saved fallback.', 'analytics-report-ai' );
+										echo esc_html__( 'A legacy / transitional Settings fallback OpenAI API key is currently saved and hidden for compatibility. Move to the preferred constant-based configuration when possible.', 'analytics-report-ai' );
 									} else {
-										echo esc_html__( 'No OpenAI API key source is currently configured. Configure the preferred constant source or save a current MVP Settings fallback.', 'analytics-report-ai' );
+										echo esc_html__( 'No OpenAI API key source is currently configured. Configure the preferred constant-based source before generating reports.', 'analytics-report-ai' );
 									}
 									?>
+								</p>
+
+								<p class="description">
+									<?php echo esc_html__( 'New Settings fallback entry is not shown in the normal Settings UI. Existing fallback values remain hidden and are not changed by saving this page unless the delete checkbox is used.', 'analytics-report-ai' ); ?>
 								</p>
 
 								<p class="description">
@@ -639,7 +626,7 @@ final class Analytics_Report_AI_Settings {
 												name="<?php echo esc_attr( ANALYTICS_REPORT_AI_OPTION_NAME ); ?>[clear_openai_api_key]"
 												value="1"
 											/>
-											<?php echo esc_html__( 'Delete the saved Settings fallback OpenAI API key. Constant-based configuration is not changed.', 'analytics-report-ai' ); ?>
+											<?php echo esc_html__( 'Delete the saved legacy / transitional Settings fallback OpenAI API key. Constant-based configuration is not changed.', 'analytics-report-ai' ); ?>
 										</label>
 									</p>
 								<?php endif; ?>

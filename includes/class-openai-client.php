@@ -29,7 +29,7 @@ final class Analytics_Report_AI_OpenAI_Client {
 		if ( '' === $api_key ) {
 			return new WP_Error(
 				'analytics_report_ai_openai_api_key_missing',
-				__( 'OpenAI API key source is missing. Configure the preferred OpenAI API key constant source or save a current MVP Settings fallback key.', 'analytics-report-ai' )
+				__( 'OpenAI API key source is missing. Configure the preferred OpenAI API key constant source before generating.', 'analytics-report-ai' )
 			);
 		}
 

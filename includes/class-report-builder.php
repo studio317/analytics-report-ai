@@ -147,11 +147,19 @@ final class Analytics_Report_AI_Report_Builder {
 									<code><?php echo esc_html( 'openai_api_key_source_category: ' . $openai_api_key_source_category ); ?></code>
 								<?php endif; ?>
 								<p class="description">
-									<?php echo esc_html__( 'This status is a safe category label. Constant-based configuration is preferred, Settings fallback remains lower priority, and credential values are hidden.', 'analytics-report-ai' ); ?>
+									<?php echo esc_html__( 'This status is a safe category label. Constant-based configuration is preferred, legacy / transitional Settings fallback is lower priority when already saved, and credential values are hidden.', 'analytics-report-ai' ); ?>
 								</p>
-								<?php if ( 'missing' === $openai_api_key_source_category ) : ?>
+								<?php if ( 'constant_configured' === $openai_api_key_source_category ) : ?>
 									<p class="description">
-										<?php echo esc_html__( 'OpenAI report generation needs an OpenAI API key source. Configure the preferred constant source or save the current MVP Settings fallback before generating.', 'analytics-report-ai' ); ?>
+										<?php echo esc_html__( 'OpenAI report generation is ready to use the preferred constant-based source. Source category does not confirm provider acceptance or request success.', 'analytics-report-ai' ); ?>
+									</p>
+								<?php elseif ( 'settings_saved' === $openai_api_key_source_category ) : ?>
+									<p class="description">
+										<?php echo esc_html__( 'OpenAI report generation can use the existing legacy / transitional Settings fallback for compatibility. Move to the preferred constant-based source when possible.', 'analytics-report-ai' ); ?>
+									</p>
+								<?php elseif ( 'missing' === $openai_api_key_source_category ) : ?>
+									<p class="description">
+										<?php echo esc_html__( 'OpenAI report generation needs an OpenAI API key source. Configure the preferred constant-based source before generating.', 'analytics-report-ai' ); ?>
 									</p>
 								<?php endif; ?>
 								<p class="description">
