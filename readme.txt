@@ -94,7 +94,13 @@ OpenAI terms and privacy information:
 
 = Credential Storage and Payload Review =
 
-In the MVP, Google OAuth token data is stored in a dedicated plugin-owned option. OAuth client Settings fallback configuration and the OpenAI API Key can be saved in plugin settings. Saved credential values are not displayed again in the admin screen. Database administrators, backups, server administrators, or code that can read WordPress options may be able to access stored credential categories. This storage posture is for MVP and developer verification, and OpenAI API key storage and OAuth client Settings fallback storage remain separate public-release decisions.
+In the MVP, Google OAuth token data is stored in a dedicated plugin-owned option. OAuth client Settings fallback configuration and existing legacy / transitional OpenAI API key fallback values may be stored in plugin settings. Saved credential values are not displayed again in the admin screen. Database administrators, backups, server administrators, or code that can read WordPress options may be able to access stored credential categories. This storage posture is for MVP and developer verification, and existing legacy / transitional OpenAI API key fallback storage and OAuth client Settings fallback storage remain separate public-release decisions.
+
+For OpenAI configuration, use the preferred constant-based source: ANALYTICS_REPORT_AI_OPENAI_API_KEY. Define this constant through a configuration mechanism that is loaded before WordPress plugins. The exact placement depends on your hosting or deployment configuration. The plugin does not display or edit this value.
+
+OpenAI source category or readiness status indicates which configuration source the plugin can use. It does not verify provider authorization or prove that an OpenAI API request will succeed. Provider/runtime failures remain separate from configuration-source status.
+
+Existing installations may show a saved legacy / transitional Settings fallback as a hidden compatibility state. This is not the normal configuration route. If a removal control is visible, it applies only to the saved Settings fallback and does not edit constant-based configuration.
 
 The plugin does not send the full raw GA4 response to OpenAI. It formats selected GA4 results into report-generation data, shows a structured Payload Preview before AI generation, and sends the reviewed report data only when Generate AI Report is clicked. The normal admin UI does not expose a full raw AI payload JSON preview.
 
