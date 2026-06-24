@@ -16,6 +16,10 @@ Analytics Report AI helps administrators fetch selected GA4 report data, review 
 
 This MVP version is intended for development and verification.
 
+= Supported Site Scope =
+
+The initial supported scope is limited to single-site WordPress installations. WordPress multisite, network activation and deactivation, network uninstall, and cross-site storage or cleanup behavior are outside the initial supported scope. This is a support-scope boundary and does not determine whether the plugin can run in a particular multisite installation.
+
 == External Services ==
 
 Analytics Report AI uses third-party services only when an administrator starts a report action. Viewing the plugin screens does not, by itself, send data to Google or OpenAI.
