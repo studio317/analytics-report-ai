@@ -173,7 +173,7 @@ scan_stage_patterns fail \
 	'sk-[A-Za-z0-9_-]{20,}' \
 	'Authorization:[[:space:]]*Bearer[[:space:]]+[A-Za-z0-9._-]{10,}' \
 	'ya29\.[A-Za-z0-9._-]{10,}' \
-	'client_secret[[:space:]]*[:=][[:space:]]*["'\'']?[A-Za-z0-9._-]{10,}' \
+	'client_secret[[:space:]]*[:=][[:space:]]*(["'\''][A-Za-z0-9._-]{10,}["'\'']|[A-Za-z0-9._-]{10,}([[:space:]]*[,;})#]|[[:space:]]*//|[[:space:]]*$))' \
 	|| fail "High-risk credential pattern found in stage."
 
 info "Scanning documentation keywords as warnings only."
