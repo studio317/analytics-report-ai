@@ -333,7 +333,7 @@ final class Analytics_Report_AI_Settings {
 
 				<p>
 					<label for="analytics-report-ai-google-oauth-redirect-uri">
-						<strong><?php echo esc_html__( 'Redirect URI for future Google OAuth setup:', 'analytics-report-ai' ); ?></strong>
+						<strong><?php echo esc_html__( 'Redirect URI for Google OAuth setup:', 'analytics-report-ai' ); ?></strong>
 					</label>
 					<input
 						type="text"
@@ -367,7 +367,7 @@ final class Analytics_Report_AI_Settings {
 						<?php echo esc_html__( 'Settings fallback configuration is saved only when entered below, is never displayed again, and is inactive whenever complete constants are available.', 'analytics-report-ai' ); ?>
 					</li>
 					<li>
-						<?php echo esc_html__( 'The redirect URI is shown only for Google OAuth client setup. Copy it into the Google OAuth client configuration when preparing OAuth support.', 'analytics-report-ai' ); ?>
+						<?php echo esc_html__( 'The redirect URI is used for Google OAuth client setup. Copy the displayed value into the Google OAuth client configuration used by this site.', 'analytics-report-ai' ); ?>
 					</li>
 					<li>
 						<?php echo esc_html__( 'Starting OAuth authorization can redirect the browser to Google. If the callback validates, this plugin can attempt token exchange and store OAuth tokens in a dedicated non-autoloaded option.', 'analytics-report-ai' ); ?>

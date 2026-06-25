@@ -22,7 +22,11 @@ The initial supported scope is limited to single-site WordPress installations. W
 
 == External Services ==
 
-Analytics Report AI uses third-party services only when an administrator starts a report action. Viewing the plugin screens does not, by itself, send data to Google or OpenAI.
+Analytics Report AI contacts third-party services only when an administrator explicitly starts Google OAuth authorization, clicks Fetch GA4 Data, or clicks Generate AI Report. Viewing Settings or Report Builder alone does not contact Google or OpenAI.
+
+= Google OAuth Authorization =
+
+When an administrator starts Google OAuth authorization, the browser can be redirected to Google. After the browser returns, the plugin can attempt a callback-bound authorization-code exchange only after callback state validation. This authorization action is separate from Fetch GA4 Data and does not itself retrieve GA4 report data. Refresh request execution and provider-side revoke remain deferred.
 
 = Google Analytics Data API =
 
