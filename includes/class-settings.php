@@ -243,7 +243,7 @@ final class Analytics_Report_AI_Settings {
 
 				<ul class="analytics-report-ai-notice-list">
 					<li>
-						<?php echo esc_html__( 'Google Analytics Data API requests use the resolved Google OAuth credential source.', 'analytics-report-ai' ); ?>
+						<?php echo esc_html__( 'Google Analytics Data API requests use the resolved Google OAuth credential source. If the OAuth token state requires recovery, reconnect is the bounded recovery posture.', 'analytics-report-ai' ); ?>
 					</li>
 					<li>
 						<?php echo esc_html__( 'OpenAI API requests use the resolved OpenAI API key source.', 'analytics-report-ai' ); ?>
@@ -288,7 +288,7 @@ final class Analytics_Report_AI_Settings {
 				<h2><?php echo esc_html__( 'Google OAuth Connection (MVP)', 'analytics-report-ai' ); ?></h2>
 
 				<p>
-					<?php echo esc_html__( 'Google OAuth is the preferred GA4 credential source. Authorization can attempt token exchange after callback state validation. Token values are not displayed. Refresh requests and provider-side revoke requests are deferred in this MVP boundary.', 'analytics-report-ai' ); ?>
+					<?php echo esc_html__( 'Google OAuth is the preferred GA4 credential source. Authorization can attempt token exchange after callback state validation. Token values are not displayed. Automatic refresh is not a public-release capability; reconnect is the bounded recovery posture. Provider-side revoke is not performed in this selected public scope.', 'analytics-report-ai' ); ?>
 				</p>
 
 				<p>
@@ -364,7 +364,7 @@ final class Analytics_Report_AI_Settings {
 						<?php echo esc_html__( 'If constants are partially configured, OAuth authorization is blocked as a safe configuration conflict. The plugin does not combine client ID and client secret configuration from different sources.', 'analytics-report-ai' ); ?>
 					</li>
 					<li>
-						<?php echo esc_html__( 'Settings fallback configuration is saved only when entered below, is never displayed again, and is inactive whenever complete constants are available.', 'analytics-report-ai' ); ?>
+						<?php echo esc_html__( 'Settings fallback configuration is saved only when entered below, is never displayed again, is inactive whenever complete constants are available, and is not the primary public setup guidance.', 'analytics-report-ai' ); ?>
 					</li>
 					<li>
 						<?php echo esc_html__( 'The redirect URI is used for Google OAuth client setup. Copy the displayed value into the Google OAuth client configuration used by this site.', 'analytics-report-ai' ); ?>
@@ -373,7 +373,7 @@ final class Analytics_Report_AI_Settings {
 						<?php echo esc_html__( 'Starting OAuth authorization can redirect the browser to Google. If the callback validates, this plugin can attempt token exchange and store OAuth tokens in a dedicated non-autoloaded option.', 'analytics-report-ai' ); ?>
 					</li>
 					<li>
-						<?php echo esc_html__( 'The plugin displays only status-level OAuth state. It does not display authorization codes, token values, token endpoint responses, or option values. Refresh requests and provider-side revoke requests are deferred.', 'analytics-report-ai' ); ?>
+						<?php echo esc_html__( 'The plugin displays only status-level OAuth state. It does not display authorization codes, token values, token endpoint responses, or option values. Refresh requests are not automatic recovery, and provider-side revoke requests are not part of the selected public scope.', 'analytics-report-ai' ); ?>
 					</li>
 					<li>
 						<?php echo esc_html__( 'The manual Google Access Token fallback is retired from normal public-release behavior. Use Google OAuth as the GA4 credential source.', 'analytics-report-ai' ); ?>

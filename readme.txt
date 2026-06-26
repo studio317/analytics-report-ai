@@ -26,7 +26,7 @@ Analytics Report AI contacts third-party services only when an administrator exp
 
 = Google OAuth Authorization =
 
-When an administrator starts Google OAuth authorization, the browser can be redirected to Google. After the browser returns, the plugin can attempt a callback-bound authorization-code exchange only after callback state validation. This authorization action is separate from Fetch GA4 Data and does not itself retrieve GA4 report data. Refresh request execution and provider-side revoke remain deferred.
+When an administrator starts Google OAuth authorization, the browser can be redirected to Google. After the browser returns, the plugin can attempt a callback-bound authorization-code exchange only after callback state validation. This authorization action is separate from Fetch GA4 Data and does not itself retrieve GA4 report data. Automatic refresh is not a public-release capability; reconnect is the bounded recovery posture. Provider-side revoke is not performed in the selected public scope.
 
 = Google Analytics Data API =
 
@@ -55,7 +55,7 @@ Data received from Google may include:
 
 The Google Analytics Data API request body is designed not to include the OpenAI API Key, WordPress user information, cookies, or IP addresses.
 
-Google OAuth is the normal GA4 credential source. The retired manual Google Access Token fallback is not a normal public-release credential path. Refresh request execution and provider-side revoke remain separate deferred tracks and are not described as implemented behavior.
+Google OAuth is the normal GA4 credential source. The retired manual Google Access Token fallback is not a normal public-release credential path. If OAuth token recovery is needed, reconnect is the bounded recovery posture. Refresh request execution and provider-side revoke remain separate deferred tracks and are not described as implemented behavior.
 
 Google terms and privacy information:
 
@@ -108,7 +108,7 @@ For OpenAI configuration, use the preferred constant-based source: ANALYTICS_REP
 
 OpenAI source category or readiness status indicates which configuration source the plugin can use. It does not verify provider authorization or prove that an OpenAI API request will succeed. Provider/runtime failures remain separate from configuration-source status.
 
-Existing installations may show a saved legacy / transitional Settings fallback as a hidden compatibility state. This is not the normal configuration route. If a removal control is visible, it applies only to the saved Settings fallback and does not edit constant-based configuration.
+Existing installations may show a saved legacy / transitional Settings fallback as a hidden compatibility state. This is a developer-only / transitional fallback and is not the normal public configuration route. If a removal control is visible, it applies only to the saved Settings fallback and does not edit constant-based configuration.
 
 The plugin does not send the full raw GA4 response to OpenAI. It formats selected GA4 results into report-generation data, shows a structured Payload Preview before AI generation, and sends the reviewed report data only when Generate AI Report is clicked. The normal admin UI does not expose a full raw AI payload JSON preview.
 

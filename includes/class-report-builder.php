@@ -125,7 +125,7 @@ final class Analytics_Report_AI_Report_Builder {
 									<code><?php echo esc_html( $credential_source_label ); ?></code>
 								<?php endif; ?>
 								<p class="description">
-									<?php echo esc_html__( 'This status is a safe category label. Google OAuth is the normal GA4 credential source, and credential values are hidden.', 'analytics-report-ai' ); ?>
+									<?php echo esc_html__( 'This status is a safe category label. Google OAuth is the normal GA4 credential source, reconnect is required when the status indicates refresh is unavailable or expired, and credential values are hidden.', 'analytics-report-ai' ); ?>
 								</p>
 								<p class="description">
 									<code><?php echo esc_html( 'oauth_connection_status_category: ' . $credential_connection_status ); ?></code>
@@ -147,7 +147,7 @@ final class Analytics_Report_AI_Report_Builder {
 									<code><?php echo esc_html( 'openai_api_key_source_category: ' . $openai_api_key_source_category ); ?></code>
 								<?php endif; ?>
 								<p class="description">
-									<?php echo esc_html__( 'This status is a safe category label. Constant-based configuration is preferred, legacy / transitional Settings fallback is lower priority when already saved, and credential values are hidden.', 'analytics-report-ai' ); ?>
+									<?php echo esc_html__( 'This status is a safe category label. Constant-based configuration is the preferred public posture, legacy / transitional Settings fallback is lower priority when already saved, and credential values are hidden.', 'analytics-report-ai' ); ?>
 								</p>
 								<?php if ( 'constant_configured' === $openai_api_key_source_category ) : ?>
 									<p class="description">
