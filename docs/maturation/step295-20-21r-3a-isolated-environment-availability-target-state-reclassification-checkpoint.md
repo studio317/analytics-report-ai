@@ -45,7 +45,7 @@ This checkpoint performed only a limited, non-destructive, category-level reclas
 
 - whether the designated isolated validation environment is currently safely classifiable as available;
 - whether the target package state before replacement package installation is currently safely classifiable as a clean or resettable pre-install state;
-- whether replacement package artifact continuity can be safely classified at category level.
+- whether the predecessor replacement package artifact continuity classification remains inherited without independent revalidation in this checkpoint.
 
 This checkpoint is not package lifecycle validation, environment remediation, cleanup, reset, installation, activation, Plugin Check, controlled validation, or final release authorization.
 
@@ -88,12 +88,14 @@ This checkpoint does not infer clean or resettable status from incomplete availa
 
 | Boundary | Classification |
 |---|---|
-| Replacement package artifact continuity | Not safely classifiable in this checkpoint |
+| Predecessor / inherited replacement package artifact continuity | Preserved |
+| Current checkpoint independent continuity revalidation | Not performed |
+| Current checkpoint effect on inherited continuity classification | No downgrade, denial, overwrite, or reclassification |
 | Package artifact operation | Not performed |
 | Package build or contents inspection rerun | Not performed |
 | Package hash, inventory, path, filename, or contents detail | Not recorded |
 
-This checkpoint does not replace, rebuild, inspect, remove, publish, install, or activate any package artifact.
+Step 295.20.21R.3A did not independently revalidate replacement package artifact continuity. It preserves the predecessor classification as inherited evidence while recording that this checkpoint did not replace, rebuild, inspect, remove, publish, install, activate, or otherwise operate on any package artifact.
 
 ## 10. No-Install / No-Activation / No-Cleanup / No-Reset Confirmation
 
