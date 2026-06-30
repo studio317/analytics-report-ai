@@ -152,9 +152,14 @@ find "$STAGE_DIR" -type d -empty -delete
 [[ -f "$STAGE_DIR/$PLUGIN_SLUG.php" ]] || fail "Stage is missing main plugin file."
 [[ -d "$STAGE_DIR/includes" ]] || fail "Stage is missing includes directory."
 [[ -d "$STAGE_DIR/assets" ]] || fail "Stage is missing assets directory."
+[[ -d "$STAGE_DIR/languages" ]] || fail "Stage is missing languages directory."
 [[ -f "$STAGE_DIR/readme.txt" ]] || fail "Stage is missing readme.txt."
+[[ -f "$STAGE_DIR/uninstall.php" ]] || fail "Stage is missing uninstall.php."
+[[ -f "$STAGE_DIR/languages/$PLUGIN_SLUG.pot" ]] || fail "Stage is missing POT translation template."
+[[ -f "$STAGE_DIR/languages/$PLUGIN_SLUG-ja.po" ]] || fail "Stage is missing Japanese PO translation."
+[[ -f "$STAGE_DIR/languages/$PLUGIN_SLUG-ja.mo" ]] || fail "Stage is missing Japanese MO translation."
 
-if [[ -d "$STAGE_DIR/.git" || -e "$STAGE_DIR/.distignore" || -d "$STAGE_DIR/docs/maturation" || -d "$STAGE_DIR/build" || -d "$STAGE_DIR/tools" ]]; then
+if [[ -d "$STAGE_DIR/.git" || -e "$STAGE_DIR/.distignore" || -d "$STAGE_DIR/docs" || -d "$STAGE_DIR/build" || -d "$STAGE_DIR/tools" ]]; then
 	fail "Stage contains an excluded development path."
 fi
 
@@ -200,12 +205,16 @@ TOP_LEVELS="$(sed 's#/.*##' "$ZIP_CONTENTS_FILE" | sort -u)"
 
 require_zip_entry "$PLUGIN_SLUG/$PLUGIN_SLUG.php"
 require_zip_entry "$PLUGIN_SLUG/readme.txt"
+require_zip_entry "$PLUGIN_SLUG/uninstall.php"
 require_zip_prefix "$PLUGIN_SLUG/includes/"
 require_zip_prefix "$PLUGIN_SLUG/assets/"
+require_zip_entry "$PLUGIN_SLUG/languages/$PLUGIN_SLUG.pot"
+require_zip_entry "$PLUGIN_SLUG/languages/$PLUGIN_SLUG-ja.po"
+require_zip_entry "$PLUGIN_SLUG/languages/$PLUGIN_SLUG-ja.mo"
 
 reject_zip_prefix "$PLUGIN_SLUG/.git/"
 reject_zip_entry "$PLUGIN_SLUG/.distignore"
-reject_zip_prefix "$PLUGIN_SLUG/docs/maturation/"
+reject_zip_prefix "$PLUGIN_SLUG/docs/"
 reject_zip_prefix "$PLUGIN_SLUG/build/"
 reject_zip_prefix "$PLUGIN_SLUG/tools/"
 reject_zip_prefix "$PLUGIN_SLUG/tests/"

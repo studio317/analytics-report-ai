@@ -275,7 +275,7 @@ final class Analytics_Report_AI_GA4_Client {
 		if ( '' === $access_token ) {
 			return new WP_Error(
 				'analytics_report_ai_google_access_token_missing',
-				__( 'No Google credential is available for GA4 Fetch. Connect Google OAuth or save a temporary Google Access Token in Settings.', 'analytics-report-ai' )
+				__( 'No Google connection is available for GA4 Fetch. Connect Google in Settings and try again.', 'analytics-report-ai' )
 			);
 		}
 
@@ -650,7 +650,7 @@ final class Analytics_Report_AI_GA4_Client {
 		}
 
 		if ( 401 === $status_code ) {
-			return __( 'Google credential is invalid or expired. Reconnect Google OAuth or save a new temporary Google Access Token in Settings.', 'analytics-report-ai' );
+			return __( 'Google credential is invalid or expired. Reconnect Google in Settings and try again.', 'analytics-report-ai' );
 		}
 
 		if ( 403 === $status_code ) {
@@ -674,7 +674,7 @@ final class Analytics_Report_AI_GA4_Client {
 		}
 
 		if ( self::has_api_error_status( $data, array( 'UNAUTHENTICATED' ) ) ) {
-			return __( 'Google credential is invalid or expired. Reconnect Google OAuth or save a new temporary Google Access Token in Settings.', 'analytics-report-ai' );
+			return __( 'Google credential is invalid or expired. Reconnect Google in Settings and try again.', 'analytics-report-ai' );
 		}
 
 		if ( self::has_api_error_status( $data, array( 'PERMISSION_DENIED' ) ) ) {

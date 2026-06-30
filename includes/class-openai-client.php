@@ -29,7 +29,7 @@ final class Analytics_Report_AI_OpenAI_Client {
 		if ( '' === $api_key ) {
 			return new WP_Error(
 				'analytics_report_ai_openai_api_key_missing',
-				__( 'OpenAI API key source is missing. Configure the preferred OpenAI API key constant source before generating.', 'analytics-report-ai' )
+				__( 'OpenAI API key is not configured. Open Settings and add an API key, or configure it on the server before generating.', 'analytics-report-ai' )
 			);
 		}
 
@@ -124,11 +124,11 @@ final class Analytics_Report_AI_OpenAI_Client {
 	 */
 	private static function get_safe_api_error_message( $status_code, $data ) {
 		if ( 400 === $status_code ) {
-			return __( 'OpenAI API rejected the request. Check the report payload and model configuration.', 'analytics-report-ai' );
+			return __( 'OpenAI API rejected the request. Check the report data and model configuration.', 'analytics-report-ai' );
 		}
 
 		if ( 401 === $status_code ) {
-			return __( 'OpenAI API authentication failed. Review the configured OpenAI API key source without sharing key values.', 'analytics-report-ai' );
+			return __( 'OpenAI API authentication failed. Review the configured OpenAI API key without sharing key values.', 'analytics-report-ai' );
 		}
 
 		if ( 403 === $status_code ) {
@@ -148,11 +148,11 @@ final class Analytics_Report_AI_OpenAI_Client {
 		}
 
 		if ( self::has_api_error_value( $data, 'type', array( 'invalid_request_error' ) ) ) {
-			return __( 'OpenAI API rejected the request. Check the report payload and model configuration.', 'analytics-report-ai' );
+			return __( 'OpenAI API rejected the request. Check the report data and model configuration.', 'analytics-report-ai' );
 		}
 
 		if ( self::has_api_error_value( $data, 'type', array( 'authentication_error' ) ) ) {
-			return __( 'OpenAI API authentication failed. Review the configured OpenAI API key source without sharing key values.', 'analytics-report-ai' );
+			return __( 'OpenAI API authentication failed. Review the configured OpenAI API key without sharing key values.', 'analytics-report-ai' );
 		}
 
 		if (

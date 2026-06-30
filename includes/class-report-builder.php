@@ -45,30 +45,23 @@ final class Analytics_Report_AI_Report_Builder {
 		$ga4_property_id         = isset( $settings['ga4_property_id'] ) ? $settings['ga4_property_id'] : '';
 		$host_filter_enabled     = ! empty( $settings['host_filter_enabled'] );
 		$host_name               = isset( $settings['host_name'] ) ? $settings['host_name'] : '';
+		$display_host_name       = '' !== $host_name ? $host_name : analytics_report_ai_get_default_host();
 		$credential_source       = analytics_report_ai_resolve_google_ga4_credential_source( $settings );
 		$credential_source_label = isset( $credential_source['status'] ) && is_scalar( $credential_source['status'] )
 			? (string) $credential_source['status']
 			: 'credential_source_missing';
-		$credential_connection_status = isset( $credential_source['oauth_connection_status_category'] ) && is_scalar( $credential_source['oauth_connection_status_category'] )
-			? (string) $credential_source['oauth_connection_status_category']
-			: 'not_connected';
 		$credential_lifecycle_status = isset( $credential_source['token_lifecycle_status_category'] ) && is_scalar( $credential_source['token_lifecycle_status_category'] )
 			? (string) $credential_source['token_lifecycle_status_category']
 			: 'reconnect_required';
-		$credential_refresh_status = isset( $credential_source['token_refresh_status_category'] ) && is_scalar( $credential_source['token_refresh_status_category'] )
-			? (string) $credential_source['token_refresh_status_category']
-			: 'unavailable';
 		$openai_api_key_categories = analytics_report_ai_get_openai_api_key_lifecycle_categories( $settings );
 		$openai_api_key_source_category = isset( $openai_api_key_categories['openai_api_key_source_category'] )
 			? $openai_api_key_categories['openai_api_key_source_category']
 			: 'missing';
-		$openai_api_key_settings_fallback_status = isset( $openai_api_key_categories['openai_api_key_settings_fallback_status'] )
-			? $openai_api_key_categories['openai_api_key_settings_fallback_status']
-			: 'not_saved';
-		$openai_api_key_value_visibility = isset( $openai_api_key_categories['openai_api_key_value_visibility'] )
-			? $openai_api_key_categories['openai_api_key_value_visibility']
-			: 'hidden';
 		$max_report_days         = analytics_report_ai_get_max_report_days();
+		$settings_url            = admin_url( 'admin.php?page=analytics-report-ai-settings' );
+		$ga4_connection_label    = $this->get_ga4_connection_label( $credential_source_label, $credential_lifecycle_status );
+		$ga4_connection_ready    = $this->is_ga4_connection_ready( $credential_source_label, $credential_lifecycle_status );
+		$openai_api_key_label    = $this->get_openai_api_key_label( $openai_api_key_source_category );
 		?>
 		<div class="wrap analytics-report-ai-admin">
 			<h1><?php echo esc_html__( 'Report Builder', 'analytics-report-ai' ); ?></h1>
@@ -76,7 +69,22 @@ final class Analytics_Report_AI_Report_Builder {
 			<?php $this->render_submission_notices( $submission_result ); ?>
 
 			<div class="analytics-report-ai-card">
-				<h2><?php echo esc_html__( 'Current Settings', 'analytics-report-ai' ); ?></h2>
+				<h2>
+					<?php
+					printf(
+						wp_kses(
+							/* translators: %s: Settings screen link. */
+							__( 'Current setup (configure %s first)', 'analytics-report-ai' ),
+							array(
+								'a' => array(
+									'href' => array(),
+								),
+							)
+						),
+						'<a href="' . esc_url( $settings_url ) . '">' . esc_html__( 'Settings', 'analytics-report-ai' ) . '</a>'
+					);
+					?>
+				</h2>
 
 				<table class="widefat striped analytics-report-ai-status-table">
 					<tbody>
@@ -98,15 +106,15 @@ final class Analytics_Report_AI_Report_Builder {
 								<?php if ( $host_filter_enabled ) : ?>
 									<?php echo esc_html__( 'Enabled', 'analytics-report-ai' ); ?>
 								<?php else : ?>
-									<?php echo esc_html__( 'Disabled', 'analytics-report-ai' ); ?>
+									<?php echo esc_html__( 'Not in use', 'analytics-report-ai' ); ?>
 								<?php endif; ?>
 							</td>
 						</tr>
 						<tr>
 							<th scope="row"><?php echo esc_html__( 'Host Name', 'analytics-report-ai' ); ?></th>
 							<td>
-								<?php if ( '' !== $host_name ) : ?>
-									<code><?php echo esc_html( $host_name ); ?></code>
+								<?php if ( '' !== $display_host_name ) : ?>
+									<code><?php echo esc_html( $display_host_name ); ?></code>
 								<?php else : ?>
 									<span class="analytics-report-ai-status-warning">
 										<?php echo esc_html__( 'Not configured', 'analytics-report-ai' ); ?>
@@ -115,57 +123,32 @@ final class Analytics_Report_AI_Report_Builder {
 							</td>
 						</tr>
 						<tr>
-							<th scope="row"><?php echo esc_html__( 'GA4 Credential Source', 'analytics-report-ai' ); ?></th>
+							<th scope="row"><?php echo esc_html__( 'Google connection', 'analytics-report-ai' ); ?></th>
 							<td>
-								<?php if ( 'credential_source_missing' === $credential_source_label || 'credential_source_oauth_refresh_needed' === $credential_source_label || 'credential_source_oauth_error_category' === $credential_source_label ) : ?>
+								<?php if ( ! $ga4_connection_ready ) : ?>
 									<span class="analytics-report-ai-status-warning">
-										<code><?php echo esc_html( $credential_source_label ); ?></code>
+										<?php echo esc_html( $ga4_connection_label ); ?>
 									</span>
 								<?php else : ?>
-									<code><?php echo esc_html( $credential_source_label ); ?></code>
+									<?php echo esc_html( $ga4_connection_label ); ?>
 								<?php endif; ?>
 								<p class="description">
-									<?php echo esc_html__( 'This status is a safe category label. Google OAuth is the normal GA4 credential source, reconnect is required when the status indicates refresh is unavailable or expired, and credential values are hidden.', 'analytics-report-ai' ); ?>
-								</p>
-								<p class="description">
-									<code><?php echo esc_html( 'oauth_connection_status_category: ' . $credential_connection_status ); ?></code>
-									<br>
-									<code><?php echo esc_html( 'token_lifecycle_status_category: ' . $credential_lifecycle_status ); ?></code>
-									<br>
-									<code><?php echo esc_html( 'token_refresh_status_category: ' . $credential_refresh_status ); ?></code>
+									<?php echo esc_html__( 'Connect or reconnect Google in Settings before fetching GA4 data. Token values are hidden.', 'analytics-report-ai' ); ?>
 								</p>
 							</td>
 						</tr>
 						<tr>
-							<th scope="row"><?php echo esc_html__( 'OpenAI API Key Source', 'analytics-report-ai' ); ?></th>
+							<th scope="row"><?php echo esc_html__( 'OpenAI API key', 'analytics-report-ai' ); ?></th>
 							<td>
 								<?php if ( 'missing' === $openai_api_key_source_category ) : ?>
 									<span class="analytics-report-ai-status-warning">
-										<code><?php echo esc_html( 'openai_api_key_source_category: ' . $openai_api_key_source_category ); ?></code>
+										<?php echo esc_html( $openai_api_key_label ); ?>
 									</span>
 								<?php else : ?>
-									<code><?php echo esc_html( 'openai_api_key_source_category: ' . $openai_api_key_source_category ); ?></code>
+									<?php echo esc_html( $openai_api_key_label ); ?>
 								<?php endif; ?>
 								<p class="description">
-									<?php echo esc_html__( 'This status is a safe category label. Constant-based configuration is the preferred public posture, legacy / transitional Settings fallback is lower priority when already saved, and credential values are hidden.', 'analytics-report-ai' ); ?>
-								</p>
-								<?php if ( 'constant_configured' === $openai_api_key_source_category ) : ?>
-									<p class="description">
-										<?php echo esc_html__( 'OpenAI report generation is ready to use the preferred constant-based source. Source category does not confirm provider acceptance or request success.', 'analytics-report-ai' ); ?>
-									</p>
-								<?php elseif ( 'settings_saved' === $openai_api_key_source_category ) : ?>
-									<p class="description">
-										<?php echo esc_html__( 'OpenAI report generation can use the existing legacy / transitional Settings fallback for compatibility. Move to the preferred constant-based source when possible.', 'analytics-report-ai' ); ?>
-									</p>
-								<?php elseif ( 'missing' === $openai_api_key_source_category ) : ?>
-									<p class="description">
-										<?php echo esc_html__( 'OpenAI report generation needs an OpenAI API key source. Configure the preferred constant-based source before generating.', 'analytics-report-ai' ); ?>
-									</p>
-								<?php endif; ?>
-								<p class="description">
-									<code><?php echo esc_html( 'openai_api_key_settings_fallback_status: ' . $openai_api_key_settings_fallback_status ); ?></code>
-									<br>
-									<code><?php echo esc_html( 'openai_api_key_value_visibility: ' . $openai_api_key_value_visibility ); ?></code>
+									<?php echo esc_html__( 'Configure an OpenAI API key in Settings before generating an AI report draft. Key values are hidden.', 'analytics-report-ai' ); ?>
 								</p>
 							</td>
 						</tr>
@@ -173,7 +156,7 @@ final class Analytics_Report_AI_Report_Builder {
 				</table>
 
 				<p class="description">
-					<?php echo esc_html__( 'This screen uses a two-step flow: fetch GA4 data, review the AI payload, then generate a report draft with the OpenAI API.', 'analytics-report-ai' ); ?>
+					<?php echo esc_html__( 'This screen uses a two-step flow: fetch GA4 data first, review the Data Preview, then generate a Japanese report draft with OpenAI.', 'analytics-report-ai' ); ?>
 				</p>
 			</div>
 
@@ -218,7 +201,7 @@ final class Analytics_Report_AI_Report_Builder {
 									<?php
 									printf(
 										/* translators: %d: maximum number of report days. */
-										esc_html__( 'For the MVP, the report period is limited to %d days to keep GA4 requests and AI payloads manageable.', 'analytics-report-ai' ),
+										esc_html__( 'The report period is limited to %d days to keep GA4 requests and report data manageable.', 'analytics-report-ai' ),
 										(int) $max_report_days
 									);
 									?>
@@ -311,7 +294,7 @@ final class Analytics_Report_AI_Report_Builder {
 					<h3><?php echo esc_html__( 'Data sent to Google Analytics Data API', 'analytics-report-ai' ); ?></h3>
 
 					<p>
-						<?php echo esc_html__( 'When you click Fetch GA4 Data, the selected date range, comparison setting, data scope, host/path filters, and required metrics/dimensions are sent to the Google Analytics Data API.', 'analytics-report-ai' ); ?>
+						<?php echo esc_html__( 'When you click Fetch GA4 Data, the selected date range, comparison setting, data scope, host name/path filters, and required metrics/dimensions are sent to the Google Analytics Data API.', 'analytics-report-ai' ); ?>
 					</p>
 
 					<ul class="analytics-report-ai-notice-list">
@@ -331,7 +314,7 @@ final class Analytics_Report_AI_Report_Builder {
 				</p>
 
 				<p class="description">
-					<?php echo esc_html__( 'Fetch GA4 Data validates the conditions, fetches GA4 preset reports, and creates a Payload Preview.', 'analytics-report-ai' ); ?>
+					<?php echo esc_html__( 'Fetch GA4 Data validates the conditions, fetches GA4 preset reports, and creates a Data Preview.', 'analytics-report-ai' ); ?>
 				</p>
 			</form>
 
@@ -604,7 +587,7 @@ final class Analytics_Report_AI_Report_Builder {
 			return array(
 				'status'      => 'error',
 				'errors'      => array(
-					__( 'The GA4 data could not be converted into a valid AI payload. Please check the settings and try again.', 'analytics-report-ai' ),
+					__( 'The GA4 data could not be converted into valid data for OpenAI. Please check the settings and try again.', 'analytics-report-ai' ),
 				),
 				'form_values' => $validation_result['form_values'],
 			);
@@ -651,32 +634,15 @@ final class Analytics_Report_AI_Report_Builder {
 		$status = isset( $credential_source['status'] ) && is_scalar( $credential_source['status'] )
 			? (string) $credential_source['status']
 			: 'credential_source_missing';
-		$lifecycle_status = isset( $credential_source['token_lifecycle_status_category'] ) && is_scalar( $credential_source['token_lifecycle_status_category'] )
-			? (string) $credential_source['token_lifecycle_status_category']
-			: 'reconnect_required';
-		$refresh_status   = isset( $credential_source['token_refresh_status_category'] ) && is_scalar( $credential_source['token_refresh_status_category'] )
-			? (string) $credential_source['token_refresh_status_category']
-			: 'unavailable';
-
 		if ( 'credential_source_oauth_refresh_needed' === $status ) {
-			return sprintf(
-				/* translators: 1: token lifecycle status category. 2: token refresh status category. */
-				__( 'Google OAuth credential source needs reconnect before OAuth credential use. Status: token_lifecycle_status_category: %1$s; token_refresh_status_category: %2$s. Refresh requests are deferred in this MVP boundary. Credential values are not displayed.', 'analytics-report-ai' ),
-				$lifecycle_status,
-				$refresh_status
-			);
+			return __( 'Google connection needs to be renewed before GA4 data can be fetched. Open Settings, reconnect Google, and try again. Credential values are not displayed.', 'analytics-report-ai' );
 		}
 
 		if ( 'credential_source_oauth_error_category' === $status ) {
-			return sprintf(
-				/* translators: 1: token lifecycle status category. 2: token refresh status category. */
-				__( 'Google OAuth credential source is not usable. Status: token_lifecycle_status_category: %1$s; token_refresh_status_category: %2$s. Reconnect Google OAuth. Credential values are not displayed.', 'analytics-report-ai' ),
-				$lifecycle_status,
-				$refresh_status
-			);
+			return __( 'Google connection is not ready for GA4 requests. Open Settings, reconnect Google, and try again. Credential values are not displayed.', 'analytics-report-ai' );
 		}
 
-		return __( 'Missing Google credential. Connect Google OAuth in Settings. Credential values are not displayed.', 'analytics-report-ai' );
+		return __( 'Google connection is not configured. Open Settings, configure Google OAuth, connect your Google account, and try again. Credential values are not displayed.', 'analytics-report-ai' );
 	}
 
 	/**
@@ -696,7 +662,7 @@ final class Analytics_Report_AI_Report_Builder {
 			return array(
 				'status' => 'error',
 				'errors' => array(
-					__( 'The saved AI payload is missing, expired, or no longer valid. Please fetch GA4 data again.', 'analytics-report-ai' ),
+					__( 'The saved report data is missing, expired, or no longer valid. Please fetch GA4 data again.', 'analytics-report-ai' ),
 				),
 			);
 		}
@@ -776,7 +742,7 @@ final class Analytics_Report_AI_Report_Builder {
 			if ( $report_days > $max_report_days ) {
 				$errors[] = sprintf(
 					/* translators: %d: maximum report period days. */
-					__( 'The report period cannot exceed %d days for the MVP. Please choose a shorter date range.', 'analytics-report-ai' ),
+					__( 'The report period cannot exceed %d days. Please choose a shorter date range.', 'analytics-report-ai' ),
 					$max_report_days
 				);
 			}
@@ -882,7 +848,7 @@ final class Analytics_Report_AI_Report_Builder {
 			if ( ! empty( $warnings ) ) {
 				?>
 				<div class="notice notice-warning">
-					<p><strong><?php echo esc_html__( 'GA4 data was fetched and the AI payload was created with warnings.', 'analytics-report-ai' ); ?></strong></p>
+					<p><strong><?php echo esc_html__( 'GA4 data was fetched and the data for OpenAI was prepared with warnings.', 'analytics-report-ai' ); ?></strong></p>
 					<ul>
 						<?php foreach ( $warnings as $warning ) : ?>
 							<li><?php echo esc_html( $warning ); ?></li>
@@ -894,7 +860,7 @@ final class Analytics_Report_AI_Report_Builder {
 			}
 			?>
 			<div class="notice notice-success">
-				<p><?php echo esc_html__( 'GA4 preset reports were fetched and AI payload was created successfully.', 'analytics-report-ai' ); ?></p>
+				<p><?php echo esc_html__( 'GA4 preset reports were fetched and the data for OpenAI was prepared successfully.', 'analytics-report-ai' ); ?></p>
 			</div>
 			<?php
 			return;
@@ -903,7 +869,10 @@ final class Analytics_Report_AI_Report_Builder {
 		if ( 'report_generated' === $submission_result['status'] ) {
 			?>
 			<div class="notice notice-success">
-				<p><?php echo esc_html__( 'AI report was generated successfully.', 'analytics-report-ai' ); ?></p>
+				<p>
+					<?php echo esc_html__( 'AI report was generated.', 'analytics-report-ai' ); ?>
+					<a href="#analytics-report-ai-generated-report-section"><?php echo esc_html__( 'View the generated report draft.', 'analytics-report-ai' ); ?></a>
+				</p>
 			</div>
 			<?php
 			return;
@@ -994,7 +963,7 @@ final class Analytics_Report_AI_Report_Builder {
 	}
 
 	/**
-	 * Render payload preview.
+	 * Render data preview.
 	 *
 	 * @param array|null $submission_result Submission result.
 	 * @return void
@@ -1015,20 +984,20 @@ final class Analytics_Report_AI_Report_Builder {
 		$generation_allowed = analytics_report_ai_payload_allows_generation( $payload );
 		?>
 		<div class="analytics-report-ai-card">
-			<h2><?php echo esc_html__( 'AI Payload Preview', 'analytics-report-ai' ); ?></h2>
+			<h2><?php echo esc_html__( 'AI Data Preview', 'analytics-report-ai' ); ?></h2>
 
 			<p>
 				<?php
 				printf(
-					/* translators: %d: number of minutes the AI payload is saved temporarily. */
-					esc_html__( 'The AI payload has been saved temporarily for %d minutes.', 'analytics-report-ai' ),
+					/* translators: %d: number of minutes the report data is saved temporarily. */
+					esc_html__( 'The data to be sent to OpenAI has been saved temporarily for %d minutes.', 'analytics-report-ai' ),
 					(int) floor( $expiration / MINUTE_IN_SECONDS )
 				);
 				?>
 			</p>
 
 			<p class="description">
-				<?php echo esc_html__( 'The reviewed AI payload is stored temporarily for this user and expires automatically.', 'analytics-report-ai' ); ?>
+				<?php echo esc_html__( 'The reviewed report data is stored temporarily for this user and expires automatically.', 'analytics-report-ai' ); ?>
 			</p>
 
 			<?php $this->render_payload_status_notices( $payload ); ?>
@@ -1053,15 +1022,15 @@ final class Analytics_Report_AI_Report_Builder {
 				</p>
 
 				<p>
-					<?php echo esc_html__( 'Credentials are not included in the AI payload. Google Access Token, OpenAI API Key, GA4 Property ID, WordPress user information, cookies, and IP addresses are not included by design.', 'analytics-report-ai' ); ?>
+					<?php echo esc_html__( 'Credentials are not included in the data sent to OpenAI. Google Access Token, OpenAI API Key, GA4 Property ID, WordPress user information, cookies, and IP addresses are not included by design.', 'analytics-report-ai' ); ?>
 				</p>
 
 				<p>
-					<?php echo esc_html__( 'Page paths and traffic sources can still be sensitive business analytics information, so review the payload before sending it.', 'analytics-report-ai' ); ?>
+					<?php echo esc_html__( 'Page paths and traffic sources can still be sensitive business analytics information, so review the data before sending it.', 'analytics-report-ai' ); ?>
 				</p>
 
 				<p>
-					<?php echo esc_html__( 'For support, share status/category labels, warning messages, or error categories only. Do not share credentials, option values, request or response bodies, AI payload JSON, generated report text, screenshots, or browser Network evidence.', 'analytics-report-ai' ); ?>
+					<?php echo esc_html__( 'For support, share visible status messages, warning messages, or general error names only. Do not share credentials, option values, request or response bodies, AI data JSON, generated report text, screenshots, or browser Network evidence.', 'analytics-report-ai' ); ?>
 				</p>
 			</div>
 
@@ -1076,7 +1045,7 @@ final class Analytics_Report_AI_Report_Builder {
 				<h3><?php echo esc_html__( 'Data sent to OpenAI API', 'analytics-report-ai' ); ?></h3>
 
 				<p>
-					<?php echo esc_html__( 'When you click Generate AI Report, the reviewed report data is sent to the OpenAI API.', 'analytics-report-ai' ); ?>
+					<?php echo esc_html__( 'When you generate an AI report, the reviewed report data is sent to the OpenAI API.', 'analytics-report-ai' ); ?>
 				</p>
 
 				<p>
@@ -1113,8 +1082,8 @@ final class Analytics_Report_AI_Report_Builder {
 			<p class="description">
 				<?php
 				echo $generation_allowed
-					? esc_html__( 'Use Generate AI Report only after reviewing the structured Payload Preview and any status-level warnings.', 'analytics-report-ai' )
-					: esc_html__( 'Generation is blocked because the current-period data is not reportable for the selected conditions.', 'analytics-report-ai' );
+					? esc_html__( 'Use Generate AI Report only after reviewing the structured Data Preview and any visible warnings.', 'analytics-report-ai' )
+					: esc_html__( 'AI generation is not available because the current-period data is not reportable for the selected conditions.', 'analytics-report-ai' );
 				?>
 			</p>
 		</div>
@@ -1144,7 +1113,7 @@ final class Analytics_Report_AI_Report_Builder {
 		}
 		?>
 		<div class="notice notice-warning inline">
-			<p><strong><?php echo esc_html__( 'Review these status-level GA4 data warnings before generating a report.', 'analytics-report-ai' ); ?></strong></p>
+			<p><strong><?php echo esc_html__( 'Review these GA4 data warnings before generating a report.', 'analytics-report-ai' ); ?></strong></p>
 			<ul>
 				<?php foreach ( $warnings as $warning ) : ?>
 					<li><?php echo esc_html( $warning ); ?></li>
@@ -1167,10 +1136,10 @@ final class Analytics_Report_AI_Report_Builder {
 			: '';
 
 		if ( 'current_period_no_data' === $reason ) {
-			return __( 'Generation is blocked because the current-period data is not reportable for the selected conditions. Change the date range or scope and fetch GA4 data again.', 'analytics-report-ai' );
+		return __( 'AI generation is not available because the current-period data is not reportable for the selected conditions. Change the date range or scope and fetch GA4 data again.', 'analytics-report-ai' );
 		}
 
-		return __( 'AI generation is blocked because the saved payload is not reportable. Fetch GA4 data again before generating a report.', 'analytics-report-ai' );
+		return __( 'AI generation is not available because the saved report data is not reportable. Fetch GA4 data again before generating a report.', 'analytics-report-ai' );
 	}
 
 	/**
@@ -1217,7 +1186,7 @@ final class Analytics_Report_AI_Report_Builder {
 		}
 
 		if ( 'current_summary_missing' === $code ) {
-			return __( 'Current-period summary metrics were unavailable, but detail rows were present. Review the partial payload before generating.', 'analytics-report-ai' );
+			return __( 'Current-period summary metrics were unavailable, but detail rows were present. Review the partial report data before generating.', 'analytics-report-ai' );
 		}
 
 		if ( 'comparison_period_no_data' === $code ) {
@@ -1240,7 +1209,7 @@ final class Analytics_Report_AI_Report_Builder {
 			);
 		}
 
-		return __( 'The payload includes a GA4 data availability warning.', 'analytics-report-ai' );
+		return __( 'The report data includes a GA4 data availability warning.', 'analytics-report-ai' );
 	}
 
 	/**
@@ -1281,7 +1250,7 @@ final class Analytics_Report_AI_Report_Builder {
 
 		$report_text = (string) $submission_result['report_text'];
 		?>
-		<div class="analytics-report-ai-card">
+		<div id="analytics-report-ai-generated-report-section" class="analytics-report-ai-card">
 			<h2><?php echo esc_html__( 'Generated Report Draft', 'analytics-report-ai' ); ?></h2>
 
 			<p class="description">
@@ -1323,6 +1292,80 @@ final class Analytics_Report_AI_Report_Builder {
 			</p>
 		</div>
 		<?php
+	}
+
+	/**
+	 * Get a user-facing GA4 connection label.
+	 *
+	 * @param string $credential_source_label Internal credential source label.
+	 * @param string $lifecycle_status        Internal token lifecycle status.
+	 * @return string
+	 */
+	private function get_ga4_connection_label( $credential_source_label, $lifecycle_status ) {
+		if ( $this->is_ga4_connection_ready( $credential_source_label, $lifecycle_status ) ) {
+			return __( 'Ready to fetch GA4 data', 'analytics-report-ai' );
+		}
+
+		if ( $this->is_ga4_connection_reconnect_required( $credential_source_label, $lifecycle_status ) ) {
+			return __( 'Reconnect Google before fetching GA4 data', 'analytics-report-ai' );
+		}
+
+		return __( 'Not connected', 'analytics-report-ai' );
+	}
+
+	/**
+	 * Check whether the GA4 OAuth connection is usable.
+	 *
+	 * @param string $credential_source_label Internal credential source label.
+	 * @param string $lifecycle_status        Internal token lifecycle status.
+	 * @return bool
+	 */
+	private function is_ga4_connection_ready( $credential_source_label, $lifecycle_status ) {
+		return 'credential_source_oauth_connected' === $credential_source_label && 'usable' === $lifecycle_status;
+	}
+
+	/**
+	 * Check whether the GA4 OAuth connection needs reconnecting.
+	 *
+	 * @param string $credential_source_label Internal credential source label.
+	 * @param string $lifecycle_status        Internal token lifecycle status.
+	 * @return bool
+	 */
+	private function is_ga4_connection_reconnect_required( $credential_source_label, $lifecycle_status ) {
+		return in_array(
+			$credential_source_label,
+			array(
+				'credential_source_oauth_refresh_needed',
+				'credential_source_oauth_error_category',
+			),
+			true
+		) || in_array(
+			$lifecycle_status,
+			array(
+				'expired',
+				'refresh_unavailable',
+				'reconnect_required',
+			),
+			true
+		);
+	}
+
+	/**
+	 * Get a user-facing OpenAI API key label.
+	 *
+	 * @param string $source_category Internal source category.
+	 * @return string
+	 */
+	private function get_openai_api_key_label( $source_category ) {
+		if ( 'constant_configured' === $source_category ) {
+			return __( 'Managed by server configuration', 'analytics-report-ai' );
+		}
+
+		if ( 'settings_saved' === $source_category ) {
+			return __( 'Saved in Settings', 'analytics-report-ai' );
+		}
+
+		return __( 'Not configured', 'analytics-report-ai' );
 	}
 
 	/**

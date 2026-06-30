@@ -535,7 +535,7 @@ if ( ! function_exists( 'analytics_report_ai_delete_google_oauth_tokens' ) ) {
 	 * Delete local Google OAuth token data without contacting Google.
 	 *
 	 * This helper deletes only the dedicated local OAuth token option. It does
-	 * not revoke provider-side access, delete OAuth client Settings fallback
+	 * not revoke provider-side access, delete saved OAuth client settings,
 	 * values, or delete the OpenAI API key.
 	 *
 	 * @return bool
@@ -567,7 +567,7 @@ if ( ! function_exists( 'analytics_report_ai_resolve_google_ga4_credential_sourc
 	 * Resolve the request-local credential source for GA4 requests.
 	 *
 	 * Token values are returned only for immediate runtime use by GA4 client
-	 * calls. The retired manual Settings fallback is not used as a normal GA4
+	 * calls. Manual Settings token entry is not used as a normal GA4
 	 * credential source. Admin UI, docs, logs, and support evidence should use
 	 * the status labels instead.
 	 *
@@ -746,7 +746,7 @@ if ( ! function_exists( 'analytics_report_ai_is_valid_date_string' ) ) {
 
 if ( ! function_exists( 'analytics_report_ai_get_max_report_days' ) ) {
 	/**
-	 * Get the maximum inclusive report period length for the MVP.
+	 * Get the maximum inclusive report period length.
 	 *
 	 * @return int
 	 */
@@ -941,7 +941,7 @@ if ( ! function_exists( 'analytics_report_ai_get_payload_transient_expiration' )
 
 if ( ! function_exists( 'analytics_report_ai_get_payload_version' ) ) {
 	/**
-	 * Get expected MVP AI payload version.
+	 * Get expected AI payload version.
 	 *
 	 * @return string
 	 */
@@ -956,7 +956,7 @@ if ( ! function_exists( 'analytics_report_ai_get_payload_version' ) ) {
 
 if ( ! function_exists( 'analytics_report_ai_get_payload_row_limits' ) ) {
 	/**
-	 * Get expected MVP AI payload row limits.
+	 * Get expected AI payload row limits.
 	 *
 	 * @return array
 	 */
@@ -973,7 +973,7 @@ if ( ! function_exists( 'analytics_report_ai_get_payload_row_limits' ) ) {
 
 if ( ! function_exists( 'analytics_report_ai_validate_ai_payload' ) ) {
 	/**
-	 * Validate the MVP AI payload shape before storage or OpenAI submission.
+	 * Validate the AI payload shape before storage or OpenAI submission.
 	 *
 	 * @param mixed $payload AI payload.
 	 * @return true|WP_Error
@@ -982,7 +982,7 @@ if ( ! function_exists( 'analytics_report_ai_validate_ai_payload' ) ) {
 		if ( ! is_array( $payload ) ) {
 			return new WP_Error(
 				'analytics_report_ai_payload_not_array',
-				__( 'AI payload is invalid.', 'analytics-report-ai' )
+				__( 'Data for OpenAI is invalid.', 'analytics-report-ai' )
 			);
 		}
 
@@ -1000,7 +1000,7 @@ if ( ! function_exists( 'analytics_report_ai_validate_ai_payload' ) ) {
 			) {
 				return new WP_Error(
 					'analytics_report_ai_payload_unexpected_' . sanitize_key( $key ),
-					__( 'AI payload is invalid.', 'analytics-report-ai' )
+					__( 'Data for OpenAI is invalid.', 'analytics-report-ai' )
 				);
 			}
 		}
@@ -1023,7 +1023,7 @@ if ( ! function_exists( 'analytics_report_ai_validate_ai_payload' ) ) {
 			if ( ! isset( $payload[ $key ] ) || ! is_array( $payload[ $key ] ) ) {
 				return new WP_Error(
 					'analytics_report_ai_payload_missing_' . sanitize_key( $key ),
-					__( 'AI payload is invalid.', 'analytics-report-ai' )
+					__( 'Data for OpenAI is invalid.', 'analytics-report-ai' )
 				);
 			}
 		}
@@ -1038,7 +1038,7 @@ if ( ! function_exists( 'analytics_report_ai_validate_ai_payload' ) ) {
 		) {
 			return new WP_Error(
 				'analytics_report_ai_payload_invalid_status',
-				__( 'AI payload is invalid.', 'analytics-report-ai' )
+				__( 'Data for OpenAI is invalid.', 'analytics-report-ai' )
 			);
 		}
 
@@ -1049,7 +1049,7 @@ if ( ! function_exists( 'analytics_report_ai_validate_ai_payload' ) ) {
 		) {
 			return new WP_Error(
 				'analytics_report_ai_payload_invalid_block_reason',
-				__( 'AI payload is invalid.', 'analytics-report-ai' )
+				__( 'Data for OpenAI is invalid.', 'analytics-report-ai' )
 			);
 		}
 
@@ -1065,7 +1065,7 @@ if ( ! function_exists( 'analytics_report_ai_validate_ai_payload' ) ) {
 			) {
 				return new WP_Error(
 					'analytics_report_ai_payload_invalid_warning',
-					__( 'AI payload is invalid.', 'analytics-report-ai' )
+					__( 'Data for OpenAI is invalid.', 'analytics-report-ai' )
 				);
 			}
 		}
@@ -1082,7 +1082,7 @@ if ( ! function_exists( 'analytics_report_ai_validate_ai_payload' ) ) {
 		) {
 			return new WP_Error(
 				'analytics_report_ai_payload_invalid_availability',
-				__( 'AI payload is invalid.', 'analytics-report-ai' )
+				__( 'Data for OpenAI is invalid.', 'analytics-report-ai' )
 			);
 		}
 
@@ -1095,7 +1095,7 @@ if ( ! function_exists( 'analytics_report_ai_validate_ai_payload' ) ) {
 			) {
 				return new WP_Error(
 					'analytics_report_ai_payload_invalid_detail_availability_' . sanitize_key( $key ),
-					__( 'AI payload is invalid.', 'analytics-report-ai' )
+					__( 'Data for OpenAI is invalid.', 'analytics-report-ai' )
 				);
 			}
 		}
@@ -1108,7 +1108,7 @@ if ( ! function_exists( 'analytics_report_ai_validate_ai_payload' ) ) {
 		) {
 			return new WP_Error(
 				'analytics_report_ai_payload_invalid_value_semantics',
-				__( 'AI payload is invalid.', 'analytics-report-ai' )
+				__( 'Data for OpenAI is invalid.', 'analytics-report-ai' )
 			);
 		}
 
@@ -1116,7 +1116,7 @@ if ( ! function_exists( 'analytics_report_ai_validate_ai_payload' ) ) {
 			if ( count( $payload[ $key ] ) > absint( $limit ) ) {
 				return new WP_Error(
 					'analytics_report_ai_payload_row_limit_' . sanitize_key( $key ),
-					__( 'AI payload is invalid.', 'analytics-report-ai' )
+					__( 'Data for OpenAI is invalid.', 'analytics-report-ai' )
 				);
 			}
 		}

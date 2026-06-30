@@ -44,7 +44,7 @@ final class Analytics_Report_AI_Plugin {
 	 */
 	public static function activate( $network_wide = false ) {
 		/*
-		 * Multisite network activation is outside the MVP support scope.
+		 * Multisite network activation is outside the initial support scope.
 		 * Keep the parameter for the WordPress activation hook signature.
 		 */
 		unset( $network_wide );
@@ -60,7 +60,21 @@ final class Analytics_Report_AI_Plugin {
 	private function __construct() {
 		$this->load_dependencies();
 
+		add_action( 'plugins_loaded', array( $this, 'load_textdomain' ) );
 		add_action( 'init', array( $this, 'boot' ) );
+	}
+
+	/**
+	 * Load bundled translations.
+	 *
+	 * @return void
+	 */
+	public function load_textdomain() {
+		load_plugin_textdomain(
+			'analytics-report-ai',
+			false,
+			dirname( plugin_basename( ANALYTICS_REPORT_AI_FILE ) ) . '/languages'
+		);
 	}
 
 	/**

@@ -6,11 +6,12 @@
  * Version: 0.1.0
  * Requires at least: 6.0
  * Requires PHP: 7.4
- * Author: cuerda
- * Author URI: https://cuerda.org/
+ * Author: Kimiya Watabe / cuerda
+ * Author URI: https://business.s317.com/
  * License: GPL-2.0-or-later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: analytics-report-ai
+ * Domain Path: /languages
  *
  * @package Analytics_Report_AI
  */

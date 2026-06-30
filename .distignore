@@ -6,7 +6,9 @@
 # - analytics-report-ai.php
 # - includes/
 # - assets/
+# - languages/
 # - readme.txt
+# - uninstall.php
 # - license file, if one is added later.
 
 # Repository metadata.
@@ -17,17 +19,17 @@
 # The ignore file itself is source/release tooling, not runtime.
 .distignore
 
-# Source-only development records.
-# Keep docs/maturation/ in the GitHub source repository, but exclude it from
-# WordPress.org / release zip packages by default.
-docs/maturation/
+# Source-only documentation.
+# Public GitHub docs can remain in source control, but release packages should
+# contain only the WordPress.org-facing readme and runtime files.
+docs/
 
 # Development tools and tests.
 tools/
 tests/
 
 # Composer dependencies and metadata.
-# Current MVP has no runtime Composer dependency. If vendor/ later contains
+# Current package has no runtime Composer dependency. If vendor/ later contains
 # runtime dependencies, revisit this rule before packaging.
 vendor/
 composer.json

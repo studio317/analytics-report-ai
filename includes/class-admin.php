@@ -147,6 +147,25 @@ final class Analytics_Report_AI_Admin {
 				),
 			)
 		);
+
+		if ( false === strpos( $screen->id, 'analytics-report-ai-settings' ) ) {
+			return;
+		}
+
+		wp_enqueue_style(
+			'analytics-report-ai-settings-help',
+			ANALYTICS_REPORT_AI_URL . 'assets/css/settings-help.css',
+			array( 'analytics-report-ai-admin' ),
+			ANALYTICS_REPORT_AI_VERSION
+		);
+
+		wp_enqueue_script(
+			'analytics-report-ai-settings-help',
+			ANALYTICS_REPORT_AI_URL . 'assets/js/settings-help.js',
+			array(),
+			ANALYTICS_REPORT_AI_VERSION,
+			true
+		);
 	}
 
 	/**
