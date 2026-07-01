@@ -1,6 +1,6 @@
 <?php
 /**
- * Uninstall cleanup for Analytics Report AI.
+ * Uninstall cleanup for Studio317 Report Drafts for Google Analytics.
  *
  * Deletes deterministic plugin-owned options only.
  *

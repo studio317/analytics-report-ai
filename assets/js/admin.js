@@ -17,17 +17,17 @@
 	}
 
 	function initializeScopeField() {
-		var scopeInputs = document.querySelectorAll('[data-analytics-report-ai-scope]');
-		var pathField = document.querySelector('[data-analytics-report-ai-path-field]');
-		var pathInput = document.querySelector('[data-analytics-report-ai-path-input]');
-		var pathDescription = document.querySelector('[data-analytics-report-ai-path-description]');
+		var scopeInputs = document.querySelectorAll('[data-studio317-report-drafts-google-analytics-scope]');
+		var pathField = document.querySelector('[data-studio317-report-drafts-google-analytics-path-field]');
+		var pathInput = document.querySelector('[data-studio317-report-drafts-google-analytics-path-input]');
+		var pathDescription = document.querySelector('[data-studio317-report-drafts-google-analytics-path-description]');
 
 		if (!scopeInputs.length || !pathField || !pathInput || !pathDescription) {
 			return;
 		}
 
 		function getSelectedScope() {
-			var selected = document.querySelector('[data-analytics-report-ai-scope]:checked');
+			var selected = document.querySelector('[data-studio317-report-drafts-google-analytics-scope]:checked');
 
 			return selected ? selected.value : 'site';
 		}
@@ -71,9 +71,9 @@
 	}
 
 	function initializeCopyReport() {
-		var copyButton = document.querySelector('[data-analytics-report-ai-copy-report]');
-		var textarea = document.querySelector('[data-analytics-report-ai-report-textarea]');
-		var status = document.querySelector('[data-analytics-report-ai-copy-status]');
+		var copyButton = document.querySelector('[data-studio317-report-drafts-google-analytics-copy-report]');
+		var textarea = document.querySelector('[data-studio317-report-drafts-google-analytics-report-textarea]');
+		var status = document.querySelector('[data-studio317-report-drafts-google-analytics-copy-status]');
 
 		if (!copyButton || !textarea) {
 			return;
@@ -132,7 +132,7 @@
 	}
 
 	function initializeConfirmButtons() {
-		var buttons = document.querySelectorAll('[data-analytics-report-ai-confirm]');
+		var buttons = document.querySelectorAll('[data-studio317-report-drafts-google-analytics-confirm]');
 
 		if (!buttons.length) {
 			return;
@@ -140,7 +140,7 @@
 
 		Array.prototype.forEach.call(buttons, function (button) {
 			button.addEventListener('click', function (event) {
-				var message = button.getAttribute('data-analytics-report-ai-confirm');
+				var message = button.getAttribute('data-studio317-report-drafts-google-analytics-confirm');
 
 				if (message && !window.confirm(message)) {
 					event.preventDefault();
@@ -150,7 +150,7 @@
 	}
 
 	function initializeSingleSubmitForms() {
-		var forms = document.querySelectorAll('[data-analytics-report-ai-single-submit]');
+		var forms = document.querySelectorAll('[data-studio317-report-drafts-google-analytics-single-submit]');
 
 		if (!forms.length) {
 			return;
@@ -158,14 +158,14 @@
 
 		Array.prototype.forEach.call(forms, function (form) {
 			form.addEventListener('submit', function (event) {
-				var button = form.querySelector('[data-analytics-report-ai-submit-button]');
+				var button = form.querySelector('[data-studio317-report-drafts-google-analytics-submit-button]');
 
-				if (form.getAttribute('data-analytics-report-ai-submitting')) {
+				if (form.getAttribute('data-studio317-report-drafts-google-analytics-submitting')) {
 					event.preventDefault();
 					return;
 				}
 
-				form.setAttribute('data-analytics-report-ai-submitting', '1');
+				form.setAttribute('data-studio317-report-drafts-google-analytics-submitting', '1');
 
 				if (button) {
 					button.setAttribute('disabled', 'disabled');

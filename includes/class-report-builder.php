@@ -58,97 +58,107 @@ final class Analytics_Report_AI_Report_Builder {
 			? $openai_api_key_categories['openai_api_key_source_category']
 			: 'missing';
 		$max_report_days         = analytics_report_ai_get_max_report_days();
-		$settings_url            = admin_url( 'admin.php?page=analytics-report-ai-settings' );
+		$settings_url            = admin_url( 'admin.php?page=studio317-report-drafts-google-analytics-settings' );
 		$ga4_connection_label    = $this->get_ga4_connection_label( $credential_source_label, $credential_lifecycle_status );
 		$ga4_connection_ready    = $this->is_ga4_connection_ready( $credential_source_label, $credential_lifecycle_status );
 		$openai_api_key_label    = $this->get_openai_api_key_label( $openai_api_key_source_category );
+		$planned_report_language = analytics_report_ai_get_report_language_profile();
 		?>
-		<div class="wrap analytics-report-ai-admin">
-			<h1><?php echo esc_html__( 'Report Builder', 'analytics-report-ai' ); ?></h1>
+		<div class="wrap studio317-report-drafts-google-analytics-admin">
+			<h1><?php echo esc_html__( 'Report Builder', 'studio317-report-drafts-google-analytics' ); ?></h1>
 
 			<?php $this->render_submission_notices( $submission_result ); ?>
 
-			<div class="analytics-report-ai-card">
+			<div class="studio317-report-drafts-google-analytics-card">
 				<h2>
 					<?php
 					printf(
 						wp_kses(
 							/* translators: %s: Settings screen link. */
-							__( 'Current setup (configure %s first)', 'analytics-report-ai' ),
+							__( 'Current setup (configure %s first)', 'studio317-report-drafts-google-analytics' ),
 							array(
 								'a' => array(
 									'href' => array(),
 								),
 							)
 						),
-						'<a href="' . esc_url( $settings_url ) . '">' . esc_html__( 'Settings', 'analytics-report-ai' ) . '</a>'
+						'<a href="' . esc_url( $settings_url ) . '">' . esc_html__( 'Settings', 'studio317-report-drafts-google-analytics' ) . '</a>'
 					);
 					?>
 				</h2>
 
-				<table class="widefat striped analytics-report-ai-status-table">
+				<table class="widefat striped studio317-report-drafts-google-analytics-status-table">
 					<tbody>
 						<tr>
-							<th scope="row"><?php echo esc_html__( 'GA4 Property ID', 'analytics-report-ai' ); ?></th>
+							<th scope="row"><?php echo esc_html__( 'GA4 Property ID', 'studio317-report-drafts-google-analytics' ); ?></th>
 							<td>
 								<?php if ( '' !== $ga4_property_id ) : ?>
 									<code><?php echo esc_html( $ga4_property_id ); ?></code>
 								<?php else : ?>
-									<span class="analytics-report-ai-status-warning">
-										<?php echo esc_html__( 'Not configured', 'analytics-report-ai' ); ?>
+									<span class="studio317-report-drafts-google-analytics-status-warning">
+										<?php echo esc_html__( 'Not configured', 'studio317-report-drafts-google-analytics' ); ?>
 									</span>
 								<?php endif; ?>
 							</td>
 						</tr>
 						<tr>
-							<th scope="row"><?php echo esc_html__( 'Host Name Filter', 'analytics-report-ai' ); ?></th>
+							<th scope="row"><?php echo esc_html__( 'Host Name Filter', 'studio317-report-drafts-google-analytics' ); ?></th>
 							<td>
 								<?php if ( $host_filter_enabled ) : ?>
-									<?php echo esc_html__( 'Enabled', 'analytics-report-ai' ); ?>
+									<?php echo esc_html__( 'Enabled', 'studio317-report-drafts-google-analytics' ); ?>
 								<?php else : ?>
-									<?php echo esc_html__( 'Not in use', 'analytics-report-ai' ); ?>
+									<?php echo esc_html__( 'Not in use', 'studio317-report-drafts-google-analytics' ); ?>
 								<?php endif; ?>
 							</td>
 						</tr>
 						<tr>
-							<th scope="row"><?php echo esc_html__( 'Host Name', 'analytics-report-ai' ); ?></th>
+							<th scope="row"><?php echo esc_html__( 'Host Name', 'studio317-report-drafts-google-analytics' ); ?></th>
 							<td>
 								<?php if ( '' !== $display_host_name ) : ?>
 									<code><?php echo esc_html( $display_host_name ); ?></code>
 								<?php else : ?>
-									<span class="analytics-report-ai-status-warning">
-										<?php echo esc_html__( 'Not configured', 'analytics-report-ai' ); ?>
+									<span class="studio317-report-drafts-google-analytics-status-warning">
+										<?php echo esc_html__( 'Not configured', 'studio317-report-drafts-google-analytics' ); ?>
 									</span>
 								<?php endif; ?>
 							</td>
 						</tr>
 						<tr>
-							<th scope="row"><?php echo esc_html__( 'Google connection', 'analytics-report-ai' ); ?></th>
+							<th scope="row"><?php echo esc_html__( 'Google connection', 'studio317-report-drafts-google-analytics' ); ?></th>
 							<td>
 								<?php if ( ! $ga4_connection_ready ) : ?>
-									<span class="analytics-report-ai-status-warning">
+									<span class="studio317-report-drafts-google-analytics-status-warning">
 										<?php echo esc_html( $ga4_connection_label ); ?>
 									</span>
 								<?php else : ?>
 									<?php echo esc_html( $ga4_connection_label ); ?>
 								<?php endif; ?>
 								<p class="description">
-									<?php echo esc_html__( 'Connect or reconnect Google in Settings before fetching GA4 data. Token values are hidden.', 'analytics-report-ai' ); ?>
+									<?php echo esc_html__( 'Connect or reconnect Google in Settings before fetching GA4 data. Token values are hidden.', 'studio317-report-drafts-google-analytics' ); ?>
 								</p>
 							</td>
 						</tr>
 						<tr>
-							<th scope="row"><?php echo esc_html__( 'OpenAI API key', 'analytics-report-ai' ); ?></th>
+							<th scope="row"><?php echo esc_html__( 'OpenAI API key', 'studio317-report-drafts-google-analytics' ); ?></th>
 							<td>
 								<?php if ( 'missing' === $openai_api_key_source_category ) : ?>
-									<span class="analytics-report-ai-status-warning">
+									<span class="studio317-report-drafts-google-analytics-status-warning">
 										<?php echo esc_html( $openai_api_key_label ); ?>
 									</span>
 								<?php else : ?>
 									<?php echo esc_html( $openai_api_key_label ); ?>
 								<?php endif; ?>
 								<p class="description">
-									<?php echo esc_html__( 'Configure an OpenAI API key in Settings before generating an AI report draft. Key values are hidden.', 'analytics-report-ai' ); ?>
+									<?php echo esc_html__( 'Configure an OpenAI API key in Settings before generating an AI report draft. Key values are hidden.', 'studio317-report-drafts-google-analytics' ); ?>
+								</p>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row"><?php echo esc_html__( 'Report language', 'studio317-report-drafts-google-analytics' ); ?></th>
+							<td>
+								<?php $this->render_report_language_summary( $planned_report_language ); ?>
+								<p class="description">
+									<?php echo esc_html__( 'The report draft language is resolved from the current WordPress user language, then the site language, then English. The WordPress timezone is not used to choose the report language.', 'studio317-report-drafts-google-analytics' ); ?>
 								</p>
 							</td>
 						</tr>
@@ -156,52 +166,52 @@ final class Analytics_Report_AI_Report_Builder {
 				</table>
 
 				<p class="description">
-					<?php echo esc_html__( 'This screen uses a two-step flow: fetch GA4 data first, review the Data Preview, then generate a Japanese report draft with OpenAI.', 'analytics-report-ai' ); ?>
+					<?php echo esc_html__( 'This screen uses a two-step flow: fetch GA4 data first, review the Data Preview, then generate a report draft in the current WordPress user language with OpenAI.', 'studio317-report-drafts-google-analytics' ); ?>
 				</p>
 			</div>
 
-			<form method="post" action="" class="analytics-report-ai-card analytics-report-ai-report-form">
+			<form method="post" action="" class="studio317-report-drafts-google-analytics-card studio317-report-drafts-google-analytics-report-form">
 				<?php wp_nonce_field( 'analytics_report_ai_report_builder_action', 'analytics_report_ai_report_builder_nonce' ); ?>
 				<input type="hidden" name="analytics_report_ai_report_action" value="fetch_ga4_summary" />
 
-				<h2><?php echo esc_html__( 'Report Conditions', 'analytics-report-ai' ); ?></h2>
+				<h2><?php echo esc_html__( 'Report Conditions', 'studio317-report-drafts-google-analytics' ); ?></h2>
 
 				<table class="form-table" role="presentation">
 					<tbody>
 						<tr>
 							<th scope="row">
-								<?php echo esc_html__( 'Date Range', 'analytics-report-ai' ); ?>
+								<?php echo esc_html__( 'Date Range', 'studio317-report-drafts-google-analytics' ); ?>
 							</th>
 							<td>
-								<label for="analytics-report-ai-start-date">
-									<?php echo esc_html__( 'Start Date', 'analytics-report-ai' ); ?>
+								<label for="studio317-report-drafts-google-analytics-start-date">
+									<?php echo esc_html__( 'Start Date', 'studio317-report-drafts-google-analytics' ); ?>
 								</label>
 								<input
 									type="date"
-									id="analytics-report-ai-start-date"
+									id="studio317-report-drafts-google-analytics-start-date"
 									name="analytics_report_ai_report[start_date]"
 									value="<?php echo esc_attr( $form_values['start_date'] ); ?>"
 								/>
 
-								<label for="analytics-report-ai-end-date" class="analytics-report-ai-inline-label">
-									<?php echo esc_html__( 'End Date', 'analytics-report-ai' ); ?>
+								<label for="studio317-report-drafts-google-analytics-end-date" class="studio317-report-drafts-google-analytics-inline-label">
+									<?php echo esc_html__( 'End Date', 'studio317-report-drafts-google-analytics' ); ?>
 								</label>
 								<input
 									type="date"
-									id="analytics-report-ai-end-date"
+									id="studio317-report-drafts-google-analytics-end-date"
 									name="analytics_report_ai_report[end_date]"
 									value="<?php echo esc_attr( $form_values['end_date'] ); ?>"
 								/>
 
 								<p class="description">
-									<?php echo esc_html__( 'The default date range is the previous month based on the WordPress timezone.', 'analytics-report-ai' ); ?>
+									<?php echo esc_html__( 'The default date range is the previous month based on the WordPress timezone.', 'studio317-report-drafts-google-analytics' ); ?>
 								</p>
 
 								<p class="description">
 									<?php
 									printf(
 										/* translators: %d: maximum number of report days. */
-										esc_html__( 'The report period is limited to %d days to keep GA4 requests and report data manageable.', 'analytics-report-ai' ),
+										esc_html__( 'The report period is limited to %d days to keep GA4 requests and report data manageable.', 'studio317-report-drafts-google-analytics' ),
 										(int) $max_report_days
 									);
 									?>
@@ -211,16 +221,16 @@ final class Analytics_Report_AI_Report_Builder {
 
 						<tr>
 							<th scope="row">
-								<?php echo esc_html__( 'Comparison', 'analytics-report-ai' ); ?>
+								<?php echo esc_html__( 'Comparison', 'studio317-report-drafts-google-analytics' ); ?>
 							</th>
 							<td>
 								<fieldset>
 									<legend class="screen-reader-text">
-										<?php echo esc_html__( 'Comparison', 'analytics-report-ai' ); ?>
+										<?php echo esc_html__( 'Comparison', 'studio317-report-drafts-google-analytics' ); ?>
 									</legend>
 
 									<?php foreach ( analytics_report_ai_get_comparison_options() as $value => $label ) : ?>
-										<label class="analytics-report-ai-radio-label">
+										<label class="studio317-report-drafts-google-analytics-radio-label">
 											<input
 												type="radio"
 												name="analytics_report_ai_report[comparison]"
@@ -233,88 +243,88 @@ final class Analytics_Report_AI_Report_Builder {
 								</fieldset>
 
 								<p class="description">
-									<?php echo esc_html__( 'When comparison is enabled, the selected period is shifted to the previous month or previous year and fetched separately from GA4.', 'analytics-report-ai' ); ?>
+									<?php echo esc_html__( 'When comparison is enabled, the selected period is shifted to the previous month or previous year and fetched separately from GA4.', 'studio317-report-drafts-google-analytics' ); ?>
 								</p>
 							</td>
 						</tr>
 
 						<tr>
 							<th scope="row">
-								<?php echo esc_html__( 'Data Scope', 'analytics-report-ai' ); ?>
+								<?php echo esc_html__( 'Data Scope', 'studio317-report-drafts-google-analytics' ); ?>
 							</th>
 							<td>
 								<fieldset>
 									<legend class="screen-reader-text">
-										<?php echo esc_html__( 'Data Scope', 'analytics-report-ai' ); ?>
+										<?php echo esc_html__( 'Data Scope', 'studio317-report-drafts-google-analytics' ); ?>
 									</legend>
 
 									<?php foreach ( analytics_report_ai_get_scope_options() as $value => $label ) : ?>
-										<label class="analytics-report-ai-radio-label">
+										<label class="studio317-report-drafts-google-analytics-radio-label">
 											<input
 												type="radio"
 												name="analytics_report_ai_report[scope]"
 												value="<?php echo esc_attr( $value ); ?>"
 												<?php checked( $form_values['scope'], $value ); ?>
-												data-analytics-report-ai-scope
+												data-studio317-report-drafts-google-analytics-scope
 											/>
 											<?php echo esc_html( $label ); ?>
 										</label>
 									<?php endforeach; ?>
 								</fieldset>
 
-								<div class="analytics-report-ai-path-field" data-analytics-report-ai-path-field>
-									<label for="analytics-report-ai-path">
-										<?php echo esc_html__( 'Path', 'analytics-report-ai' ); ?>
+								<div class="studio317-report-drafts-google-analytics-path-field" data-studio317-report-drafts-google-analytics-path-field>
+									<label for="studio317-report-drafts-google-analytics-path">
+										<?php echo esc_html__( 'Path', 'studio317-report-drafts-google-analytics' ); ?>
 									</label>
 
 									<input
 										type="text"
-										id="analytics-report-ai-path"
+										id="studio317-report-drafts-google-analytics-path"
 										name="analytics_report_ai_report[path]"
 										value="<?php echo esc_attr( $form_values['path'] ); ?>"
 										class="regular-text"
 										placeholder="/blog/"
-										data-analytics-report-ai-path-input
+										data-studio317-report-drafts-google-analytics-path-input
 									/>
 
-									<p class="description" data-analytics-report-ai-path-description>
-										<?php echo esc_html__( 'For directory scope, enter a path such as /blog/. For page scope, enter a path such as /about.', 'analytics-report-ai' ); ?>
+									<p class="description" data-studio317-report-drafts-google-analytics-path-description>
+										<?php echo esc_html__( 'For directory scope, enter a path such as /blog/. For page scope, enter a path such as /about.', 'studio317-report-drafts-google-analytics' ); ?>
 									</p>
 								</div>
 
 								<p class="description">
-									<?php echo esc_html__( 'Site scope covers all paths. Directory scope matches paths that start with the entered path. Page scope matches the exact normalized path. Full URLs are not allowed.', 'analytics-report-ai' ); ?>
+									<?php echo esc_html__( 'Site scope covers all paths. Directory scope matches paths that start with the entered path. Page scope matches the exact normalized path. Full URLs are not allowed.', 'studio317-report-drafts-google-analytics' ); ?>
 								</p>
 							</td>
 						</tr>
 					</tbody>
 				</table>
 
-				<div class="analytics-report-ai-info-block">
-					<h3><?php echo esc_html__( 'Data sent to Google Analytics Data API', 'analytics-report-ai' ); ?></h3>
+				<div class="studio317-report-drafts-google-analytics-info-block">
+					<h3><?php echo esc_html__( 'Data sent to Google Analytics Data API', 'studio317-report-drafts-google-analytics' ); ?></h3>
 
 					<p>
-						<?php echo esc_html__( 'When you click Fetch GA4 Data, the selected date range, comparison setting, data scope, host name/path filters, and required metrics/dimensions are sent to the Google Analytics Data API.', 'analytics-report-ai' ); ?>
+						<?php echo esc_html__( 'When you click Fetch GA4 Data, the selected date range, comparison setting, data scope, host name/path filters, and required metrics/dimensions are sent to the Google Analytics Data API.', 'studio317-report-drafts-google-analytics' ); ?>
 					</p>
 
-					<ul class="analytics-report-ai-notice-list">
+					<ul class="studio317-report-drafts-google-analytics-notice-list">
 						<li>
-							<?php echo esc_html__( 'The OpenAI API Key is not sent to Google.', 'analytics-report-ai' ); ?>
+							<?php echo esc_html__( 'The OpenAI API Key is not sent to Google.', 'studio317-report-drafts-google-analytics' ); ?>
 						</li>
 						<li>
-							<?php echo esc_html__( 'WordPress user information, cookies, and IP addresses are not included in this GA4 request body by design.', 'analytics-report-ai' ); ?>
+							<?php echo esc_html__( 'WordPress user identifiers, cookies, and IP addresses are not included in this GA4 request body by design.', 'studio317-report-drafts-google-analytics' ); ?>
 						</li>
 					</ul>
 				</div>
 
 				<p>
 					<button type="submit" class="button button-primary">
-						<?php echo esc_html__( 'Fetch GA4 Data', 'analytics-report-ai' ); ?>
+						<?php echo esc_html__( 'Fetch GA4 Data', 'studio317-report-drafts-google-analytics' ); ?>
 					</button>
 				</p>
 
 				<p class="description">
-					<?php echo esc_html__( 'Fetch GA4 Data validates the conditions, fetches GA4 preset reports, and creates a Data Preview.', 'analytics-report-ai' ); ?>
+					<?php echo esc_html__( 'Fetch GA4 Data validates the conditions, fetches GA4 preset reports, and creates a Data Preview.', 'studio317-report-drafts-google-analytics' ); ?>
 				</p>
 			</form>
 
@@ -341,7 +351,7 @@ final class Analytics_Report_AI_Report_Builder {
 			return array(
 				'status' => 'error',
 				'errors' => array(
-					__( 'You do not have permission to perform this action.', 'analytics-report-ai' ),
+					__( 'You do not have permission to perform this action.', 'studio317-report-drafts-google-analytics' ),
 				),
 			);
 		}
@@ -354,7 +364,7 @@ final class Analytics_Report_AI_Report_Builder {
 			return array(
 				'status' => 'error',
 				'errors' => array(
-					__( 'Security check failed. Please reload the page and try again.', 'analytics-report-ai' ),
+					__( 'Security check failed. Please reload the page and try again.', 'studio317-report-drafts-google-analytics' ),
 				),
 			);
 		}
@@ -374,7 +384,7 @@ final class Analytics_Report_AI_Report_Builder {
 		return array(
 			'status' => 'error',
 			'errors' => array(
-				__( 'Invalid action.', 'analytics-report-ai' ),
+				__( 'Invalid action.', 'studio317-report-drafts-google-analytics' ),
 			),
 		);
 	}
@@ -578,7 +588,8 @@ final class Analytics_Report_AI_Report_Builder {
 			$settings,
 			$current_summary,
 			$comparison_summary,
-			$preset_reports
+			$preset_reports,
+			analytics_report_ai_get_report_language_profile()
 		);
 
 		$payload_validation = analytics_report_ai_validate_ai_payload( $payload );
@@ -587,7 +598,7 @@ final class Analytics_Report_AI_Report_Builder {
 			return array(
 				'status'      => 'error',
 				'errors'      => array(
-					__( 'The GA4 data could not be converted into valid data for OpenAI. Please check the settings and try again.', 'analytics-report-ai' ),
+					__( 'The GA4 data could not be converted into valid data for OpenAI. Please check the settings and try again.', 'studio317-report-drafts-google-analytics' ),
 				),
 				'form_values' => $validation_result['form_values'],
 			);
@@ -635,14 +646,14 @@ final class Analytics_Report_AI_Report_Builder {
 			? (string) $credential_source['status']
 			: 'credential_source_missing';
 		if ( 'credential_source_oauth_refresh_needed' === $status ) {
-			return __( 'Google connection needs to be renewed before GA4 data can be fetched. Open Settings, reconnect Google, and try again. Credential values are not displayed.', 'analytics-report-ai' );
+			return __( 'Google connection needs to be renewed before GA4 data can be fetched. Open Settings, reconnect Google, and try again. Credential values are not displayed.', 'studio317-report-drafts-google-analytics' );
 		}
 
 		if ( 'credential_source_oauth_error_category' === $status ) {
-			return __( 'Google connection is not ready for GA4 requests. Open Settings, reconnect Google, and try again. Credential values are not displayed.', 'analytics-report-ai' );
+			return __( 'Google connection is not ready for GA4 requests. Open Settings, reconnect Google, and try again. Credential values are not displayed.', 'studio317-report-drafts-google-analytics' );
 		}
 
-		return __( 'Google connection is not configured. Open Settings, configure Google OAuth, connect your Google account, and try again. Credential values are not displayed.', 'analytics-report-ai' );
+		return __( 'Google connection is not configured. Open Settings, configure Google OAuth, connect your Google account, and try again. Credential values are not displayed.', 'studio317-report-drafts-google-analytics' );
 	}
 
 	/**
@@ -662,7 +673,7 @@ final class Analytics_Report_AI_Report_Builder {
 			return array(
 				'status' => 'error',
 				'errors' => array(
-					__( 'The saved report data is missing, expired, or no longer valid. Please fetch GA4 data again.', 'analytics-report-ai' ),
+					__( 'The saved report data is missing, expired, or no longer valid. Please fetch GA4 data again.', 'studio317-report-drafts-google-analytics' ),
 				),
 			);
 		}
@@ -716,11 +727,11 @@ final class Analytics_Report_AI_Report_Builder {
 		$end_date   = isset( $form_values['end_date'] ) ? $form_values['end_date'] : '';
 
 		if ( ! analytics_report_ai_is_valid_date_string( $start_date ) ) {
-			$errors[] = __( 'Start date is invalid.', 'analytics-report-ai' );
+			$errors[] = __( 'Start date is invalid.', 'studio317-report-drafts-google-analytics' );
 		}
 
 		if ( ! analytics_report_ai_is_valid_date_string( $end_date ) ) {
-			$errors[] = __( 'End date is invalid.', 'analytics-report-ai' );
+			$errors[] = __( 'End date is invalid.', 'studio317-report-drafts-google-analytics' );
 		}
 
 		if (
@@ -728,7 +739,7 @@ final class Analytics_Report_AI_Report_Builder {
 			&& analytics_report_ai_is_valid_date_string( $end_date )
 			&& $start_date > $end_date
 		) {
-			$errors[] = __( 'End date must be the same as or later than start date.', 'analytics-report-ai' );
+			$errors[] = __( 'End date must be the same as or later than start date.', 'studio317-report-drafts-google-analytics' );
 		}
 
 		if (
@@ -742,7 +753,7 @@ final class Analytics_Report_AI_Report_Builder {
 			if ( $report_days > $max_report_days ) {
 				$errors[] = sprintf(
 					/* translators: %d: maximum report period days. */
-					__( 'The report period cannot exceed %d days. Please choose a shorter date range.', 'analytics-report-ai' ),
+					__( 'The report period cannot exceed %d days. Please choose a shorter date range.', 'studio317-report-drafts-google-analytics' ),
 					$max_report_days
 				);
 			}
@@ -752,7 +763,7 @@ final class Analytics_Report_AI_Report_Builder {
 		$comparison         = isset( $form_values['comparison'] ) ? $form_values['comparison'] : '';
 
 		if ( ! isset( $comparison_options[ $comparison ] ) ) {
-			$errors[]   = __( 'Comparison option is invalid.', 'analytics-report-ai' );
+			$errors[]   = __( 'Comparison option is invalid.', 'studio317-report-drafts-google-analytics' );
 			$comparison = 'previous_month';
 		}
 
@@ -760,7 +771,7 @@ final class Analytics_Report_AI_Report_Builder {
 		$scope         = isset( $form_values['scope'] ) ? $form_values['scope'] : '';
 
 		if ( ! isset( $scope_options[ $scope ] ) ) {
-			$errors[] = __( 'Data scope is invalid.', 'analytics-report-ai' );
+			$errors[] = __( 'Data scope is invalid.', 'studio317-report-drafts-google-analytics' );
 			$scope    = 'site';
 		}
 
@@ -803,7 +814,7 @@ final class Analytics_Report_AI_Report_Builder {
 			return array(
 				'status'      => 'error',
 				'errors'      => array(
-					__( 'Comparison period could not be calculated. Please choose a different date range or comparison option.', 'analytics-report-ai' ),
+					__( 'Comparison period could not be calculated. Please choose a different date range or comparison option.', 'studio317-report-drafts-google-analytics' ),
 				),
 				'form_values' => $form_values,
 			);
@@ -848,7 +859,7 @@ final class Analytics_Report_AI_Report_Builder {
 			if ( ! empty( $warnings ) ) {
 				?>
 				<div class="notice notice-warning">
-					<p><strong><?php echo esc_html__( 'GA4 data was fetched and the data for OpenAI was prepared with warnings.', 'analytics-report-ai' ); ?></strong></p>
+					<p><strong><?php echo esc_html__( 'GA4 data was fetched and the data for OpenAI was prepared with warnings.', 'studio317-report-drafts-google-analytics' ); ?></strong></p>
 					<ul>
 						<?php foreach ( $warnings as $warning ) : ?>
 							<li><?php echo esc_html( $warning ); ?></li>
@@ -860,7 +871,7 @@ final class Analytics_Report_AI_Report_Builder {
 			}
 			?>
 			<div class="notice notice-success">
-				<p><?php echo esc_html__( 'GA4 preset reports were fetched and the data for OpenAI was prepared successfully.', 'analytics-report-ai' ); ?></p>
+				<p><?php echo esc_html__( 'GA4 preset reports were fetched and the data for OpenAI was prepared successfully.', 'studio317-report-drafts-google-analytics' ); ?></p>
 			</div>
 			<?php
 			return;
@@ -870,8 +881,8 @@ final class Analytics_Report_AI_Report_Builder {
 			?>
 			<div class="notice notice-success">
 				<p>
-					<?php echo esc_html__( 'AI report was generated.', 'analytics-report-ai' ); ?>
-					<a href="#analytics-report-ai-generated-report-section"><?php echo esc_html__( 'View the generated report draft.', 'analytics-report-ai' ); ?></a>
+					<?php echo esc_html__( 'AI report was generated.', 'studio317-report-drafts-google-analytics' ); ?>
+					<a href="#studio317-report-drafts-google-analytics-generated-report-section"><?php echo esc_html__( 'View the generated report draft.', 'studio317-report-drafts-google-analytics' ); ?></a>
 				</p>
 			</div>
 			<?php
@@ -883,7 +894,7 @@ final class Analytics_Report_AI_Report_Builder {
 		}
 		?>
 		<div class="notice notice-error">
-			<p><strong><?php echo esc_html__( 'Please fix the following errors.', 'analytics-report-ai' ); ?></strong></p>
+			<p><strong><?php echo esc_html__( 'Please fix the following errors.', 'studio317-report-drafts-google-analytics' ); ?></strong></p>
 			<ul>
 				<?php foreach ( $submission_result['errors'] as $error ) : ?>
 					<li><?php echo esc_html( $error ); ?></li>
@@ -913,13 +924,13 @@ final class Analytics_Report_AI_Report_Builder {
 		$conditions        = $submission_result['conditions'];
 		$comparison_period = isset( $conditions['comparison_period'] ) ? $conditions['comparison_period'] : null;
 		?>
-		<div class="analytics-report-ai-card">
-			<h2><?php echo esc_html__( 'Validated Conditions', 'analytics-report-ai' ); ?></h2>
+		<div class="studio317-report-drafts-google-analytics-card">
+			<h2><?php echo esc_html__( 'Validated Conditions', 'studio317-report-drafts-google-analytics' ); ?></h2>
 
-			<table class="widefat striped analytics-report-ai-status-table">
+			<table class="widefat striped studio317-report-drafts-google-analytics-status-table">
 				<tbody>
 					<tr>
-						<th scope="row"><?php echo esc_html__( 'Date Range', 'analytics-report-ai' ); ?></th>
+						<th scope="row"><?php echo esc_html__( 'Date Range', 'studio317-report-drafts-google-analytics' ); ?></th>
 						<td>
 							<code><?php echo esc_html( $conditions['period']['start_date'] ); ?></code>
 							-
@@ -927,32 +938,32 @@ final class Analytics_Report_AI_Report_Builder {
 						</td>
 					</tr>
 					<tr>
-						<th scope="row"><?php echo esc_html__( 'Comparison', 'analytics-report-ai' ); ?></th>
+						<th scope="row"><?php echo esc_html__( 'Comparison', 'studio317-report-drafts-google-analytics' ); ?></th>
 						<td><?php echo esc_html( $conditions['comparison_label'] ); ?></td>
 					</tr>
 					<tr>
-						<th scope="row"><?php echo esc_html__( 'Comparison Period', 'analytics-report-ai' ); ?></th>
+						<th scope="row"><?php echo esc_html__( 'Comparison Period', 'studio317-report-drafts-google-analytics' ); ?></th>
 						<td>
 							<?php if ( is_array( $comparison_period ) ) : ?>
 								<code><?php echo esc_html( $comparison_period['start_date'] ); ?></code>
 								-
 								<code><?php echo esc_html( $comparison_period['end_date'] ); ?></code>
 							<?php else : ?>
-								<?php echo esc_html__( 'None', 'analytics-report-ai' ); ?>
+								<?php echo esc_html__( 'None', 'studio317-report-drafts-google-analytics' ); ?>
 							<?php endif; ?>
 						</td>
 					</tr>
 					<tr>
-						<th scope="row"><?php echo esc_html__( 'Data Scope', 'analytics-report-ai' ); ?></th>
+						<th scope="row"><?php echo esc_html__( 'Data Scope', 'studio317-report-drafts-google-analytics' ); ?></th>
 						<td><?php echo esc_html( $conditions['scope_label'] ); ?></td>
 					</tr>
 					<tr>
-						<th scope="row"><?php echo esc_html__( 'Normalized Path', 'analytics-report-ai' ); ?></th>
+						<th scope="row"><?php echo esc_html__( 'Normalized Path', 'studio317-report-drafts-google-analytics' ); ?></th>
 						<td>
 							<?php if ( '' !== $conditions['path'] ) : ?>
 								<code><?php echo esc_html( $conditions['path'] ); ?></code>
 							<?php else : ?>
-								<?php echo esc_html__( 'None', 'analytics-report-ai' ); ?>
+								<?php echo esc_html__( 'None', 'studio317-report-drafts-google-analytics' ); ?>
 							<?php endif; ?>
 						</td>
 					</tr>
@@ -960,6 +971,30 @@ final class Analytics_Report_AI_Report_Builder {
 			</table>
 		</div>
 		<?php
+	}
+
+	/**
+	 * Render the report language selected for AI generation.
+	 *
+	 * @param array $report_language Report language profile.
+	 * @return void
+	 */
+	private function render_report_language_summary( $report_language ) {
+		if ( is_wp_error( analytics_report_ai_validate_report_language_profile( $report_language ) ) ) {
+			$report_language = analytics_report_ai_get_report_language_profile_from_locale( 'en_US', 'default_locale' );
+		}
+
+		$language_name = analytics_report_ai_get_report_language_display_name( $report_language );
+		$output_locale = isset( $report_language['output_locale'] ) && is_scalar( $report_language['output_locale'] )
+			? (string) $report_language['output_locale']
+			: 'en-US';
+
+		printf(
+			/* translators: 1: report language name, 2: output locale. */
+			esc_html__( 'Report language: %1$s (%2$s)', 'studio317-report-drafts-google-analytics' ),
+			esc_html( $language_name ),
+			esc_html( $output_locale )
+		);
 	}
 
 	/**
@@ -983,97 +1018,107 @@ final class Analytics_Report_AI_Report_Builder {
 		$expiration = isset( $submission_result['expiration'] ) ? absint( $submission_result['expiration'] ) : analytics_report_ai_get_payload_transient_expiration();
 		$generation_allowed = analytics_report_ai_payload_allows_generation( $payload );
 		?>
-		<div class="analytics-report-ai-card">
-			<h2><?php echo esc_html__( 'AI Data Preview', 'analytics-report-ai' ); ?></h2>
+		<div class="studio317-report-drafts-google-analytics-card">
+			<h2><?php echo esc_html__( 'AI Data Preview', 'studio317-report-drafts-google-analytics' ); ?></h2>
 
 			<p>
 				<?php
 				printf(
 					/* translators: %d: number of minutes the report data is saved temporarily. */
-					esc_html__( 'The data to be sent to OpenAI has been saved temporarily for %d minutes.', 'analytics-report-ai' ),
+					esc_html__( 'The data to be sent to OpenAI has been saved temporarily for %d minutes.', 'studio317-report-drafts-google-analytics' ),
 					(int) floor( $expiration / MINUTE_IN_SECONDS )
 				);
 				?>
 			</p>
 
 			<p class="description">
-				<?php echo esc_html__( 'The reviewed report data is stored temporarily for this user and expires automatically.', 'analytics-report-ai' ); ?>
+				<?php echo esc_html__( 'The reviewed report data is stored temporarily for this user and expires automatically.', 'studio317-report-drafts-google-analytics' ); ?>
 			</p>
 
 			<?php $this->render_payload_status_notices( $payload ); ?>
 
-			<div class="analytics-report-ai-info-block">
-				<h3><?php echo esc_html__( 'Structured pre-send review', 'analytics-report-ai' ); ?></h3>
+			<p>
+				<?php
+				$this->render_report_language_summary(
+					isset( $payload['report_language'] ) && is_array( $payload['report_language'] )
+						? $payload['report_language']
+						: array()
+				);
+				?>
+			</p>
+
+			<div class="studio317-report-drafts-google-analytics-info-block">
+				<h3><?php echo esc_html__( 'Structured pre-send review', 'studio317-report-drafts-google-analytics' ); ?></h3>
 
 				<p>
-					<?php echo esc_html__( 'Review this structured summary before sending data to AI.', 'analytics-report-ai' ); ?>
+					<?php echo esc_html__( 'Review this structured summary before sending data to AI.', 'studio317-report-drafts-google-analytics' ); ?>
 				</p>
 
 				<p>
-					<?php echo esc_html__( 'This preview focuses on report conditions, data availability, warnings, and generation readiness.', 'analytics-report-ai' ); ?>
+					<?php echo esc_html__( 'This preview focuses on report conditions, data availability, warnings, and generation readiness.', 'studio317-report-drafts-google-analytics' ); ?>
 				</p>
 
 				<p>
-					<?php echo esc_html__( 'Use the status and warning information below to decide whether to generate a report.', 'analytics-report-ai' ); ?>
+					<?php echo esc_html__( 'Use the status and warning information below to decide whether to generate a report.', 'studio317-report-drafts-google-analytics' ); ?>
 				</p>
 
 				<p>
-					<?php echo esc_html__( 'The reviewed report data can include host name, page path, traffic channel/source, city, summary metrics, and comparison differences.', 'analytics-report-ai' ); ?>
+					<?php echo esc_html__( 'The reviewed report data can include host name, page path, traffic channel/source, city, summary metrics, and comparison differences.', 'studio317-report-drafts-google-analytics' ); ?>
 				</p>
 
 				<p>
-					<?php echo esc_html__( 'Credentials are not included in the data sent to OpenAI. Google Access Token, OpenAI API Key, GA4 Property ID, WordPress user information, cookies, and IP addresses are not included by design.', 'analytics-report-ai' ); ?>
+					<?php echo esc_html__( 'Credentials are not included in the data sent to OpenAI. Google Access Token, OpenAI API Key, GA4 Property ID, WordPress user identifiers, cookies, and IP addresses are not included by design.', 'studio317-report-drafts-google-analytics' ); ?>
 				</p>
 
 				<p>
-					<?php echo esc_html__( 'Page paths and traffic sources can still be sensitive business analytics information, so review the data before sending it.', 'analytics-report-ai' ); ?>
+					<?php echo esc_html__( 'Page paths and traffic sources can still be sensitive business analytics information, so review the data before sending it.', 'studio317-report-drafts-google-analytics' ); ?>
 				</p>
 
 				<p>
-					<?php echo esc_html__( 'For support, share visible status messages, warning messages, or general error names only. Do not share credentials, option values, request or response bodies, AI data JSON, generated report text, screenshots, or browser Network evidence.', 'analytics-report-ai' ); ?>
+					<?php echo esc_html__( 'For support, share visible status messages, warning messages, or general error names only. Do not share credentials, option values, request or response bodies, AI data JSON, generated report text, screenshots, or browser Network evidence.', 'studio317-report-drafts-google-analytics' ); ?>
 				</p>
 			</div>
 
 			<?php $this->render_summary_preview_table( $payload ); ?>
-			<?php $this->render_list_preview_table( __( 'Daily Trend', 'analytics-report-ai' ), isset( $payload['daily_trend'] ) ? $payload['daily_trend'] : array() ); ?>
-			<?php $this->render_list_preview_table( __( 'Top Pages', 'analytics-report-ai' ), isset( $payload['top_pages'] ) ? $payload['top_pages'] : array() ); ?>
-			<?php $this->render_list_preview_table( __( 'Traffic Channels', 'analytics-report-ai' ), isset( $payload['traffic_channels'] ) ? $payload['traffic_channels'] : array() ); ?>
-			<?php $this->render_list_preview_table( __( 'Traffic Sources', 'analytics-report-ai' ), isset( $payload['traffic_sources'] ) ? $payload['traffic_sources'] : array() ); ?>
-			<?php $this->render_list_preview_table( __( 'Regional Trends', 'analytics-report-ai' ), isset( $payload['regional_trends'] ) ? $payload['regional_trends'] : array() ); ?>
+			<?php $this->render_list_preview_table( __( 'Daily Trend', 'studio317-report-drafts-google-analytics' ), isset( $payload['daily_trend'] ) ? $payload['daily_trend'] : array() ); ?>
+			<?php $this->render_list_preview_table( __( 'Top Pages', 'studio317-report-drafts-google-analytics' ), isset( $payload['top_pages'] ) ? $payload['top_pages'] : array() ); ?>
+			<?php $this->render_list_preview_table( __( 'Traffic Channels', 'studio317-report-drafts-google-analytics' ), isset( $payload['traffic_channels'] ) ? $payload['traffic_channels'] : array() ); ?>
+			<?php $this->render_list_preview_table( __( 'Traffic Sources', 'studio317-report-drafts-google-analytics' ), isset( $payload['traffic_sources'] ) ? $payload['traffic_sources'] : array() ); ?>
+			<?php $this->render_list_preview_table( __( 'Regional Trends', 'studio317-report-drafts-google-analytics' ), isset( $payload['regional_trends'] ) ? $payload['regional_trends'] : array() ); ?>
 
-			<div class="analytics-report-ai-info-block">
-				<h3><?php echo esc_html__( 'Data sent to OpenAI API', 'analytics-report-ai' ); ?></h3>
+			<div class="studio317-report-drafts-google-analytics-info-block">
+				<h3><?php echo esc_html__( 'Data sent to OpenAI API', 'studio317-report-drafts-google-analytics' ); ?></h3>
 
 				<p>
-					<?php echo esc_html__( 'When you generate an AI report, the reviewed report data is sent to the OpenAI API.', 'analytics-report-ai' ); ?>
+					<?php echo esc_html__( 'When you generate an AI report, the reviewed report data and selected report language are sent to the OpenAI API.', 'studio317-report-drafts-google-analytics' ); ?>
 				</p>
 
 				<p>
-					<?php echo esc_html__( 'Generating a report sends the reviewed data to OpenAI API and may consume API usage.', 'analytics-report-ai' ); ?>
+					<?php echo esc_html__( 'Generating a report sends the reviewed data to OpenAI API and may consume API usage.', 'studio317-report-drafts-google-analytics' ); ?>
 				</p>
 
 				<p>
-					<?php echo esc_html__( 'The generated result is a draft. Review and edit it before publishing, sharing, or sending it.', 'analytics-report-ai' ); ?>
+					<?php echo esc_html__( 'The generated result is a draft. Review and edit it before publishing, sharing, or sending it.', 'studio317-report-drafts-google-analytics' ); ?>
 				</p>
 			</div>
 
-			<form method="post" action="" class="analytics-report-ai-generate-form" data-analytics-report-ai-single-submit>
+			<form method="post" action="" class="studio317-report-drafts-google-analytics-generate-form" data-studio317-report-drafts-google-analytics-single-submit>
 				<?php wp_nonce_field( 'analytics_report_ai_report_builder_action', 'analytics_report_ai_report_builder_nonce' ); ?>
 				<input type="hidden" name="analytics_report_ai_report_action" value="generate_ai_report" />
 				<p>
 					<button
 						type="submit"
 						class="button button-primary"
-						data-analytics-report-ai-submit-button
+						data-studio317-report-drafts-google-analytics-submit-button
 						<?php disabled( ! $generation_allowed ); ?>
 						<?php if ( 'report_generated' === $submission_result['status'] ) : ?>
-							data-analytics-report-ai-confirm="<?php echo esc_attr__( 'The current report text will be overwritten. Continue?', 'analytics-report-ai' ); ?>"
+							data-studio317-report-drafts-google-analytics-confirm="<?php echo esc_attr__( 'The current report text will be overwritten. Continue?', 'studio317-report-drafts-google-analytics' ); ?>"
 						<?php endif; ?>
 					>
 						<?php
 						echo 'report_generated' === $submission_result['status']
-							? esc_html__( 'Regenerate AI Report', 'analytics-report-ai' )
-							: esc_html__( 'Generate AI Report', 'analytics-report-ai' );
+							? esc_html__( 'Regenerate AI Report', 'studio317-report-drafts-google-analytics' )
+							: esc_html__( 'Generate AI Report', 'studio317-report-drafts-google-analytics' );
 						?>
 					</button>
 				</p>
@@ -1082,8 +1127,8 @@ final class Analytics_Report_AI_Report_Builder {
 			<p class="description">
 				<?php
 				echo $generation_allowed
-					? esc_html__( 'Use Generate AI Report only after reviewing the structured Data Preview and any visible warnings.', 'analytics-report-ai' )
-					: esc_html__( 'AI generation is not available because the current-period data is not reportable for the selected conditions.', 'analytics-report-ai' );
+					? esc_html__( 'Use Generate AI Report only after reviewing the structured Data Preview and any visible warnings.', 'studio317-report-drafts-google-analytics' )
+					: esc_html__( 'AI generation is not available because the current-period data is not reportable for the selected conditions.', 'studio317-report-drafts-google-analytics' );
 				?>
 			</p>
 		</div>
@@ -1113,13 +1158,13 @@ final class Analytics_Report_AI_Report_Builder {
 		}
 		?>
 		<div class="notice notice-warning inline">
-			<p><strong><?php echo esc_html__( 'Review these GA4 data warnings before generating a report.', 'analytics-report-ai' ); ?></strong></p>
+			<p><strong><?php echo esc_html__( 'Review these GA4 data warnings before generating a report.', 'studio317-report-drafts-google-analytics' ); ?></strong></p>
 			<ul>
 				<?php foreach ( $warnings as $warning ) : ?>
 					<li><?php echo esc_html( $warning ); ?></li>
 				<?php endforeach; ?>
 			</ul>
-			<p><?php echo esc_html__( 'Generation is available, but warnings may limit what the generated draft should claim.', 'analytics-report-ai' ); ?></p>
+			<p><?php echo esc_html__( 'Generation is available, but warnings may limit what the generated draft should claim.', 'studio317-report-drafts-google-analytics' ); ?></p>
 		</div>
 		<?php
 	}
@@ -1136,10 +1181,10 @@ final class Analytics_Report_AI_Report_Builder {
 			: '';
 
 		if ( 'current_period_no_data' === $reason ) {
-		return __( 'AI generation is not available because the current-period data is not reportable for the selected conditions. Change the date range or scope and fetch GA4 data again.', 'analytics-report-ai' );
+		return __( 'AI generation is not available because the current-period data is not reportable for the selected conditions. Change the date range or scope and fetch GA4 data again.', 'studio317-report-drafts-google-analytics' );
 		}
 
-		return __( 'AI generation is not available because the saved report data is not reportable. Fetch GA4 data again before generating a report.', 'analytics-report-ai' );
+		return __( 'AI generation is not available because the saved report data is not reportable. Fetch GA4 data again before generating a report.', 'studio317-report-drafts-google-analytics' );
 	}
 
 	/**
@@ -1178,38 +1223,38 @@ final class Analytics_Report_AI_Report_Builder {
 	 */
 	private function get_payload_warning_message( $code, $category ) {
 		if ( 'current_period_zero_activity' === $code ) {
-			return __( 'The current-period summary contains explicit zero activity. This is treated as measured zero activity, not as a GA4 API error.', 'analytics-report-ai' );
+			return __( 'The current-period summary contains explicit zero activity. This is treated as measured zero activity, not as a GA4 API error.', 'studio317-report-drafts-google-analytics' );
 		}
 
 		if ( 'current_summary_partial_metric_values' === $code ) {
-			return __( 'Some current-period summary metrics were unavailable, so the report should treat the summary as partial.', 'analytics-report-ai' );
+			return __( 'Some current-period summary metrics were unavailable, so the report should treat the summary as partial.', 'studio317-report-drafts-google-analytics' );
 		}
 
 		if ( 'current_summary_missing' === $code ) {
-			return __( 'Current-period summary metrics were unavailable, but detail rows were present. Review the partial report data before generating.', 'analytics-report-ai' );
+			return __( 'Current-period summary metrics were unavailable, but detail rows were present. Review the partial report data before generating.', 'studio317-report-drafts-google-analytics' );
 		}
 
 		if ( 'comparison_period_no_data' === $code ) {
-			return __( 'Comparison-period data is unavailable. Generated text should avoid comparison claims.', 'analytics-report-ai' );
+			return __( 'Comparison-period data is unavailable. Generated text should avoid comparison claims.', 'studio317-report-drafts-google-analytics' );
 		}
 
 		if ( 'comparison_period_zero_activity' === $code ) {
-			return __( 'The comparison period contains explicit zero activity, so comparison wording may be limited.', 'analytics-report-ai' );
+			return __( 'The comparison period contains explicit zero activity, so comparison wording may be limited.', 'studio317-report-drafts-google-analytics' );
 		}
 
 		if ( 'comparison_summary_partial_metric_values' === $code ) {
-			return __( 'Some comparison-period summary metrics were unavailable, so comparison wording may be limited.', 'analytics-report-ai' );
+			return __( 'Some comparison-period summary metrics were unavailable, so comparison wording may be limited.', 'studio317-report-drafts-google-analytics' );
 		}
 
 		if ( 'detail_preset_empty' === $code ) {
 			return sprintf(
 				/* translators: %s: safe GA4 preset label. */
-				__( '%s rows are unavailable for the selected conditions.', 'analytics-report-ai' ),
+				__( '%s rows are unavailable for the selected conditions.', 'studio317-report-drafts-google-analytics' ),
 				$this->get_payload_warning_category_label( $category )
 			);
 		}
 
-		return __( 'The report data includes a GA4 data availability warning.', 'analytics-report-ai' );
+		return __( 'The report data includes a GA4 data availability warning.', 'studio317-report-drafts-google-analytics' );
 	}
 
 	/**
@@ -1220,16 +1265,16 @@ final class Analytics_Report_AI_Report_Builder {
 	 */
 	private function get_payload_warning_category_label( $category ) {
 		$labels = array(
-			'daily_trend'       => __( 'Daily Trend', 'analytics-report-ai' ),
-			'top_pages'         => __( 'Top Pages', 'analytics-report-ai' ),
-			'traffic_channels'  => __( 'Traffic Channels', 'analytics-report-ai' ),
-			'traffic_sources'   => __( 'Traffic Sources', 'analytics-report-ai' ),
-			'regional_trends'   => __( 'Regional Trends', 'analytics-report-ai' ),
-			'summary'           => __( 'Summary Metrics', 'analytics-report-ai' ),
-			'comparison_period' => __( 'Comparison Period', 'analytics-report-ai' ),
+			'daily_trend'       => __( 'Daily Trend', 'studio317-report-drafts-google-analytics' ),
+			'top_pages'         => __( 'Top Pages', 'studio317-report-drafts-google-analytics' ),
+			'traffic_channels'  => __( 'Traffic Channels', 'studio317-report-drafts-google-analytics' ),
+			'traffic_sources'   => __( 'Traffic Sources', 'studio317-report-drafts-google-analytics' ),
+			'regional_trends'   => __( 'Regional Trends', 'studio317-report-drafts-google-analytics' ),
+			'summary'           => __( 'Summary Metrics', 'studio317-report-drafts-google-analytics' ),
+			'comparison_period' => __( 'Comparison Period', 'studio317-report-drafts-google-analytics' ),
 		);
 
-		return isset( $labels[ $category ] ) ? $labels[ $category ] : __( 'GA4 detail', 'analytics-report-ai' );
+		return isset( $labels[ $category ] ) ? $labels[ $category ] : __( 'GA4 detail', 'studio317-report-drafts-google-analytics' );
 	}
 
 	/**
@@ -1250,44 +1295,44 @@ final class Analytics_Report_AI_Report_Builder {
 
 		$report_text = (string) $submission_result['report_text'];
 		?>
-		<div id="analytics-report-ai-generated-report-section" class="analytics-report-ai-card">
-			<h2><?php echo esc_html__( 'Generated Report Draft', 'analytics-report-ai' ); ?></h2>
+		<div id="studio317-report-drafts-google-analytics-generated-report-section" class="studio317-report-drafts-google-analytics-card">
+			<h2><?php echo esc_html__( 'Generated Report Draft', 'studio317-report-drafts-google-analytics' ); ?></h2>
 
 			<p class="description">
-				<?php echo esc_html__( 'Review and edit the generated draft before using it.', 'analytics-report-ai' ); ?>
+				<?php echo esc_html__( 'Review and edit the generated draft before using it.', 'studio317-report-drafts-google-analytics' ); ?>
 			</p>
 
 			<p class="description">
-				<?php echo esc_html__( 'The plugin does not save generated report text.', 'analytics-report-ai' ); ?>
+				<?php echo esc_html__( 'The plugin does not save generated report text.', 'studio317-report-drafts-google-analytics' ); ?>
 			</p>
 
 			<p class="description">
-				<?php echo esc_html__( 'This AI-generated text is a draft. Review and edit it before publishing, sharing, or sending it.', 'analytics-report-ai' ); ?>
+				<?php echo esc_html__( 'This AI-generated text is a draft. Review and edit it before publishing, sharing, or sending it.', 'studio317-report-drafts-google-analytics' ); ?>
 			</p>
 
 			<p class="description">
-				<?php echo esc_html__( 'Copying the report text is a user-initiated action.', 'analytics-report-ai' ); ?>
+				<?php echo esc_html__( 'Copying the report text is a user-initiated action.', 'studio317-report-drafts-google-analytics' ); ?>
 			</p>
 
 			<textarea
-				id="analytics-report-ai-generated-report"
-				class="large-text analytics-report-ai-generated-report"
+				id="studio317-report-drafts-google-analytics-generated-report"
+				class="large-text studio317-report-drafts-google-analytics-generated-report"
 				rows="18"
-				data-analytics-report-ai-report-textarea
+				data-studio317-report-drafts-google-analytics-report-textarea
 			><?php echo esc_textarea( $report_text ); ?></textarea>
 
-			<p class="analytics-report-ai-copy-actions">
+			<p class="studio317-report-drafts-google-analytics-copy-actions">
 				<button
 					type="button"
 					class="button"
-					data-analytics-report-ai-copy-report
+					data-studio317-report-drafts-google-analytics-copy-report
 				>
-					<?php echo esc_html__( 'Copy Report Text', 'analytics-report-ai' ); ?>
+					<?php echo esc_html__( 'Copy Report Text', 'studio317-report-drafts-google-analytics' ); ?>
 				</button>
 				<span
-					class="analytics-report-ai-copy-status"
+					class="studio317-report-drafts-google-analytics-copy-status"
 					aria-live="polite"
-					data-analytics-report-ai-copy-status
+					data-studio317-report-drafts-google-analytics-copy-status
 				></span>
 			</p>
 		</div>
@@ -1303,14 +1348,14 @@ final class Analytics_Report_AI_Report_Builder {
 	 */
 	private function get_ga4_connection_label( $credential_source_label, $lifecycle_status ) {
 		if ( $this->is_ga4_connection_ready( $credential_source_label, $lifecycle_status ) ) {
-			return __( 'Ready to fetch GA4 data', 'analytics-report-ai' );
+			return __( 'Ready to fetch GA4 data', 'studio317-report-drafts-google-analytics' );
 		}
 
 		if ( $this->is_ga4_connection_reconnect_required( $credential_source_label, $lifecycle_status ) ) {
-			return __( 'Reconnect Google before fetching GA4 data', 'analytics-report-ai' );
+			return __( 'Reconnect Google before fetching GA4 data', 'studio317-report-drafts-google-analytics' );
 		}
 
-		return __( 'Not connected', 'analytics-report-ai' );
+		return __( 'Not connected', 'studio317-report-drafts-google-analytics' );
 	}
 
 	/**
@@ -1358,14 +1403,14 @@ final class Analytics_Report_AI_Report_Builder {
 	 */
 	private function get_openai_api_key_label( $source_category ) {
 		if ( 'constant_configured' === $source_category ) {
-			return __( 'Managed by server configuration', 'analytics-report-ai' );
+			return __( 'Managed by server configuration', 'studio317-report-drafts-google-analytics' );
 		}
 
 		if ( 'settings_saved' === $source_category ) {
-			return __( 'Saved in Settings', 'analytics-report-ai' );
+			return __( 'Saved in Settings', 'studio317-report-drafts-google-analytics' );
 		}
 
-		return __( 'Not configured', 'analytics-report-ai' );
+		return __( 'Not configured', 'studio317-report-drafts-google-analytics' );
 	}
 
 	/**
@@ -1379,17 +1424,17 @@ final class Analytics_Report_AI_Report_Builder {
 			return;
 		}
 		?>
-		<h3><?php echo esc_html__( 'Summary Metrics', 'analytics-report-ai' ); ?></h3>
+		<h3><?php echo esc_html__( 'Summary Metrics', 'studio317-report-drafts-google-analytics' ); ?></h3>
 
-		<table class="widefat striped analytics-report-ai-preview-table">
+		<table class="widefat striped studio317-report-drafts-google-analytics-preview-table">
 			<thead>
 				<tr>
-					<th><?php echo esc_html__( 'Metric', 'analytics-report-ai' ); ?></th>
-					<th><?php echo esc_html__( 'Current', 'analytics-report-ai' ); ?></th>
-					<th><?php echo esc_html__( 'Comparison', 'analytics-report-ai' ); ?></th>
-					<th><?php echo esc_html__( 'Diff', 'analytics-report-ai' ); ?></th>
-					<th><?php echo esc_html__( 'Change Rate', 'analytics-report-ai' ); ?></th>
-					<th><?php echo esc_html__( 'Unit', 'analytics-report-ai' ); ?></th>
+					<th><?php echo esc_html__( 'Metric', 'studio317-report-drafts-google-analytics' ); ?></th>
+					<th><?php echo esc_html__( 'Current', 'studio317-report-drafts-google-analytics' ); ?></th>
+					<th><?php echo esc_html__( 'Comparison', 'studio317-report-drafts-google-analytics' ); ?></th>
+					<th><?php echo esc_html__( 'Diff', 'studio317-report-drafts-google-analytics' ); ?></th>
+					<th><?php echo esc_html__( 'Change Rate', 'studio317-report-drafts-google-analytics' ); ?></th>
+					<th><?php echo esc_html__( 'Unit', 'studio317-report-drafts-google-analytics' ); ?></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -1432,7 +1477,7 @@ final class Analytics_Report_AI_Report_Builder {
 		?>
 		<h3><?php echo esc_html( $title ); ?></h3>
 
-		<table class="widefat striped analytics-report-ai-preview-table">
+		<table class="widefat striped studio317-report-drafts-google-analytics-preview-table">
 			<thead>
 				<tr>
 					<?php foreach ( $columns as $column ) : ?>

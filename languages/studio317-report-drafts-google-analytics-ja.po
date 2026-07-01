@@ -1,12 +1,13 @@
-# Copyright (C) 2026 cuerda
+# Copyright (C) 2026 Kimiya Watabe / Studio317
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Analytics Report AI 0.1.0\n"
-"Report-Msgid-Bugs-To: https://cuerda.org/\n"
-"POT-Creation-Date: 2026-06-30T12:56:11+09:00\n"
+"Project-Id-Version: Studio317 Report Drafts for Google Analytics 0.1.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/studio317-report-"
+"drafts-google-analytics\n"
+"POT-Creation-Date: 2026-07-01T12:05:51+09:00\n"
 "PO-Revision-Date: 2026-06-30 10:00+0900\n"
-"Last-Translator: cuerda\n"
+"Last-Translator: Kimiya Watabe / Studio317\n"
 "Language-Team: Japanese\n"
 "Language: ja\n"
 "MIME-Version: 1.0\n"
@@ -14,45 +15,40 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Codex\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Domain: analytics-report-ai\n"
+"X-Domain: studio317-report-drafts-google-analytics\n"
 
 #. Plugin Name of the plugin
-#: analytics-report-ai.php includes/class-admin.php:82
+#: studio317-report-drafts-google-analytics.php includes/class-admin.php:82
 #: includes/class-admin.php:83
-msgid "Analytics Report AI"
-msgstr "Analytics Report AI"
-
-#. Plugin URI of the plugin
-#: analytics-report-ai.php
-msgid "https://cuerda.org/"
-msgstr "https://cuerda.org/"
+msgid "Studio317 Report Drafts for Google Analytics"
+msgstr "Studio317 Report Drafts for Google Analytics"
 
 #. Description of the plugin
-#: analytics-report-ai.php
+#: studio317-report-drafts-google-analytics.php
 msgid ""
-"Creates AI-assisted Japanese report drafts from GA4 data with admin review, "
-"editing, and copy tools."
+"Creates AI-assisted report drafts from GA4 data in the WordPress user "
+"language with admin review, editing, and copy tools."
 msgstr ""
-"GA4データから、管理画面で確認・編集・コピーできるAI支援の日本語レポート下書き"
-"を作成します。"
+"GA4データから、WordPressユーザー言語に合わせたAI支援のレポート下書きを作成"
+"し、管理画面で確認・編集・コピーできます。"
 
 #. Author of the plugin
-#: analytics-report-ai.php
-msgid "Kimiya Watabe / cuerda"
-msgstr ""
+#: studio317-report-drafts-google-analytics.php
+msgid "Kimiya Watabe / Studio317"
+msgstr "Kimiya Watabe / Studio317"
 
 #. Author URI of the plugin
-#: analytics-report-ai.php
+#: studio317-report-drafts-google-analytics.php
 msgid "https://business.s317.com/"
-msgstr ""
+msgstr "https://business.s317.com/"
 
 #: includes/class-admin.php:93 includes/class-admin.php:94
-#: includes/class-report-builder.php:67
+#: includes/class-report-builder.php:68
 msgid "Report Builder"
 msgstr "レポートビルダー"
 
 #: includes/class-admin.php:102 includes/class-admin.php:103
-#: includes/class-report-builder.php:84
+#: includes/class-report-builder.php:85
 msgid "Settings"
 msgstr "設定"
 
@@ -81,8 +77,12 @@ msgstr "コピーする内容がありません。"
 
 #: includes/class-admin.php:183 includes/class-admin.php:276
 #: includes/class-admin.php:321
-msgid "You do not have permission to manage Analytics Report AI credentials."
-msgstr "Analytics Report AI の認証情報を管理する権限がありません。"
+msgid ""
+"You do not have permission to manage Studio317 Report Drafts for Google "
+"Analytics credentials."
+msgstr ""
+"Studio317 Report Drafts for Google Analytics の認証情報を管理する権限がありま"
+"せん。"
 
 #: includes/class-admin.php:184 includes/class-admin.php:277
 #: includes/class-admin.php:322
@@ -177,7 +177,7 @@ msgstr ""
 "再試行してください。"
 
 #. translators: 1: safe user-facing error message, 2: HTTP status code.
-#: includes/class-ga4-client.php:731 includes/class-openai-client.php:211
+#: includes/class-ga4-client.php:731 includes/class-openai-client.php:215
 #, php-format
 msgid "%1$s HTTP status: %2$d"
 msgstr "%1$s HTTPステータス: %2$d"
@@ -190,7 +190,7 @@ msgstr ""
 "OpenAI APIキーが設定されていません。生成する前に、設定画面でAPIキーを追加する"
 "か、サーバー側で設定してください。"
 
-#: includes/class-openai-client.php:58
+#: includes/class-openai-client.php:62
 msgid ""
 "Could not connect to OpenAI API. Check the server network connection and try "
 "again."
@@ -198,17 +198,17 @@ msgstr ""
 "OpenAI API に接続できませんでした。サーバーのネットワーク接続を確認して再試行"
 "してください。"
 
-#: includes/class-openai-client.php:73
+#: includes/class-openai-client.php:77
 msgid "OpenAI API returned an unreadable response. Please try again later."
 msgstr ""
 "OpenAI API から読み取れないレスポンスが返されました。時間をおいて再試行してく"
 "ださい。"
 
-#: includes/class-openai-client.php:82
+#: includes/class-openai-client.php:86
 msgid "OpenAI API returned no report text."
 msgstr "OpenAI API からレポート本文が返されませんでした。"
 
-#: includes/class-openai-client.php:127 includes/class-openai-client.php:151
+#: includes/class-openai-client.php:131 includes/class-openai-client.php:155
 msgid ""
 "OpenAI API rejected the request. Check the report data and model "
 "configuration."
@@ -216,7 +216,7 @@ msgstr ""
 "OpenAI API がリクエストを拒否しました。レポートデータとモデル設定を確認してく"
 "ださい。"
 
-#: includes/class-openai-client.php:131 includes/class-openai-client.php:155
+#: includes/class-openai-client.php:135 includes/class-openai-client.php:159
 msgid ""
 "OpenAI API authentication failed. Review the configured OpenAI API key "
 "without sharing key values."
@@ -224,7 +224,7 @@ msgstr ""
 "OpenAI API の認証に失敗しました。キー値を共有せずに、設定済みのOpenAI APIキー"
 "を確認してください。"
 
-#: includes/class-openai-client.php:135 includes/class-openai-client.php:162
+#: includes/class-openai-client.php:139 includes/class-openai-client.php:166
 msgid ""
 "OpenAI API permission was denied. If you use a restricted key, allow Model "
 "capabilities and Responses (/v1/responses) requests."
@@ -232,7 +232,7 @@ msgstr ""
 "OpenAI API の権限が拒否されました。制限付きキーを使用する場合は、Model "
 "capabilities と Responses (/v1/responses) のリクエストを許可してください。"
 
-#: includes/class-openai-client.php:139 includes/class-openai-client.php:166
+#: includes/class-openai-client.php:143 includes/class-openai-client.php:170
 msgid ""
 "The configured OpenAI model or endpoint was not found. Check the model "
 "configuration."
@@ -240,7 +240,7 @@ msgstr ""
 "設定されたOpenAIモデルまたはエンドポイントが見つかりません。モデル設定を確認"
 "してください。"
 
-#: includes/class-openai-client.php:143 includes/class-openai-client.php:173
+#: includes/class-openai-client.php:147 includes/class-openai-client.php:177
 msgid ""
 "OpenAI API rate limit or quota may have been exceeded. Check your OpenAI "
 "Platform usage and billing."
@@ -248,11 +248,11 @@ msgstr ""
 "OpenAI API のレート制限またはクォータに達した可能性があります。OpenAI "
 "Platform の使用状況と請求設定を確認してください。"
 
-#: includes/class-openai-client.php:147
+#: includes/class-openai-client.php:151
 msgid "OpenAI API is temporarily unavailable. Please try again later."
 msgstr "OpenAI API は一時的に利用できません。時間をおいて再試行してください。"
 
-#: includes/class-openai-client.php:176
+#: includes/class-openai-client.php:180
 msgid ""
 "OpenAI API returned an unexpected error. Review the OpenAI configuration and "
 "try again without sharing request or response details."
@@ -261,42 +261,42 @@ msgstr ""
 "共有せずにOpenAI設定を確認し、再試行してください。"
 
 #. translators: %s: Settings screen link.
-#: includes/class-report-builder.php:77
+#: includes/class-report-builder.php:78
 #, php-format
 msgid "Current setup (configure %s first)"
 msgstr "現在の設定状況（はじめに%sしてください）"
 
-#: includes/class-report-builder.php:92 includes/class-settings.php:377
+#: includes/class-report-builder.php:93 includes/class-settings.php:377
 msgid "GA4 Property ID"
 msgstr "GA4プロパティID"
 
-#: includes/class-report-builder.php:98 includes/class-report-builder.php:120
-#: includes/class-report-builder.php:1368 includes/class-settings.php:786
+#: includes/class-report-builder.php:99 includes/class-report-builder.php:121
+#: includes/class-report-builder.php:1413 includes/class-settings.php:786
 #: includes/class-settings.php:858
 msgid "Not configured"
 msgstr "未設定"
 
-#: includes/class-report-builder.php:104 includes/class-settings.php:520
+#: includes/class-report-builder.php:105 includes/class-settings.php:520
 msgid "Host Name Filter"
 msgstr "ホスト名フィルター"
 
-#: includes/class-report-builder.php:107
+#: includes/class-report-builder.php:108
 msgid "Enabled"
 msgstr "有効"
 
-#: includes/class-report-builder.php:109
+#: includes/class-report-builder.php:110
 msgid "Not in use"
 msgstr "未使用"
 
-#: includes/class-report-builder.php:114 includes/class-settings.php:539
+#: includes/class-report-builder.php:115 includes/class-settings.php:539
 msgid "Host Name"
 msgstr "ホスト名"
 
-#: includes/class-report-builder.php:126 includes/class-settings.php:295
+#: includes/class-report-builder.php:127 includes/class-settings.php:295
 msgid "Google connection"
 msgstr "Google接続"
 
-#: includes/class-report-builder.php:136
+#: includes/class-report-builder.php:137
 msgid ""
 "Connect or reconnect Google in Settings before fetching GA4 data. Token "
 "values are hidden."
@@ -304,11 +304,11 @@ msgstr ""
 "GA4データを取得する前に、設定でGoogleに接続または再接続してください。トークン"
 "値は非表示です。"
 
-#: includes/class-report-builder.php:141
+#: includes/class-report-builder.php:142
 msgid "OpenAI API key"
 msgstr "OpenAI APIキー"
 
-#: includes/class-report-builder.php:151
+#: includes/class-report-builder.php:152
 msgid ""
 "Configure an OpenAI API key in Settings before generating an AI report "
 "draft. Key values are hidden."
@@ -316,37 +316,51 @@ msgstr ""
 "AIレポート下書きを生成する前に、設定でOpenAI APIキーを設定してください。キー"
 "値は非表示です。"
 
-#: includes/class-report-builder.php:159
+#: includes/class-report-builder.php:157
+msgid "Report language"
+msgstr "レポート言語"
+
+#: includes/class-report-builder.php:161
+msgid ""
+"The report draft language is resolved from the current WordPress user "
+"language, then the site language, then English. The WordPress timezone is "
+"not used to choose the report language."
+msgstr ""
+"レポート下書きの言語は、現在のWordPressユーザー言語、サイト言語、英語の順で決"
+"定されます。WordPressのタイムゾーンはレポート言語の判定には使用されません。"
+
+#: includes/class-report-builder.php:169
 msgid ""
 "This screen uses a two-step flow: fetch GA4 data first, review the Data "
-"Preview, then generate a Japanese report draft with OpenAI."
+"Preview, then generate a report draft in the current WordPress user language "
+"with OpenAI."
 msgstr ""
 "この画面では、まずGA4データを取得し、送信データのプレビューを確認してから、"
-"OpenAIで日本語レポート下書きを生成します。"
+"OpenAIで現在のWordPressユーザー言語に合わせたレポート下書きを生成します。"
 
-#: includes/class-report-builder.php:167
+#: includes/class-report-builder.php:177
 msgid "Report Conditions"
 msgstr "レポート条件"
 
-#: includes/class-report-builder.php:173 includes/class-report-builder.php:922
+#: includes/class-report-builder.php:183 includes/class-report-builder.php:933
 msgid "Date Range"
 msgstr "期間"
 
-#: includes/class-report-builder.php:177
+#: includes/class-report-builder.php:187
 msgid "Start Date"
 msgstr "開始日"
 
-#: includes/class-report-builder.php:187
+#: includes/class-report-builder.php:197
 msgid "End Date"
 msgstr "終了日"
 
-#: includes/class-report-builder.php:197
+#: includes/class-report-builder.php:207
 msgid ""
 "The default date range is the previous month based on the WordPress timezone."
 msgstr "デフォルトの期間は、WordPressのタイムゾーンに基づく前月です。"
 
 #. translators: %d: maximum number of report days.
-#: includes/class-report-builder.php:204
+#: includes/class-report-builder.php:214
 #, php-format
 msgid ""
 "The report period is limited to %d days to keep GA4 requests and report data "
@@ -355,12 +369,12 @@ msgstr ""
 "GA4リクエストとレポートデータを扱いやすく保つため、レポート期間は%d日までに制"
 "限されています。"
 
-#: includes/class-report-builder.php:214 includes/class-report-builder.php:219
-#: includes/class-report-builder.php:930 includes/class-report-builder.php:1389
+#: includes/class-report-builder.php:224 includes/class-report-builder.php:229
+#: includes/class-report-builder.php:941 includes/class-report-builder.php:1434
 msgid "Comparison"
 msgstr "比較"
 
-#: includes/class-report-builder.php:236
+#: includes/class-report-builder.php:246
 msgid ""
 "When comparison is enabled, the selected period is shifted to the previous "
 "month or previous year and fetched separately from GA4."
@@ -368,16 +382,16 @@ msgstr ""
 "比較を有効にすると、選択期間を前月または前年にずらした期間をGA4から別途取得し"
 "ます。"
 
-#: includes/class-report-builder.php:243 includes/class-report-builder.php:248
-#: includes/class-report-builder.php:946
+#: includes/class-report-builder.php:253 includes/class-report-builder.php:258
+#: includes/class-report-builder.php:957
 msgid "Data Scope"
 msgstr "データ範囲"
 
-#: includes/class-report-builder.php:267
+#: includes/class-report-builder.php:277
 msgid "Path"
 msgstr "パス"
 
-#: includes/class-report-builder.php:281
+#: includes/class-report-builder.php:291
 msgid ""
 "For directory scope, enter a path such as /blog/. For page scope, enter a "
 "path such as /about."
@@ -385,7 +399,7 @@ msgstr ""
 "ディレクトリ範囲では /blog/ のようなパスを入力します。ページ範囲では /about "
 "のようなパスを入力します。"
 
-#: includes/class-report-builder.php:286
+#: includes/class-report-builder.php:296
 msgid ""
 "Site scope covers all paths. Directory scope matches paths that start with "
 "the entered path. Page scope matches the exact normalized path. Full URLs "
@@ -395,11 +409,11 @@ msgstr ""
 "るパスに一致し、ページ範囲は正規化されたパスに完全一致します。完全なURLは使用"
 "できません。"
 
-#: includes/class-report-builder.php:294
+#: includes/class-report-builder.php:304
 msgid "Data sent to Google Analytics Data API"
 msgstr "Google Analytics Data API に送信されるデータ"
 
-#: includes/class-report-builder.php:297
+#: includes/class-report-builder.php:307
 msgid ""
 "When you click Fetch GA4 Data, the selected date range, comparison setting, "
 "data scope, host name/path filters, and required metrics/dimensions are sent "
@@ -409,23 +423,23 @@ msgstr ""
 "ト名・パスのフィルター、必要な指標とディメンションが Google Analytics Data "
 "API に送信されます。"
 
-#: includes/class-report-builder.php:302
+#: includes/class-report-builder.php:312
 msgid "The OpenAI API Key is not sent to Google."
 msgstr "OpenAI APIキーはGoogleには送信されません。"
 
-#: includes/class-report-builder.php:305
+#: includes/class-report-builder.php:315
 msgid ""
-"WordPress user information, cookies, and IP addresses are not included in "
+"WordPress user identifiers, cookies, and IP addresses are not included in "
 "this GA4 request body by design."
 msgstr ""
-"このGA4リクエスト本文には、設計上、WordPressユーザー情報、Cookie、IPアドレス"
-"は含まれません。"
+"このGA4リクエスト本文には、設計上、WordPressユーザー識別子、Cookie、IPアドレ"
+"スは含まれません。"
 
-#: includes/class-report-builder.php:312
+#: includes/class-report-builder.php:322
 msgid "Fetch GA4 Data"
 msgstr "GA4データを取得"
 
-#: includes/class-report-builder.php:317
+#: includes/class-report-builder.php:327
 msgid ""
 "Fetch GA4 Data validates the conditions, fetches GA4 preset reports, and "
 "creates a Data Preview."
@@ -433,21 +447,21 @@ msgstr ""
 "「GA4データを取得」では、条件を確認し、GA4のプリセットレポートを取得して送信"
 "データのプレビューを作成します。"
 
-#: includes/class-report-builder.php:344
+#: includes/class-report-builder.php:354
 msgid "You do not have permission to perform this action."
 msgstr "この操作を行う権限がありません。"
 
-#: includes/class-report-builder.php:357
+#: includes/class-report-builder.php:367
 msgid "Security check failed. Please reload the page and try again."
 msgstr ""
 "セキュリティチェックに失敗しました。ページを再読み込みして再試行してくださ"
 "い。"
 
-#: includes/class-report-builder.php:377
+#: includes/class-report-builder.php:387
 msgid "Invalid action."
 msgstr "無効な操作です。"
 
-#: includes/class-report-builder.php:590
+#: includes/class-report-builder.php:601
 msgid ""
 "The GA4 data could not be converted into valid data for OpenAI. Please check "
 "the settings and try again."
@@ -455,7 +469,7 @@ msgstr ""
 "GA4データをOpenAIへ送信できる形式に変換できませんでした。設定を確認して再試行"
 "してください。"
 
-#: includes/class-report-builder.php:638
+#: includes/class-report-builder.php:649
 msgid ""
 "Google connection needs to be renewed before GA4 data can be fetched. Open "
 "Settings, reconnect Google, and try again. Credential values are not "
@@ -464,7 +478,7 @@ msgstr ""
 "GA4データを取得する前にGoogle接続の更新が必要です。設定を開いてGoogleに再接続"
 "し、再試行してください。認証情報の値は表示されません。"
 
-#: includes/class-report-builder.php:642
+#: includes/class-report-builder.php:653
 msgid ""
 "Google connection is not ready for GA4 requests. Open Settings, reconnect "
 "Google, and try again. Credential values are not displayed."
@@ -472,7 +486,7 @@ msgstr ""
 "Google接続はGA4リクエストに使用できる状態ではありません。設定を開いてGoogleに"
 "再接続し、再試行してください。認証情報の値は表示されません。"
 
-#: includes/class-report-builder.php:645
+#: includes/class-report-builder.php:656
 msgid ""
 "Google connection is not configured. Open Settings, configure Google OAuth, "
 "connect your Google account, and try again. Credential values are not "
@@ -481,7 +495,7 @@ msgstr ""
 "Google接続が設定されていません。設定を開いてGoogle OAuthを設定し、Googleアカ"
 "ウントに接続してから再試行してください。認証情報の値は表示されません。"
 
-#: includes/class-report-builder.php:665
+#: includes/class-report-builder.php:676
 msgid ""
 "The saved report data is missing, expired, or no longer valid. Please fetch "
 "GA4 data again."
@@ -489,35 +503,35 @@ msgstr ""
 "一時保存されたレポートデータが見つからない、期限切れ、または無効です。GA4デー"
 "タを再取得してください。"
 
-#: includes/class-report-builder.php:719
+#: includes/class-report-builder.php:730
 msgid "Start date is invalid."
 msgstr "開始日が無効です。"
 
-#: includes/class-report-builder.php:723
+#: includes/class-report-builder.php:734
 msgid "End date is invalid."
 msgstr "終了日が無効です。"
 
-#: includes/class-report-builder.php:731
+#: includes/class-report-builder.php:742
 msgid "End date must be the same as or later than start date."
 msgstr "終了日は開始日以降の日付にしてください。"
 
 #. translators: %d: maximum report period days.
-#: includes/class-report-builder.php:745
+#: includes/class-report-builder.php:756
 #, php-format
 msgid ""
 "The report period cannot exceed %d days. Please choose a shorter date range."
 msgstr ""
 "レポート期間は%d日を超えることはできません。より短い期間を選択してください。"
 
-#: includes/class-report-builder.php:755
+#: includes/class-report-builder.php:766
 msgid "Comparison option is invalid."
 msgstr "比較オプションが無効です。"
 
-#: includes/class-report-builder.php:763
+#: includes/class-report-builder.php:774
 msgid "Data scope is invalid."
 msgstr "データ範囲が無効です。"
 
-#: includes/class-report-builder.php:806
+#: includes/class-report-builder.php:817
 msgid ""
 "Comparison period could not be calculated. Please choose a different date "
 "range or comparison option."
@@ -525,58 +539,64 @@ msgstr ""
 "比較期間を計算できませんでした。別の期間または比較オプションを選択してくださ"
 "い。"
 
-#: includes/class-report-builder.php:851
+#: includes/class-report-builder.php:862
 msgid ""
 "GA4 data was fetched and the data for OpenAI was prepared with warnings."
 msgstr "GA4データを取得し、警告付きでOpenAIへ送信するデータを準備しました。"
 
-#: includes/class-report-builder.php:863
+#: includes/class-report-builder.php:874
 msgid ""
 "GA4 preset reports were fetched and the data for OpenAI was prepared "
 "successfully."
 msgstr ""
 "GA4のプリセットレポートを取得し、OpenAIへ送信するデータを準備しました。"
 
-#: includes/class-report-builder.php:873
+#: includes/class-report-builder.php:884
 msgid "AI report was generated."
 msgstr "AIレポートを生成しました。"
 
-#: includes/class-report-builder.php:874
+#: includes/class-report-builder.php:885
 msgid "View the generated report draft."
 msgstr "生成レポート下書きを見る。"
 
-#: includes/class-report-builder.php:886
+#: includes/class-report-builder.php:897
 msgid "Please fix the following errors."
 msgstr "以下のエラーを修正してください。"
 
-#: includes/class-report-builder.php:917
+#: includes/class-report-builder.php:928
 msgid "Validated Conditions"
 msgstr "検証済み条件"
 
-#: includes/class-report-builder.php:934 includes/class-report-builder.php:1229
+#: includes/class-report-builder.php:945 includes/class-report-builder.php:1274
 msgid "Comparison Period"
 msgstr "比較期間"
 
-#: includes/class-report-builder.php:941 includes/class-report-builder.php:955
+#: includes/class-report-builder.php:952 includes/class-report-builder.php:966
 msgid "None"
 msgstr "なし"
 
-#: includes/class-report-builder.php:950
+#: includes/class-report-builder.php:961
 msgid "Normalized Path"
 msgstr "正規化パス"
 
-#: includes/class-report-builder.php:987
+#. translators: 1: report language name, 2: output locale.
+#: includes/class-report-builder.php:994
+#, php-format
+msgid "Report language: %1$s (%2$s)"
+msgstr "生成するレポートの言語: %1$s（%2$s）"
+
+#: includes/class-report-builder.php:1022
 msgid "AI Data Preview"
 msgstr "AI送信データのプレビュー"
 
 #. translators: %d: number of minutes the report data is saved temporarily.
-#: includes/class-report-builder.php:993
+#: includes/class-report-builder.php:1028
 #, php-format
 msgid ""
 "The data to be sent to OpenAI has been saved temporarily for %d minutes."
 msgstr "OpenAIへ送信するデータを%d分間一時保存しました。"
 
-#: includes/class-report-builder.php:1000
+#: includes/class-report-builder.php:1035
 msgid ""
 "The reviewed report data is stored temporarily for this user and expires "
 "automatically."
@@ -584,15 +604,15 @@ msgstr ""
 "確認済みのレポートデータはこのユーザー向けに一時保存され、自動的に期限切れに"
 "なります。"
 
-#: includes/class-report-builder.php:1006
+#: includes/class-report-builder.php:1051
 msgid "Structured pre-send review"
 msgstr "送信前の構造化レビュー"
 
-#: includes/class-report-builder.php:1009
+#: includes/class-report-builder.php:1054
 msgid "Review this structured summary before sending data to AI."
 msgstr "AIにデータを送信する前に、この構造化された要約を確認してください。"
 
-#: includes/class-report-builder.php:1013
+#: includes/class-report-builder.php:1058
 msgid ""
 "This preview focuses on report conditions, data availability, warnings, and "
 "generation readiness."
@@ -600,13 +620,13 @@ msgstr ""
 "このプレビューでは、レポート条件、データの利用可否、警告、生成準備状況を確認"
 "できます。"
 
-#: includes/class-report-builder.php:1017
+#: includes/class-report-builder.php:1062
 msgid ""
 "Use the status and warning information below to decide whether to generate a "
 "report."
 msgstr "以下の状態と警告情報を確認して、レポートを生成するか判断してください。"
 
-#: includes/class-report-builder.php:1021
+#: includes/class-report-builder.php:1066
 msgid ""
 "The reviewed report data can include host name, page path, traffic channel/"
 "source, city, summary metrics, and comparison differences."
@@ -614,17 +634,17 @@ msgstr ""
 "確認済みのレポートデータには、ホスト名、ページパス、トラフィックチャネル/ソー"
 "ス、都市、概要指標、比較差分が含まれる場合があります。"
 
-#: includes/class-report-builder.php:1025
+#: includes/class-report-builder.php:1070
 msgid ""
 "Credentials are not included in the data sent to OpenAI. Google Access "
-"Token, OpenAI API Key, GA4 Property ID, WordPress user information, cookies, "
+"Token, OpenAI API Key, GA4 Property ID, WordPress user identifiers, cookies, "
 "and IP addresses are not included by design."
 msgstr ""
 "OpenAIへ送信するデータに認証情報は含まれません。Googleアクセストークン、"
-"OpenAI APIキー、GA4プロパティID、WordPressユーザー情報、Cookie、IPアドレスは"
-"設計上含まれません。"
+"OpenAI APIキー、GA4プロパティID、WordPressユーザー識別子、Cookie、IPアドレス"
+"は設計上含まれません。"
 
-#: includes/class-report-builder.php:1029
+#: includes/class-report-builder.php:1074
 msgid ""
 "Page paths and traffic sources can still be sensitive business analytics "
 "information, so review the data before sending it."
@@ -632,7 +652,7 @@ msgstr ""
 "ページパスやトラフィックソースは機密性のあるビジネス分析情報になり得るため、"
 "送信前にデータを確認してください。"
 
-#: includes/class-report-builder.php:1033
+#: includes/class-report-builder.php:1078
 msgid ""
 "For support, share visible status messages, warning messages, or general "
 "error names only. Do not share credentials, option values, request or "
@@ -644,44 +664,44 @@ msgstr ""
 "文、AI送信データのJSON、生成レポート本文、スクリーンショット、ブラウザの"
 "Network証跡は共有しないでください。"
 
-#: includes/class-report-builder.php:1038
-#: includes/class-report-builder.php:1223
+#: includes/class-report-builder.php:1083
+#: includes/class-report-builder.php:1268
 msgid "Daily Trend"
 msgstr "日別推移"
 
-#: includes/class-report-builder.php:1039
-#: includes/class-report-builder.php:1224
+#: includes/class-report-builder.php:1084
+#: includes/class-report-builder.php:1269
 msgid "Top Pages"
 msgstr "上位ページ"
 
-#: includes/class-report-builder.php:1040
-#: includes/class-report-builder.php:1225
+#: includes/class-report-builder.php:1085
+#: includes/class-report-builder.php:1270
 msgid "Traffic Channels"
 msgstr "トラフィックチャネル"
 
-#: includes/class-report-builder.php:1041
-#: includes/class-report-builder.php:1226
+#: includes/class-report-builder.php:1086
+#: includes/class-report-builder.php:1271
 msgid "Traffic Sources"
 msgstr "トラフィックソース"
 
-#: includes/class-report-builder.php:1042
-#: includes/class-report-builder.php:1227
+#: includes/class-report-builder.php:1087
+#: includes/class-report-builder.php:1272
 msgid "Regional Trends"
 msgstr "地域別推移"
 
-#: includes/class-report-builder.php:1045
+#: includes/class-report-builder.php:1090
 msgid "Data sent to OpenAI API"
 msgstr "OpenAI API に送信されるデータ"
 
-#: includes/class-report-builder.php:1048
+#: includes/class-report-builder.php:1093
 msgid ""
-"When you generate an AI report, the reviewed report data is sent to the "
-"OpenAI API."
+"When you generate an AI report, the reviewed report data and selected report "
+"language are sent to the OpenAI API."
 msgstr ""
-"「AIレポートを生成」をクリックすると、確認済みのレポートデータが OpenAI API "
-"に送信されます。"
+"「AIレポートを生成」をクリックすると、確認済みのレポートデータと選択されたレ"
+"ポート言語が OpenAI API に送信されます。"
 
-#: includes/class-report-builder.php:1052
+#: includes/class-report-builder.php:1097
 msgid ""
 "Generating a report sends the reviewed data to OpenAI API and may consume "
 "API usage."
@@ -689,25 +709,25 @@ msgstr ""
 "レポート生成では確認済みデータを OpenAI API に送信し、API使用量を消費する場合"
 "があります。"
 
-#: includes/class-report-builder.php:1056
+#: includes/class-report-builder.php:1101
 msgid ""
 "The generated result is a draft. Review and edit it before publishing, "
 "sharing, or sending it."
 msgstr "生成結果は下書きです。公開、共有、送信の前に確認・編集してください。"
 
-#: includes/class-report-builder.php:1070
+#: includes/class-report-builder.php:1115
 msgid "The current report text will be overwritten. Continue?"
 msgstr "現在のレポート本文が上書きされます。続行しますか？"
 
-#: includes/class-report-builder.php:1075
+#: includes/class-report-builder.php:1120
 msgid "Regenerate AI Report"
 msgstr "AIレポートを再生成"
 
-#: includes/class-report-builder.php:1076
+#: includes/class-report-builder.php:1121
 msgid "Generate AI Report"
 msgstr "AIレポートを生成"
 
-#: includes/class-report-builder.php:1085
+#: includes/class-report-builder.php:1130
 msgid ""
 "Use Generate AI Report only after reviewing the structured Data Preview and "
 "any visible warnings."
@@ -715,18 +735,18 @@ msgstr ""
 "構造化された送信データのプレビューと表示されている警告を確認した後でのみ、"
 "「AIレポートを生成」を使用してください。"
 
-#: includes/class-report-builder.php:1086
+#: includes/class-report-builder.php:1131
 msgid ""
 "AI generation is not available because the current-period data is not "
 "reportable for the selected conditions."
 msgstr ""
 "選択条件の現在期間データがレポート可能ではないため、AI生成は利用できません。"
 
-#: includes/class-report-builder.php:1116
+#: includes/class-report-builder.php:1161
 msgid "Review these GA4 data warnings before generating a report."
 msgstr "レポート生成前に、これらのGA4データ警告を確認してください。"
 
-#: includes/class-report-builder.php:1122
+#: includes/class-report-builder.php:1167
 msgid ""
 "Generation is available, but warnings may limit what the generated draft "
 "should claim."
@@ -734,7 +754,7 @@ msgstr ""
 "生成は可能ですが、警告によって生成下書きで述べられる内容が制限される場合があ"
 "ります。"
 
-#: includes/class-report-builder.php:1139
+#: includes/class-report-builder.php:1184
 msgid ""
 "AI generation is not available because the current-period data is not "
 "reportable for the selected conditions. Change the date range or scope and "
@@ -743,7 +763,7 @@ msgstr ""
 "選択条件の現在期間データがレポート可能ではないため、AI生成は利用できません。"
 "期間または範囲を変更してGA4データを再取得してください。"
 
-#: includes/class-report-builder.php:1142
+#: includes/class-report-builder.php:1187
 msgid ""
 "AI generation is not available because the saved report data is not "
 "reportable. Fetch GA4 data again before generating a report."
@@ -751,7 +771,7 @@ msgstr ""
 "一時保存されたレポートデータがレポート可能ではないため、AI生成は利用できませ"
 "ん。レポート生成前にGA4データを再取得してください。"
 
-#: includes/class-report-builder.php:1181
+#: includes/class-report-builder.php:1226
 msgid ""
 "The current-period summary contains explicit zero activity. This is treated "
 "as measured zero activity, not as a GA4 API error."
@@ -759,7 +779,7 @@ msgstr ""
 "現在期間の概要には明示的なゼロ活動が含まれています。これはGA4 APIエラーではな"
 "く、測定されたゼロ活動として扱われます。"
 
-#: includes/class-report-builder.php:1185
+#: includes/class-report-builder.php:1230
 msgid ""
 "Some current-period summary metrics were unavailable, so the report should "
 "treat the summary as partial."
@@ -767,7 +787,7 @@ msgstr ""
 "現在期間の一部の概要指標が利用できないため、レポートでは概要を部分的なものと"
 "して扱う必要があります。"
 
-#: includes/class-report-builder.php:1189
+#: includes/class-report-builder.php:1234
 msgid ""
 "Current-period summary metrics were unavailable, but detail rows were "
 "present. Review the partial report data before generating."
@@ -775,7 +795,7 @@ msgstr ""
 "現在期間の概要指標は利用できませんでしたが、詳細行は存在します。生成前に部分"
 "的なレポートデータを確認してください。"
 
-#: includes/class-report-builder.php:1193
+#: includes/class-report-builder.php:1238
 msgid ""
 "Comparison-period data is unavailable. Generated text should avoid "
 "comparison claims."
@@ -783,7 +803,7 @@ msgstr ""
 "比較期間データが利用できません。生成文では比較に関する主張を避ける必要があり"
 "ます。"
 
-#: includes/class-report-builder.php:1197
+#: includes/class-report-builder.php:1242
 msgid ""
 "The comparison period contains explicit zero activity, so comparison wording "
 "may be limited."
@@ -791,7 +811,7 @@ msgstr ""
 "比較期間には明示的なゼロ活動が含まれるため、比較表現が制限される場合がありま"
 "す。"
 
-#: includes/class-report-builder.php:1201
+#: includes/class-report-builder.php:1246
 msgid ""
 "Some comparison-period summary metrics were unavailable, so comparison "
 "wording may be limited."
@@ -800,37 +820,37 @@ msgstr ""
 "す。"
 
 #. translators: %s: safe GA4 preset label.
-#: includes/class-report-builder.php:1207
+#: includes/class-report-builder.php:1252
 #, php-format
 msgid "%s rows are unavailable for the selected conditions."
 msgstr "選択条件では%sの行が利用できません。"
 
-#: includes/class-report-builder.php:1212
+#: includes/class-report-builder.php:1257
 msgid "The report data includes a GA4 data availability warning."
 msgstr "レポートデータにはGA4データ利用可否に関する警告が含まれています。"
 
-#: includes/class-report-builder.php:1228
-#: includes/class-report-builder.php:1382
+#: includes/class-report-builder.php:1273
+#: includes/class-report-builder.php:1427
 msgid "Summary Metrics"
 msgstr "概要指標"
 
-#: includes/class-report-builder.php:1232
+#: includes/class-report-builder.php:1277
 msgid "GA4 detail"
 msgstr "GA4詳細"
 
-#: includes/class-report-builder.php:1254
+#: includes/class-report-builder.php:1299
 msgid "Generated Report Draft"
 msgstr "生成レポート下書き"
 
-#: includes/class-report-builder.php:1257
+#: includes/class-report-builder.php:1302
 msgid "Review and edit the generated draft before using it."
 msgstr "使用する前に、生成された下書きを確認・編集してください。"
 
-#: includes/class-report-builder.php:1261
+#: includes/class-report-builder.php:1306
 msgid "The plugin does not save generated report text."
 msgstr "プラグインは生成レポート本文を保存しません。"
 
-#: includes/class-report-builder.php:1265
+#: includes/class-report-builder.php:1310
 msgid ""
 "This AI-generated text is a draft. Review and edit it before publishing, "
 "sharing, or sending it."
@@ -838,53 +858,53 @@ msgstr ""
 "このAI生成テキストは下書きです。公開、共有、送信の前に確認・編集してくださ"
 "い。"
 
-#: includes/class-report-builder.php:1269
+#: includes/class-report-builder.php:1314
 msgid "Copying the report text is a user-initiated action."
 msgstr "レポート本文のコピーはユーザーが開始する操作です。"
 
-#: includes/class-report-builder.php:1285
+#: includes/class-report-builder.php:1330
 msgid "Copy Report Text"
 msgstr "レポート本文をコピー"
 
-#: includes/class-report-builder.php:1306
+#: includes/class-report-builder.php:1351
 msgid "Ready to fetch GA4 data"
 msgstr "GA4データを取得できます"
 
-#: includes/class-report-builder.php:1310
+#: includes/class-report-builder.php:1355
 msgid "Reconnect Google before fetching GA4 data"
 msgstr "GA4データ取得前にGoogleへ再接続してください"
 
-#: includes/class-report-builder.php:1313 includes/class-settings.php:822
+#: includes/class-report-builder.php:1358 includes/class-settings.php:822
 msgid "Not connected"
 msgstr "未接続"
 
-#: includes/class-report-builder.php:1361 includes/class-settings.php:778
+#: includes/class-report-builder.php:1406 includes/class-settings.php:778
 #: includes/class-settings.php:853
 msgid "Managed by server configuration"
 msgstr "サーバー設定で管理されています"
 
-#: includes/class-report-builder.php:1365 includes/class-settings.php:780
+#: includes/class-report-builder.php:1410 includes/class-settings.php:780
 #: includes/class-settings.php:855
 msgid "Saved in Settings"
 msgstr "設定に保存済み"
 
-#: includes/class-report-builder.php:1387
+#: includes/class-report-builder.php:1432
 msgid "Metric"
 msgstr "指標"
 
-#: includes/class-report-builder.php:1388
+#: includes/class-report-builder.php:1433
 msgid "Current"
 msgstr "現在"
 
-#: includes/class-report-builder.php:1390
+#: includes/class-report-builder.php:1435
 msgid "Diff"
 msgstr "差分"
 
-#: includes/class-report-builder.php:1391
+#: includes/class-report-builder.php:1436
 msgid "Change Rate"
 msgstr "変化率"
 
-#: includes/class-report-builder.php:1392
+#: includes/class-report-builder.php:1437
 msgid "Unit"
 msgstr "単位"
 
@@ -924,8 +944,8 @@ msgid ""
 msgstr "OpenAI APIキーを保存しました。キー値は非表示で、再表示されません。"
 
 #: includes/class-settings.php:261
-msgid "Analytics Report AI Settings"
-msgstr "Analytics Report AI 設定"
+msgid "Studio317 Report Drafts for Google Analytics Settings"
+msgstr "Studio317 Report Drafts for Google Analytics 設定"
 
 #: includes/class-settings.php:267
 msgid "Setup checklist"
@@ -961,11 +981,11 @@ msgstr "レポートビルダーを開き、GA4データを取得します。"
 
 #: includes/class-settings.php:275
 msgid ""
-"Review the Data Preview, generate the Japanese draft, then review, edit, and "
-"copy it."
+"Review the Data Preview, generate the report draft in the current WordPress "
+"user language, then review, edit, and copy it."
 msgstr ""
-"送信データのプレビューを確認し、日本語の下書きを生成してから、確認・編集・コ"
-"ピーします。"
+"送信データのプレビューを確認し、現在のWordPressユーザー言語でレポート下書きを"
+"生成してから、確認・編集・コピーします。"
 
 #: includes/class-settings.php:280
 msgid "External service usage"
@@ -973,13 +993,13 @@ msgstr "外部サービスの利用"
 
 #: includes/class-settings.php:283
 msgid ""
-"Analytics Report AI contacts Google only when you start Google authorization "
-"or fetch GA4 data. It contacts OpenAI only when you click Generate AI Report "
-"after reviewing the Data Preview."
+"Studio317 Report Drafts for Google Analytics contacts Google only when you "
+"start Google authorization or fetch GA4 data. It contacts OpenAI only when "
+"you click Generate AI Report after reviewing the Data Preview."
 msgstr ""
-"Analytics Report AI は、Google認可を開始するかGA4データを取得したときにのみ"
-"Googleへ接続します。送信データのプレビューを確認した後に「AIレポートを生成」"
-"をクリックしたときにのみOpenAIへ接続します。"
+"Studio317 Report Drafts for Google Analytics は、Google認可を開始するかGA4"
+"データを取得したときにのみGoogleへ接続します。送信データのプレビューを確認し"
+"た後に「AIレポートを生成」をクリックしたときにのみOpenAIへ接続します。"
 
 #: includes/class-settings.php:287
 msgid ""
@@ -991,11 +1011,12 @@ msgstr ""
 
 #: includes/class-settings.php:288
 msgid ""
-"Generate AI Report sends the reviewed report data to the OpenAI API and "
-"receives an AI-generated Japanese draft."
+"Generate AI Report sends the reviewed report data and selected report output "
+"language to the OpenAI API, then receives an AI-generated draft in that "
+"language."
 msgstr ""
-"「AIレポートを生成」では、確認済みのレポートデータをOpenAI APIに送信し、AI生"
-"成の日本語下書きを受け取ります。"
+"「AIレポートを生成」では、確認済みのレポートデータと選択された出力言語を"
+"OpenAI APIに送信し、その言語でAI生成の下書きを受け取ります。"
 
 #: includes/class-settings.php:289
 msgid ""
@@ -1678,13 +1699,112 @@ msgstr ""
 msgid "Path is empty after removing query strings and fragments."
 msgstr "クエリ文字列とフラグメントを除去した後のパスが空です。"
 
-#: includes/functions-utils.php:985 includes/functions-utils.php:1003
-#: includes/functions-utils.php:1026 includes/functions-utils.php:1041
-#: includes/functions-utils.php:1052 includes/functions-utils.php:1068
-#: includes/functions-utils.php:1085 includes/functions-utils.php:1098
-#: includes/functions-utils.php:1111 includes/functions-utils.php:1119
+#: includes/functions-utils.php:1104 includes/functions-utils.php:1120
+#: includes/functions-utils.php:1130 includes/functions-utils.php:1137
+#: includes/functions-utils.php:1144 includes/functions-utils.php:1151
+#: includes/functions-utils.php:1158 includes/functions-utils.php:1171
+#: includes/functions-utils.php:1283 includes/functions-utils.php:1300
+#: includes/functions-utils.php:1308 includes/functions-utils.php:1325
+#: includes/functions-utils.php:1347 includes/functions-utils.php:1362
+#: includes/functions-utils.php:1373 includes/functions-utils.php:1389
+#: includes/functions-utils.php:1406 includes/functions-utils.php:1419
+#: includes/functions-utils.php:1432 includes/functions-utils.php:1440
 msgid "Data for OpenAI is invalid."
 msgstr "OpenAIへ送信するデータが無効です。"
 
-#~ msgid "cuerda"
-#~ msgstr "cuerda"
+#: includes/functions-utils.php:1196
+msgid "Arabic"
+msgstr "アラビア語"
+
+#: includes/functions-utils.php:1197
+msgid "German"
+msgstr "ドイツ語"
+
+#: includes/functions-utils.php:1198
+msgid "English"
+msgstr "英語"
+
+#: includes/functions-utils.php:1199
+msgid "English (United Kingdom)"
+msgstr "英語（英国）"
+
+#: includes/functions-utils.php:1200 includes/functions-utils.php:1236
+msgid "English (United States)"
+msgstr "英語（米国）"
+
+#: includes/functions-utils.php:1201
+msgid "Spanish"
+msgstr "スペイン語"
+
+#: includes/functions-utils.php:1202
+msgid "French"
+msgstr "フランス語"
+
+#: includes/functions-utils.php:1203
+msgid "Indonesian"
+msgstr "インドネシア語"
+
+#: includes/functions-utils.php:1204
+msgid "Italian"
+msgstr "イタリア語"
+
+#: includes/functions-utils.php:1205
+msgid "Japanese"
+msgstr "日本語"
+
+#: includes/functions-utils.php:1206
+msgid "Korean"
+msgstr "韓国語"
+
+#: includes/functions-utils.php:1207
+msgid "Dutch"
+msgstr "オランダ語"
+
+#: includes/functions-utils.php:1208
+msgid "Polish"
+msgstr "ポーランド語"
+
+#: includes/functions-utils.php:1209
+msgid "Portuguese"
+msgstr "ポルトガル語"
+
+#: includes/functions-utils.php:1210
+msgid "Portuguese (Brazil)"
+msgstr "ポルトガル語（ブラジル）"
+
+#: includes/functions-utils.php:1211
+msgid "Portuguese (Portugal)"
+msgstr "ポルトガル語（ポルトガル）"
+
+#: includes/functions-utils.php:1212
+msgid "Russian"
+msgstr "ロシア語"
+
+#: includes/functions-utils.php:1213
+msgid "Thai"
+msgstr "タイ語"
+
+#: includes/functions-utils.php:1214
+msgid "Turkish"
+msgstr "トルコ語"
+
+#: includes/functions-utils.php:1215
+msgid "Ukrainian"
+msgstr "ウクライナ語"
+
+#: includes/functions-utils.php:1216
+msgid "Vietnamese"
+msgstr "ベトナム語"
+
+#: includes/functions-utils.php:1217
+msgid "Chinese"
+msgstr "中国語"
+
+#: includes/functions-utils.php:1218
+msgid "Simplified Chinese"
+msgstr "簡体字中国語"
+
+#: includes/functions-utils.php:1219 includes/functions-utils.php:1220
+#: includes/functions-utils.php:1221
+msgid "Traditional Chinese"
+msgstr "繁体字中国語"

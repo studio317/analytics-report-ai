@@ -1,6 +1,6 @@
 {
-	"name": "cuerda/analytics-report-ai",
-	"description": "Development tooling for the Analytics Report AI WordPress plugin.",
+	"name": "studio317/studio317-report-drafts-google-analytics",
+	"description": "Development tooling for the Studio317 Report Drafts for Google Analytics WordPress plugin.",
 	"type": "wordpress-plugin",
 	"private": true,
 	"config": {

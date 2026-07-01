@@ -698,9 +698,9 @@ if ( ! function_exists( 'analytics_report_ai_get_comparison_options' ) ) {
 	 */
 	function analytics_report_ai_get_comparison_options() {
 		return array(
-			'none'           => __( 'No comparison', 'analytics-report-ai' ),
-			'previous_month' => __( 'Previous month', 'analytics-report-ai' ),
-			'previous_year'  => __( 'Previous year', 'analytics-report-ai' ),
+			'none'           => __( 'No comparison', 'studio317-report-drafts-google-analytics' ),
+			'previous_month' => __( 'Previous month', 'studio317-report-drafts-google-analytics' ),
+			'previous_year'  => __( 'Previous year', 'studio317-report-drafts-google-analytics' ),
 		);
 	}
 }
@@ -713,9 +713,9 @@ if ( ! function_exists( 'analytics_report_ai_get_scope_options' ) ) {
 	 */
 	function analytics_report_ai_get_scope_options() {
 		return array(
-			'site'      => __( 'Entire site', 'analytics-report-ai' ),
-			'directory' => __( 'Directory', 'analytics-report-ai' ),
-			'page'      => __( 'Page', 'analytics-report-ai' ),
+			'site'      => __( 'Entire site', 'studio317-report-drafts-google-analytics' ),
+			'directory' => __( 'Directory', 'studio317-report-drafts-google-analytics' ),
+			'page'      => __( 'Page', 'studio317-report-drafts-google-analytics' ),
 		);
 	}
 }
@@ -875,14 +875,14 @@ if ( ! function_exists( 'analytics_report_ai_normalize_report_path' ) ) {
 		if ( '' === $path ) {
 			return new WP_Error(
 				'analytics_report_ai_empty_path',
-				__( 'Path is required when Directory or Page is selected.', 'analytics-report-ai' )
+				__( 'Path is required when Directory or Page is selected.', 'studio317-report-drafts-google-analytics' )
 			);
 		}
 
 		if ( preg_match( '#^[a-z][a-z0-9+\-.]*://#i', $path ) ) {
 			return new WP_Error(
 				'analytics_report_ai_full_url_not_allowed',
-				__( 'Full URLs are not allowed. Enter only the path, such as /blog/ or /about.', 'analytics-report-ai' )
+				__( 'Full URLs are not allowed. Enter only the path, such as /blog/ or /about.', 'studio317-report-drafts-google-analytics' )
 			);
 		}
 
@@ -892,7 +892,7 @@ if ( ! function_exists( 'analytics_report_ai_normalize_report_path' ) ) {
 		if ( '' === $path ) {
 			return new WP_Error(
 				'analytics_report_ai_empty_path_after_normalization',
-				__( 'Path is empty after removing query strings and fragments.', 'analytics-report-ai' )
+				__( 'Path is empty after removing query strings and fragments.', 'studio317-report-drafts-google-analytics' )
 			);
 		}
 
@@ -939,6 +939,304 @@ if ( ! function_exists( 'analytics_report_ai_get_payload_transient_expiration' )
 	}
 }
 
+if ( ! function_exists( 'analytics_report_ai_get_report_language_profiles' ) ) {
+	/**
+	 * Get safe language labels for report output prompts.
+	 *
+	 * @return array
+	 */
+	function analytics_report_ai_get_report_language_profiles() {
+		return array(
+			'ar'    => 'Arabic',
+			'de'    => 'German',
+			'en'    => 'English',
+			'en_GB' => 'English (United Kingdom)',
+			'en_US' => 'English (United States)',
+			'es'    => 'Spanish',
+			'fr'    => 'French',
+			'id'    => 'Indonesian',
+			'it'    => 'Italian',
+			'ja'    => 'Japanese',
+			'ko'    => 'Korean',
+			'nl'    => 'Dutch',
+			'pl'    => 'Polish',
+			'pt'    => 'Portuguese',
+			'pt_BR' => 'Portuguese (Brazil)',
+			'pt_PT' => 'Portuguese (Portugal)',
+			'ru'    => 'Russian',
+			'th'    => 'Thai',
+			'tr'    => 'Turkish',
+			'uk'    => 'Ukrainian',
+			'vi'    => 'Vietnamese',
+			'zh'    => 'Chinese',
+			'zh_CN' => 'Simplified Chinese',
+			'zh_HK' => 'Traditional Chinese',
+			'zh_MO' => 'Traditional Chinese',
+			'zh_TW' => 'Traditional Chinese',
+		);
+	}
+}
+
+if ( ! function_exists( 'analytics_report_ai_normalize_wordpress_locale' ) ) {
+	/**
+	 * Normalize a WordPress locale to a safe underscore-separated form.
+	 *
+	 * @param mixed $locale Locale value.
+	 * @return string
+	 */
+	function analytics_report_ai_normalize_wordpress_locale( $locale ) {
+		if ( ! is_scalar( $locale ) ) {
+			return '';
+		}
+
+		$locale = trim( (string) $locale );
+
+		if ( '' === $locale ) {
+			return '';
+		}
+
+		$locale = wp_check_invalid_utf8( $locale );
+		$locale = str_replace( '-', '_', $locale );
+
+		if ( ! is_string( $locale ) || ! preg_match( '/^[A-Za-z]{2,3}(?:_[A-Za-z0-9]{2,8}){0,2}$/', $locale ) ) {
+			return '';
+		}
+
+		$parts = explode( '_', $locale );
+
+		if ( empty( $parts[0] ) ) {
+			return '';
+		}
+
+		$normalized = array( strtolower( $parts[0] ) );
+
+		foreach ( array_slice( $parts, 1 ) as $part ) {
+			$normalized[] = strtoupper( $part );
+		}
+
+		return implode( '_', $normalized );
+	}
+}
+
+if ( ! function_exists( 'analytics_report_ai_get_report_language_profile_from_locale' ) ) {
+	/**
+	 * Build a safe report language profile from a WordPress locale.
+	 *
+	 * @param mixed  $locale WordPress locale.
+	 * @param string $source Source category.
+	 * @return array
+	 */
+	function analytics_report_ai_get_report_language_profile_from_locale( $locale, $source ) {
+		$allowed_sources = array( 'user_locale', 'site_locale', 'default_locale' );
+		$source          = in_array( $source, $allowed_sources, true ) ? $source : 'default_locale';
+		$locale          = analytics_report_ai_normalize_wordpress_locale( $locale );
+
+		if ( '' === $locale ) {
+			$locale = 'en_US';
+			$source = 'default_locale';
+		}
+
+		$parts         = explode( '_', $locale );
+		$language_code = isset( $parts[0] ) ? strtolower( $parts[0] ) : 'en';
+		$profiles      = analytics_report_ai_get_report_language_profiles();
+
+		if ( isset( $profiles[ $locale ] ) ) {
+			$language_name = $profiles[ $locale ];
+		} elseif ( isset( $profiles[ $language_code ] ) ) {
+			$language_name = $profiles[ $language_code ];
+		} else {
+			$language_name = sprintf( 'Language code %s', $language_code );
+		}
+
+		return array(
+			'wordpress_locale' => $locale,
+			'output_locale'    => str_replace( '_', '-', $locale ),
+			'language_code'    => $language_code,
+			'language_name'    => $language_name,
+			'source'           => $source,
+		);
+	}
+}
+
+if ( ! function_exists( 'analytics_report_ai_get_report_language_profile' ) ) {
+	/**
+	 * Resolve the report output language profile for the current request.
+	 *
+	 * @param int $user_id User ID.
+	 * @return array
+	 */
+	function analytics_report_ai_get_report_language_profile( $user_id = 0 ) {
+		$user_id = absint( $user_id );
+
+		if ( 0 === $user_id ) {
+			$user_id = get_current_user_id();
+		}
+
+		if ( $user_id > 0 ) {
+			$user_locale = analytics_report_ai_normalize_wordpress_locale( get_user_locale( $user_id ) );
+
+			if ( '' !== $user_locale ) {
+				return analytics_report_ai_get_report_language_profile_from_locale( $user_locale, 'user_locale' );
+			}
+		}
+
+		$site_locale = analytics_report_ai_normalize_wordpress_locale( get_locale() );
+
+		if ( '' !== $site_locale ) {
+			return analytics_report_ai_get_report_language_profile_from_locale( $site_locale, 'site_locale' );
+		}
+
+		return analytics_report_ai_get_report_language_profile_from_locale( 'en_US', 'default_locale' );
+	}
+}
+
+if ( ! function_exists( 'analytics_report_ai_validate_report_language_profile' ) ) {
+	/**
+	 * Validate a report language profile stored in report data.
+	 *
+	 * @param mixed $profile Language profile.
+	 * @return true|WP_Error
+	 */
+	function analytics_report_ai_validate_report_language_profile( $profile ) {
+		if ( ! is_array( $profile ) ) {
+			return new WP_Error(
+				'analytics_report_ai_report_language_not_array',
+				__( 'Data for OpenAI is invalid.', 'studio317-report-drafts-google-analytics' )
+			);
+		}
+
+		$required_keys = array(
+			'wordpress_locale',
+			'output_locale',
+			'language_code',
+			'language_name',
+			'source',
+		);
+
+		foreach ( $required_keys as $key ) {
+			if ( ! isset( $profile[ $key ] ) || ! is_scalar( $profile[ $key ] ) || '' === trim( (string) $profile[ $key ] ) ) {
+				return new WP_Error(
+					'analytics_report_ai_report_language_missing_' . sanitize_key( $key ),
+					__( 'Data for OpenAI is invalid.', 'studio317-report-drafts-google-analytics' )
+				);
+			}
+		}
+
+		$normalized_locale = analytics_report_ai_normalize_wordpress_locale( $profile['wordpress_locale'] );
+
+		if ( '' === $normalized_locale ) {
+			return new WP_Error(
+				'analytics_report_ai_report_language_invalid_wordpress_locale',
+				__( 'Data for OpenAI is invalid.', 'studio317-report-drafts-google-analytics' )
+			);
+		}
+
+		if ( ! preg_match( '/^[a-z]{2,3}(?:-[A-Z0-9]{2,8}){0,2}$/', (string) $profile['output_locale'] ) ) {
+			return new WP_Error(
+				'analytics_report_ai_report_language_invalid_output_locale',
+				__( 'Data for OpenAI is invalid.', 'studio317-report-drafts-google-analytics' )
+			);
+		}
+
+		if ( ! preg_match( '/^[a-z]{2,3}$/', (string) $profile['language_code'] ) ) {
+			return new WP_Error(
+				'analytics_report_ai_report_language_invalid_code',
+				__( 'Data for OpenAI is invalid.', 'studio317-report-drafts-google-analytics' )
+			);
+		}
+
+		if ( ! preg_match( '/^[A-Za-z][A-Za-z0-9 ()+\-]{1,80}$/', (string) $profile['language_name'] ) ) {
+			return new WP_Error(
+				'analytics_report_ai_report_language_invalid_name',
+				__( 'Data for OpenAI is invalid.', 'studio317-report-drafts-google-analytics' )
+			);
+		}
+
+		if ( ! in_array( (string) $profile['source'], array( 'user_locale', 'site_locale', 'default_locale' ), true ) ) {
+			return new WP_Error(
+				'analytics_report_ai_report_language_invalid_source',
+				__( 'Data for OpenAI is invalid.', 'studio317-report-drafts-google-analytics' )
+			);
+		}
+
+		$expected_profile = analytics_report_ai_get_report_language_profile_from_locale(
+			$normalized_locale,
+			(string) $profile['source']
+		);
+
+		foreach ( array( 'wordpress_locale', 'output_locale', 'language_code', 'language_name', 'source' ) as $key ) {
+			if ( (string) $profile[ $key ] !== (string) $expected_profile[ $key ] ) {
+				return new WP_Error(
+					'analytics_report_ai_report_language_mismatch_' . sanitize_key( $key ),
+					__( 'Data for OpenAI is invalid.', 'studio317-report-drafts-google-analytics' )
+				);
+			}
+		}
+
+		return true;
+	}
+}
+
+if ( ! function_exists( 'analytics_report_ai_get_report_language_display_name' ) ) {
+	/**
+	 * Get a translatable display name for a report language profile.
+	 *
+	 * @param array $profile Report language profile.
+	 * @return string
+	 */
+	function analytics_report_ai_get_report_language_display_name( $profile ) {
+		$locale = isset( $profile['wordpress_locale'] ) && is_scalar( $profile['wordpress_locale'] )
+			? analytics_report_ai_normalize_wordpress_locale( (string) $profile['wordpress_locale'] )
+			: '';
+		$code   = isset( $profile['language_code'] ) && is_scalar( $profile['language_code'] )
+			? strtolower( (string) $profile['language_code'] )
+			: '';
+
+		$labels = array(
+			'ar'    => __( 'Arabic', 'studio317-report-drafts-google-analytics' ),
+			'de'    => __( 'German', 'studio317-report-drafts-google-analytics' ),
+			'en'    => __( 'English', 'studio317-report-drafts-google-analytics' ),
+			'en_GB' => __( 'English (United Kingdom)', 'studio317-report-drafts-google-analytics' ),
+			'en_US' => __( 'English (United States)', 'studio317-report-drafts-google-analytics' ),
+			'es'    => __( 'Spanish', 'studio317-report-drafts-google-analytics' ),
+			'fr'    => __( 'French', 'studio317-report-drafts-google-analytics' ),
+			'id'    => __( 'Indonesian', 'studio317-report-drafts-google-analytics' ),
+			'it'    => __( 'Italian', 'studio317-report-drafts-google-analytics' ),
+			'ja'    => __( 'Japanese', 'studio317-report-drafts-google-analytics' ),
+			'ko'    => __( 'Korean', 'studio317-report-drafts-google-analytics' ),
+			'nl'    => __( 'Dutch', 'studio317-report-drafts-google-analytics' ),
+			'pl'    => __( 'Polish', 'studio317-report-drafts-google-analytics' ),
+			'pt'    => __( 'Portuguese', 'studio317-report-drafts-google-analytics' ),
+			'pt_BR' => __( 'Portuguese (Brazil)', 'studio317-report-drafts-google-analytics' ),
+			'pt_PT' => __( 'Portuguese (Portugal)', 'studio317-report-drafts-google-analytics' ),
+			'ru'    => __( 'Russian', 'studio317-report-drafts-google-analytics' ),
+			'th'    => __( 'Thai', 'studio317-report-drafts-google-analytics' ),
+			'tr'    => __( 'Turkish', 'studio317-report-drafts-google-analytics' ),
+			'uk'    => __( 'Ukrainian', 'studio317-report-drafts-google-analytics' ),
+			'vi'    => __( 'Vietnamese', 'studio317-report-drafts-google-analytics' ),
+			'zh'    => __( 'Chinese', 'studio317-report-drafts-google-analytics' ),
+			'zh_CN' => __( 'Simplified Chinese', 'studio317-report-drafts-google-analytics' ),
+			'zh_HK' => __( 'Traditional Chinese', 'studio317-report-drafts-google-analytics' ),
+			'zh_MO' => __( 'Traditional Chinese', 'studio317-report-drafts-google-analytics' ),
+			'zh_TW' => __( 'Traditional Chinese', 'studio317-report-drafts-google-analytics' ),
+		);
+
+		if ( isset( $labels[ $locale ] ) ) {
+			return $labels[ $locale ];
+		}
+
+		if ( isset( $labels[ $code ] ) ) {
+			return $labels[ $code ];
+		}
+
+		if ( isset( $profile['language_name'] ) && is_scalar( $profile['language_name'] ) ) {
+			return sanitize_text_field( (string) $profile['language_name'] );
+		}
+
+		return __( 'English (United States)', 'studio317-report-drafts-google-analytics' );
+	}
+}
+
 if ( ! function_exists( 'analytics_report_ai_get_payload_version' ) ) {
 	/**
 	 * Get expected AI payload version.
@@ -982,13 +1280,12 @@ if ( ! function_exists( 'analytics_report_ai_validate_ai_payload' ) ) {
 		if ( ! is_array( $payload ) ) {
 			return new WP_Error(
 				'analytics_report_ai_payload_not_array',
-				__( 'Data for OpenAI is invalid.', 'analytics-report-ai' )
+				__( 'Data for OpenAI is invalid.', 'studio317-report-drafts-google-analytics' )
 			);
 		}
 
 		$expected_values = array(
 			'payload_version' => analytics_report_ai_get_payload_version(),
-			'language'        => 'ja',
 			'report_type'     => 'ga4_summary',
 		);
 
@@ -1000,9 +1297,33 @@ if ( ! function_exists( 'analytics_report_ai_validate_ai_payload' ) ) {
 			) {
 				return new WP_Error(
 					'analytics_report_ai_payload_unexpected_' . sanitize_key( $key ),
-					__( 'Data for OpenAI is invalid.', 'analytics-report-ai' )
+					__( 'Data for OpenAI is invalid.', 'studio317-report-drafts-google-analytics' )
 				);
 			}
+		}
+
+		if ( empty( $payload['report_language'] ) || ! is_array( $payload['report_language'] ) ) {
+			return new WP_Error(
+				'analytics_report_ai_payload_missing_report_language',
+				__( 'Data for OpenAI is invalid.', 'studio317-report-drafts-google-analytics' )
+			);
+		}
+
+		$report_language_validation = analytics_report_ai_validate_report_language_profile( $payload['report_language'] );
+
+		if ( is_wp_error( $report_language_validation ) ) {
+			return $report_language_validation;
+		}
+
+		if (
+			! isset( $payload['language'] )
+			|| ! is_scalar( $payload['language'] )
+			|| (string) $payload['language'] !== (string) $payload['report_language']['language_code']
+		) {
+			return new WP_Error(
+				'analytics_report_ai_payload_invalid_language_code',
+				__( 'Data for OpenAI is invalid.', 'studio317-report-drafts-google-analytics' )
+			);
 		}
 
 		$required_array_keys = array(
@@ -1023,7 +1344,7 @@ if ( ! function_exists( 'analytics_report_ai_validate_ai_payload' ) ) {
 			if ( ! isset( $payload[ $key ] ) || ! is_array( $payload[ $key ] ) ) {
 				return new WP_Error(
 					'analytics_report_ai_payload_missing_' . sanitize_key( $key ),
-					__( 'Data for OpenAI is invalid.', 'analytics-report-ai' )
+					__( 'Data for OpenAI is invalid.', 'studio317-report-drafts-google-analytics' )
 				);
 			}
 		}
@@ -1038,7 +1359,7 @@ if ( ! function_exists( 'analytics_report_ai_validate_ai_payload' ) ) {
 		) {
 			return new WP_Error(
 				'analytics_report_ai_payload_invalid_status',
-				__( 'Data for OpenAI is invalid.', 'analytics-report-ai' )
+				__( 'Data for OpenAI is invalid.', 'studio317-report-drafts-google-analytics' )
 			);
 		}
 
@@ -1049,7 +1370,7 @@ if ( ! function_exists( 'analytics_report_ai_validate_ai_payload' ) ) {
 		) {
 			return new WP_Error(
 				'analytics_report_ai_payload_invalid_block_reason',
-				__( 'Data for OpenAI is invalid.', 'analytics-report-ai' )
+				__( 'Data for OpenAI is invalid.', 'studio317-report-drafts-google-analytics' )
 			);
 		}
 
@@ -1065,7 +1386,7 @@ if ( ! function_exists( 'analytics_report_ai_validate_ai_payload' ) ) {
 			) {
 				return new WP_Error(
 					'analytics_report_ai_payload_invalid_warning',
-					__( 'Data for OpenAI is invalid.', 'analytics-report-ai' )
+					__( 'Data for OpenAI is invalid.', 'studio317-report-drafts-google-analytics' )
 				);
 			}
 		}
@@ -1082,7 +1403,7 @@ if ( ! function_exists( 'analytics_report_ai_validate_ai_payload' ) ) {
 		) {
 			return new WP_Error(
 				'analytics_report_ai_payload_invalid_availability',
-				__( 'Data for OpenAI is invalid.', 'analytics-report-ai' )
+				__( 'Data for OpenAI is invalid.', 'studio317-report-drafts-google-analytics' )
 			);
 		}
 
@@ -1095,7 +1416,7 @@ if ( ! function_exists( 'analytics_report_ai_validate_ai_payload' ) ) {
 			) {
 				return new WP_Error(
 					'analytics_report_ai_payload_invalid_detail_availability_' . sanitize_key( $key ),
-					__( 'Data for OpenAI is invalid.', 'analytics-report-ai' )
+					__( 'Data for OpenAI is invalid.', 'studio317-report-drafts-google-analytics' )
 				);
 			}
 		}
@@ -1108,7 +1429,7 @@ if ( ! function_exists( 'analytics_report_ai_validate_ai_payload' ) ) {
 		) {
 			return new WP_Error(
 				'analytics_report_ai_payload_invalid_value_semantics',
-				__( 'Data for OpenAI is invalid.', 'analytics-report-ai' )
+				__( 'Data for OpenAI is invalid.', 'studio317-report-drafts-google-analytics' )
 			);
 		}
 
@@ -1116,7 +1437,7 @@ if ( ! function_exists( 'analytics_report_ai_validate_ai_payload' ) ) {
 			if ( count( $payload[ $key ] ) > absint( $limit ) ) {
 				return new WP_Error(
 					'analytics_report_ai_payload_row_limit_' . sanitize_key( $key ),
-					__( 'Data for OpenAI is invalid.', 'analytics-report-ai' )
+					__( 'Data for OpenAI is invalid.', 'studio317-report-drafts-google-analytics' )
 				);
 			}
 		}

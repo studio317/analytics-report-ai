@@ -1,9 +1,9 @@
-# Analytics Report AI distribution ignore draft.
+# Studio317 Report Drafts for Google Analytics distribution ignore draft.
 # This file is for future WordPress.org / release zip packaging.
 # Recheck this draft before creating a release zip.
 #
 # Keep runtime files in the package:
-# - analytics-report-ai.php
+# - studio317-report-drafts-google-analytics.php
 # - includes/
 # - assets/
 # - languages/

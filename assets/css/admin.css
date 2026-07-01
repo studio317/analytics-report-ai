@@ -1,4 +1,4 @@
-.analytics-report-ai-admin .analytics-report-ai-card {
+.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-card {
 	max-width: 960px;
 	margin-top: 20px;
 	padding: 20px;
@@ -7,53 +7,53 @@
 	border-radius: 4px;
 }
 
-.analytics-report-ai-admin .analytics-report-ai-card h2 {
+.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-card h2 {
 	margin-top: 0;
 }
 
-.analytics-report-ai-admin .analytics-report-ai-status-table {
+.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-status-table {
 	margin-top: 12px;
 }
 
-.analytics-report-ai-admin .analytics-report-ai-status-table th {
+.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-status-table th {
 	width: 220px;
 }
 
-.analytics-report-ai-admin .analytics-report-ai-status-warning {
+.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-status-warning {
 	color: #b32d2e;
 	font-weight: 600;
 }
 
-.analytics-report-ai-admin .analytics-report-ai-info-block {
+.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-info-block {
 	margin: 16px 0;
 	padding: 12px 14px;
 	background: #f6f7f7;
 	border-left: 4px solid #72aee6;
 }
 
-.analytics-report-ai-admin .analytics-report-ai-info-block h3 {
+.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-info-block h3 {
 	margin: 0 0 8px;
 }
 
-.analytics-report-ai-admin .analytics-report-ai-info-block p {
+.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-info-block p {
 	margin: 8px 0;
 }
 
-.analytics-report-ai-admin .analytics-report-ai-notice-list {
+.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-notice-list {
 	margin: 8px 0 0 20px;
 	list-style: disc;
 }
 
-.analytics-report-ai-admin .analytics-report-ai-inline-label {
+.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-inline-label {
 	margin-left: 16px;
 }
 
-.analytics-report-ai-admin .analytics-report-ai-radio-label {
+.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-radio-label {
 	display: block;
 	margin: 0 0 8px;
 }
 
-.analytics-report-ai-admin .analytics-report-ai-path-field {
+.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-path-field {
 	margin-top: 12px;
 	padding: 12px;
 	background: #f6f7f7;
@@ -61,31 +61,31 @@
 	border-radius: 4px;
 }
 
-.analytics-report-ai-admin .analytics-report-ai-path-field.is-hidden {
+.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-path-field.is-hidden {
 	display: none;
 }
 
-.analytics-report-ai-admin .analytics-report-ai-path-field label {
+.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-path-field label {
 	display: block;
 	margin-bottom: 6px;
 	font-weight: 600;
 }
 
-.analytics-report-ai-admin .analytics-report-ai-preview-table {
+.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-preview-table {
 	margin-top: 8px;
 	margin-bottom: 20px;
 }
 
-.analytics-report-ai-admin .analytics-report-ai-json-preview {
+.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-json-preview {
 	margin-top: 20px;
 }
 
-.analytics-report-ai-admin .analytics-report-ai-json-preview summary {
+.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-json-preview summary {
 	cursor: pointer;
 	font-weight: 600;
 }
 
-.analytics-report-ai-admin .analytics-report-ai-json-preview pre {
+.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-json-preview pre {
 	max-height: 420px;
 	overflow: auto;
 	padding: 16px;
@@ -95,25 +95,25 @@
 	white-space: pre-wrap;
 }
 
-.analytics-report-ai-admin .analytics-report-ai-generate-form {
+.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-generate-form {
 	margin-top: 20px;
 }
 
-.analytics-report-ai-admin .analytics-report-ai-generated-report {
+.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-generated-report {
 	width: 100%;
 	margin-top: 12px;
 	font-family: Consolas, Monaco, monospace;
 	line-height: 1.7;
 }
 
-.analytics-report-ai-admin .analytics-report-ai-copy-actions {
+.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-copy-actions {
 	display: flex;
 	align-items: center;
 	gap: 12px;
 	margin-top: 12px;
 }
 
-.analytics-report-ai-admin .analytics-report-ai-copy-status {
+.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-copy-status {
 	color: #008a20;
 	font-weight: 600;
 }

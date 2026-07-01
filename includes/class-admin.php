@@ -10,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Registers admin menus, screens, and assets for Analytics Report AI.
+ * Registers admin menus, screens, and assets for Studio317 Report Drafts for Google Analytics.
  *
  * @since 0.1.0
  */
@@ -79,30 +79,30 @@ final class Analytics_Report_AI_Admin {
 	 */
 	public function register_menus() {
 		add_menu_page(
-			__( 'Analytics Report AI', 'analytics-report-ai' ),
-			__( 'Analytics Report AI', 'analytics-report-ai' ),
+			__( 'Studio317 Report Drafts for Google Analytics', 'studio317-report-drafts-google-analytics' ),
+			__( 'Studio317 Report Drafts for Google Analytics', 'studio317-report-drafts-google-analytics' ),
 			'manage_options',
-			'analytics-report-ai',
+			'studio317-report-drafts-google-analytics',
 			array( $this->report_builder, 'render_page' ),
 			'dashicons-chart-area',
 			65
 		);
 
 		add_submenu_page(
-			'analytics-report-ai',
-			__( 'Report Builder', 'analytics-report-ai' ),
-			__( 'Report Builder', 'analytics-report-ai' ),
+			'studio317-report-drafts-google-analytics',
+			__( 'Report Builder', 'studio317-report-drafts-google-analytics' ),
+			__( 'Report Builder', 'studio317-report-drafts-google-analytics' ),
 			'manage_options',
-			'analytics-report-ai',
+			'studio317-report-drafts-google-analytics',
 			array( $this->report_builder, 'render_page' )
 		);
 
 		add_submenu_page(
-			'analytics-report-ai',
-			__( 'Settings', 'analytics-report-ai' ),
-			__( 'Settings', 'analytics-report-ai' ),
+			'studio317-report-drafts-google-analytics',
+			__( 'Settings', 'studio317-report-drafts-google-analytics' ),
+			__( 'Settings', 'studio317-report-drafts-google-analytics' ),
 			'manage_options',
-			'analytics-report-ai-settings',
+			'studio317-report-drafts-google-analytics-settings',
 			array( $this->settings, 'render_page' )
 		);
 	}
@@ -115,19 +115,19 @@ final class Analytics_Report_AI_Admin {
 	public function enqueue_assets() {
 		$screen = get_current_screen();
 
-		if ( ! $screen || false === strpos( $screen->id, 'analytics-report-ai' ) ) {
+		if ( ! $screen || false === strpos( $screen->id, 'studio317-report-drafts-google-analytics' ) ) {
 			return;
 		}
 
 		wp_enqueue_style(
-			'analytics-report-ai-admin',
+			'studio317-report-drafts-google-analytics-admin',
 			ANALYTICS_REPORT_AI_URL . 'assets/css/admin.css',
 			array(),
 			ANALYTICS_REPORT_AI_VERSION
 		);
 
 		wp_enqueue_script(
-			'analytics-report-ai-admin',
+			'studio317-report-drafts-google-analytics-admin',
 			ANALYTICS_REPORT_AI_URL . 'assets/js/admin.js',
 			array(),
 			ANALYTICS_REPORT_AI_VERSION,
@@ -135,32 +135,32 @@ final class Analytics_Report_AI_Admin {
 		);
 
 		wp_localize_script(
-			'analytics-report-ai-admin',
+			'studio317-report-drafts-google-analytics-admin',
 			'analyticsReportAiAdmin',
 			array(
 				'strings' => array(
-					'directoryScopeDescription' => __( 'Directory scope matches paths that start with the entered path, such as /blog/.', 'analytics-report-ai' ),
-					'pageScopeDescription'      => __( 'Page scope matches the exact normalized path, such as /about.', 'analytics-report-ai' ),
-					'copied'                    => __( 'Copied.', 'analytics-report-ai' ),
-					'copyFailed'                => __( 'Copy failed. Please select and copy manually.', 'analytics-report-ai' ),
-					'nothingToCopy'             => __( 'Nothing to copy.', 'analytics-report-ai' ),
+					'directoryScopeDescription' => __( 'Directory scope matches paths that start with the entered path, such as /blog/.', 'studio317-report-drafts-google-analytics' ),
+					'pageScopeDescription'      => __( 'Page scope matches the exact normalized path, such as /about.', 'studio317-report-drafts-google-analytics' ),
+					'copied'                    => __( 'Copied.', 'studio317-report-drafts-google-analytics' ),
+					'copyFailed'                => __( 'Copy failed. Please select and copy manually.', 'studio317-report-drafts-google-analytics' ),
+					'nothingToCopy'             => __( 'Nothing to copy.', 'studio317-report-drafts-google-analytics' ),
 				),
 			)
 		);
 
-		if ( false === strpos( $screen->id, 'analytics-report-ai-settings' ) ) {
+		if ( false === strpos( $screen->id, 'studio317-report-drafts-google-analytics-settings' ) ) {
 			return;
 		}
 
 		wp_enqueue_style(
-			'analytics-report-ai-settings-help',
+			'studio317-report-drafts-google-analytics-settings-help',
 			ANALYTICS_REPORT_AI_URL . 'assets/css/settings-help.css',
-			array( 'analytics-report-ai-admin' ),
+			array( 'studio317-report-drafts-google-analytics-admin' ),
 			ANALYTICS_REPORT_AI_VERSION
 		);
 
 		wp_enqueue_script(
-			'analytics-report-ai-settings-help',
+			'studio317-report-drafts-google-analytics-settings-help',
 			ANALYTICS_REPORT_AI_URL . 'assets/js/settings-help.js',
 			array(),
 			ANALYTICS_REPORT_AI_VERSION,
@@ -180,8 +180,8 @@ final class Analytics_Report_AI_Admin {
 	public function handle_google_oauth_connect() {
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_die(
-				esc_html__( 'You do not have permission to manage Analytics Report AI credentials.', 'analytics-report-ai' ),
-				esc_html__( 'Permission denied', 'analytics-report-ai' ),
+				esc_html__( 'You do not have permission to manage Studio317 Report Drafts for Google Analytics credentials.', 'studio317-report-drafts-google-analytics' ),
+				esc_html__( 'Permission denied', 'studio317-report-drafts-google-analytics' ),
 				array( 'response' => 403 )
 			);
 		}
@@ -273,8 +273,8 @@ final class Analytics_Report_AI_Admin {
 	public function handle_google_oauth_callback() {
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_die(
-				esc_html__( 'You do not have permission to manage Analytics Report AI credentials.', 'analytics-report-ai' ),
-				esc_html__( 'Permission denied', 'analytics-report-ai' ),
+				esc_html__( 'You do not have permission to manage Studio317 Report Drafts for Google Analytics credentials.', 'studio317-report-drafts-google-analytics' ),
+				esc_html__( 'Permission denied', 'studio317-report-drafts-google-analytics' ),
 				array( 'response' => 403 )
 			);
 		}
@@ -318,8 +318,8 @@ final class Analytics_Report_AI_Admin {
 	public function handle_google_oauth_disconnect() {
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_die(
-				esc_html__( 'You do not have permission to manage Analytics Report AI credentials.', 'analytics-report-ai' ),
-				esc_html__( 'Permission denied', 'analytics-report-ai' ),
+				esc_html__( 'You do not have permission to manage Studio317 Report Drafts for Google Analytics credentials.', 'studio317-report-drafts-google-analytics' ),
+				esc_html__( 'Permission denied', 'studio317-report-drafts-google-analytics' ),
 				array( 'response' => 403 )
 			);
 		}
@@ -346,7 +346,7 @@ final class Analytics_Report_AI_Admin {
 	 * @return string
 	 */
 	private function get_settings_url( $args = array() ) {
-		$url = admin_url( 'admin.php?page=analytics-report-ai-settings' );
+		$url = admin_url( 'admin.php?page=studio317-report-drafts-google-analytics-settings' );
 
 		if ( empty( $args ) ) {
 			return $url;

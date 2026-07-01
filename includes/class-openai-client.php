@@ -29,13 +29,17 @@ final class Analytics_Report_AI_OpenAI_Client {
 		if ( '' === $api_key ) {
 			return new WP_Error(
 				'analytics_report_ai_openai_api_key_missing',
-				__( 'OpenAI API key is not configured. Open Settings and add an API key, or configure it on the server before generating.', 'analytics-report-ai' )
+				__( 'OpenAI API key is not configured. Open Settings and add an API key, or configure it on the server before generating.', 'studio317-report-drafts-google-analytics' )
 			);
 		}
 
 		$request_body = array(
 			'model'             => self::get_model(),
-			'instructions'      => Analytics_Report_AI_Prompt_Builder::build_system_prompt(),
+			'instructions'      => Analytics_Report_AI_Prompt_Builder::build_system_prompt(
+				isset( $payload['report_language'] ) && is_array( $payload['report_language'] )
+					? $payload['report_language']
+					: array()
+			),
 			'input'             => Analytics_Report_AI_Prompt_Builder::build_user_input( $payload ),
 			'max_output_tokens' => 2200,
 		);
@@ -55,7 +59,7 @@ final class Analytics_Report_AI_OpenAI_Client {
 		if ( is_wp_error( $response ) ) {
 			return new WP_Error(
 				'analytics_report_ai_openai_request_failed',
-				__( 'Could not connect to OpenAI API. Check the server network connection and try again.', 'analytics-report-ai' )
+				__( 'Could not connect to OpenAI API. Check the server network connection and try again.', 'studio317-report-drafts-google-analytics' )
 			);
 		}
 
@@ -70,7 +74,7 @@ final class Analytics_Report_AI_OpenAI_Client {
 		if ( ! is_array( $data ) ) {
 			return new WP_Error(
 				'analytics_report_ai_openai_invalid_json',
-				__( 'OpenAI API returned an unreadable response. Please try again later.', 'analytics-report-ai' )
+				__( 'OpenAI API returned an unreadable response. Please try again later.', 'studio317-report-drafts-google-analytics' )
 			);
 		}
 
@@ -79,7 +83,7 @@ final class Analytics_Report_AI_OpenAI_Client {
 		if ( '' === $text ) {
 			return new WP_Error(
 				'analytics_report_ai_openai_empty_text',
-				__( 'OpenAI API returned no report text.', 'analytics-report-ai' )
+				__( 'OpenAI API returned no report text.', 'studio317-report-drafts-google-analytics' )
 			);
 		}
 
@@ -124,56 +128,56 @@ final class Analytics_Report_AI_OpenAI_Client {
 	 */
 	private static function get_safe_api_error_message( $status_code, $data ) {
 		if ( 400 === $status_code ) {
-			return __( 'OpenAI API rejected the request. Check the report data and model configuration.', 'analytics-report-ai' );
+			return __( 'OpenAI API rejected the request. Check the report data and model configuration.', 'studio317-report-drafts-google-analytics' );
 		}
 
 		if ( 401 === $status_code ) {
-			return __( 'OpenAI API authentication failed. Review the configured OpenAI API key without sharing key values.', 'analytics-report-ai' );
+			return __( 'OpenAI API authentication failed. Review the configured OpenAI API key without sharing key values.', 'studio317-report-drafts-google-analytics' );
 		}
 
 		if ( 403 === $status_code ) {
-			return __( 'OpenAI API permission was denied. If you use a restricted key, allow Model capabilities and Responses (/v1/responses) requests.', 'analytics-report-ai' );
+			return __( 'OpenAI API permission was denied. If you use a restricted key, allow Model capabilities and Responses (/v1/responses) requests.', 'studio317-report-drafts-google-analytics' );
 		}
 
 		if ( 404 === $status_code ) {
-			return __( 'The configured OpenAI model or endpoint was not found. Check the model configuration.', 'analytics-report-ai' );
+			return __( 'The configured OpenAI model or endpoint was not found. Check the model configuration.', 'studio317-report-drafts-google-analytics' );
 		}
 
 		if ( 429 === $status_code ) {
-			return __( 'OpenAI API rate limit or quota may have been exceeded. Check your OpenAI Platform usage and billing.', 'analytics-report-ai' );
+			return __( 'OpenAI API rate limit or quota may have been exceeded. Check your OpenAI Platform usage and billing.', 'studio317-report-drafts-google-analytics' );
 		}
 
 		if ( $status_code >= 500 ) {
-			return __( 'OpenAI API is temporarily unavailable. Please try again later.', 'analytics-report-ai' );
+			return __( 'OpenAI API is temporarily unavailable. Please try again later.', 'studio317-report-drafts-google-analytics' );
 		}
 
 		if ( self::has_api_error_value( $data, 'type', array( 'invalid_request_error' ) ) ) {
-			return __( 'OpenAI API rejected the request. Check the report data and model configuration.', 'analytics-report-ai' );
+			return __( 'OpenAI API rejected the request. Check the report data and model configuration.', 'studio317-report-drafts-google-analytics' );
 		}
 
 		if ( self::has_api_error_value( $data, 'type', array( 'authentication_error' ) ) ) {
-			return __( 'OpenAI API authentication failed. Review the configured OpenAI API key without sharing key values.', 'analytics-report-ai' );
+			return __( 'OpenAI API authentication failed. Review the configured OpenAI API key without sharing key values.', 'studio317-report-drafts-google-analytics' );
 		}
 
 		if (
 			self::has_api_error_value( $data, 'type', array( 'permission_error' ) )
 			|| self::has_api_error_value( $data, 'code', array( 'insufficient_permissions' ) )
 		) {
-			return __( 'OpenAI API permission was denied. If you use a restricted key, allow Model capabilities and Responses (/v1/responses) requests.', 'analytics-report-ai' );
+			return __( 'OpenAI API permission was denied. If you use a restricted key, allow Model capabilities and Responses (/v1/responses) requests.', 'studio317-report-drafts-google-analytics' );
 		}
 
 		if ( self::has_api_error_value( $data, 'code', array( 'model_not_found' ) ) ) {
-			return __( 'The configured OpenAI model or endpoint was not found. Check the model configuration.', 'analytics-report-ai' );
+			return __( 'The configured OpenAI model or endpoint was not found. Check the model configuration.', 'studio317-report-drafts-google-analytics' );
 		}
 
 		if (
 			self::has_api_error_value( $data, 'type', array( 'rate_limit_error' ) )
 			|| self::has_api_error_value( $data, 'code', array( 'insufficient_quota', 'rate_limit_exceeded' ) )
 		) {
-			return __( 'OpenAI API rate limit or quota may have been exceeded. Check your OpenAI Platform usage and billing.', 'analytics-report-ai' );
+			return __( 'OpenAI API rate limit or quota may have been exceeded. Check your OpenAI Platform usage and billing.', 'studio317-report-drafts-google-analytics' );
 		}
 
-		return __( 'OpenAI API returned an unexpected error. Review the OpenAI configuration and try again without sharing request or response details.', 'analytics-report-ai' );
+		return __( 'OpenAI API returned an unexpected error. Review the OpenAI configuration and try again without sharing request or response details.', 'studio317-report-drafts-google-analytics' );
 	}
 
 	/**
@@ -208,7 +212,7 @@ final class Analytics_Report_AI_OpenAI_Client {
 
 		return sprintf(
 			/* translators: 1: safe user-facing error message, 2: HTTP status code. */
-			__( '%1$s HTTP status: %2$d', 'analytics-report-ai' ),
+			__( '%1$s HTTP status: %2$d', 'studio317-report-drafts-google-analytics' ),
 			$message,
 			$status_code
 		);

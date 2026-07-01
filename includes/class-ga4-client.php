@@ -10,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Handles GA4 Data API requests for Analytics Report AI reports.
+ * Handles GA4 Data API requests for Studio317 Report Drafts for Google Analytics reports.
  *
  * @since 0.1.0
  */
@@ -268,14 +268,14 @@ final class Analytics_Report_AI_GA4_Client {
 		if ( '' === $property_id ) {
 			return new WP_Error(
 				'analytics_report_ai_ga4_property_id_missing',
-				__( 'GA4 Property ID is not configured.', 'analytics-report-ai' )
+				__( 'GA4 Property ID is not configured.', 'studio317-report-drafts-google-analytics' )
 			);
 		}
 
 		if ( '' === $access_token ) {
 			return new WP_Error(
 				'analytics_report_ai_google_access_token_missing',
-				__( 'No Google connection is available for GA4 Fetch. Connect Google in Settings and try again.', 'analytics-report-ai' )
+				__( 'No Google connection is available for GA4 Fetch. Connect Google in Settings and try again.', 'studio317-report-drafts-google-analytics' )
 			);
 		}
 
@@ -287,7 +287,7 @@ final class Analytics_Report_AI_GA4_Client {
 		) {
 			return new WP_Error(
 				'analytics_report_ai_ga4_invalid_period',
-				__( 'GA4 report period is invalid.', 'analytics-report-ai' )
+				__( 'GA4 report period is invalid.', 'studio317-report-drafts-google-analytics' )
 			);
 		}
 
@@ -341,7 +341,7 @@ final class Analytics_Report_AI_GA4_Client {
 		if ( is_wp_error( $response ) ) {
 			return new WP_Error(
 				'analytics_report_ai_ga4_request_failed',
-				__( 'Could not connect to Google Analytics Data API. Check the server network connection and try again.', 'analytics-report-ai' )
+				__( 'Could not connect to Google Analytics Data API. Check the server network connection and try again.', 'studio317-report-drafts-google-analytics' )
 			);
 		}
 
@@ -356,7 +356,7 @@ final class Analytics_Report_AI_GA4_Client {
 		if ( ! is_array( $data ) ) {
 			return new WP_Error(
 				'analytics_report_ai_ga4_invalid_json',
-				__( 'Google Analytics Data API returned an unreadable response. Please try again later.', 'analytics-report-ai' )
+				__( 'Google Analytics Data API returned an unreadable response. Please try again later.', 'studio317-report-drafts-google-analytics' )
 			);
 		}
 
@@ -646,54 +646,54 @@ final class Analytics_Report_AI_GA4_Client {
 	 */
 	private static function get_safe_api_error_message( $status_code, $data ) {
 		if ( 400 === $status_code ) {
-			return __( 'Google Analytics Data API rejected the report request. Check the GA4 property ID, date range, and report filters.', 'analytics-report-ai' );
+			return __( 'Google Analytics Data API rejected the report request. Check the GA4 property ID, date range, and report filters.', 'studio317-report-drafts-google-analytics' );
 		}
 
 		if ( 401 === $status_code ) {
-			return __( 'Google credential is invalid or expired. Reconnect Google in Settings and try again.', 'analytics-report-ai' );
+			return __( 'Google credential is invalid or expired. Reconnect Google in Settings and try again.', 'studio317-report-drafts-google-analytics' );
 		}
 
 		if ( 403 === $status_code ) {
-			return __( 'Google Analytics Data API permission was denied. Check that the token has access to the selected GA4 property.', 'analytics-report-ai' );
+			return __( 'Google Analytics Data API permission was denied. Check that the token has access to the selected GA4 property.', 'studio317-report-drafts-google-analytics' );
 		}
 
 		if ( 404 === $status_code ) {
-			return __( 'GA4 property was not found. Check that the property ID is correct and that the token can access it.', 'analytics-report-ai' );
+			return __( 'GA4 property was not found. Check that the property ID is correct and that the token can access it.', 'studio317-report-drafts-google-analytics' );
 		}
 
 		if ( 429 === $status_code ) {
-			return __( 'Google Analytics Data API rate limit may have been exceeded. Please wait and try again later.', 'analytics-report-ai' );
+			return __( 'Google Analytics Data API rate limit may have been exceeded. Please wait and try again later.', 'studio317-report-drafts-google-analytics' );
 		}
 
 		if ( $status_code >= 500 ) {
-			return __( 'Google Analytics Data API is temporarily unavailable. Please try again later.', 'analytics-report-ai' );
+			return __( 'Google Analytics Data API is temporarily unavailable. Please try again later.', 'studio317-report-drafts-google-analytics' );
 		}
 
 		if ( self::has_api_error_status( $data, array( 'INVALID_ARGUMENT' ) ) ) {
-			return __( 'Google Analytics Data API rejected the report request. Check the GA4 property ID, date range, and report filters.', 'analytics-report-ai' );
+			return __( 'Google Analytics Data API rejected the report request. Check the GA4 property ID, date range, and report filters.', 'studio317-report-drafts-google-analytics' );
 		}
 
 		if ( self::has_api_error_status( $data, array( 'UNAUTHENTICATED' ) ) ) {
-			return __( 'Google credential is invalid or expired. Reconnect Google in Settings and try again.', 'analytics-report-ai' );
+			return __( 'Google credential is invalid or expired. Reconnect Google in Settings and try again.', 'studio317-report-drafts-google-analytics' );
 		}
 
 		if ( self::has_api_error_status( $data, array( 'PERMISSION_DENIED' ) ) ) {
-			return __( 'Google Analytics Data API permission was denied. Check that the token has access to the selected GA4 property.', 'analytics-report-ai' );
+			return __( 'Google Analytics Data API permission was denied. Check that the token has access to the selected GA4 property.', 'studio317-report-drafts-google-analytics' );
 		}
 
 		if ( self::has_api_error_status( $data, array( 'NOT_FOUND' ) ) ) {
-			return __( 'GA4 property was not found. Check that the property ID is correct and that the token can access it.', 'analytics-report-ai' );
+			return __( 'GA4 property was not found. Check that the property ID is correct and that the token can access it.', 'studio317-report-drafts-google-analytics' );
 		}
 
 		if ( self::has_api_error_status( $data, array( 'RESOURCE_EXHAUSTED' ) ) ) {
-			return __( 'Google Analytics Data API rate limit may have been exceeded. Please wait and try again later.', 'analytics-report-ai' );
+			return __( 'Google Analytics Data API rate limit may have been exceeded. Please wait and try again later.', 'studio317-report-drafts-google-analytics' );
 		}
 
 		if ( self::has_api_error_status( $data, array( 'ABORTED', 'DEADLINE_EXCEEDED', 'INTERNAL', 'UNAVAILABLE', 'UNKNOWN' ) ) ) {
-			return __( 'Google Analytics Data API is temporarily unavailable. Please try again later.', 'analytics-report-ai' );
+			return __( 'Google Analytics Data API is temporarily unavailable. Please try again later.', 'studio317-report-drafts-google-analytics' );
 		}
 
-		return __( 'Google Analytics Data API returned an unexpected error. Check the settings and try again.', 'analytics-report-ai' );
+		return __( 'Google Analytics Data API returned an unexpected error. Check the settings and try again.', 'studio317-report-drafts-google-analytics' );
 	}
 
 	/**
@@ -728,7 +728,7 @@ final class Analytics_Report_AI_GA4_Client {
 
 		return sprintf(
 			/* translators: 1: safe user-facing error message, 2: HTTP status code. */
-			__( '%1$s HTTP status: %2$d', 'analytics-report-ai' ),
+			__( '%1$s HTTP status: %2$d', 'studio317-report-drafts-google-analytics' ),
 			$message,
 			$status_code
 		);

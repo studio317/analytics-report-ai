@@ -1,10 +1,10 @@
 # Data Handling
 
-This document summarizes the public data-handling boundary for Analytics Report AI.
+This document summarizes the public data-handling boundary for Studio317 Report Drafts for Google Analytics.
 
 ## External Services
 
-Analytics Report AI contacts third-party services only after explicit administrator actions:
+Studio317 Report Drafts for Google Analytics contacts third-party services only after explicit administrator actions:
 
 - Google authorization can be started from Settings.
 - Google Analytics Data API requests run when an administrator clicks Fetch GA4 Data.
@@ -20,7 +20,7 @@ Fetch GA4 Data sends selected report conditions and required report metrics or d
 
 ## OpenAI
 
-Generate AI Report sends the reviewed report data to the OpenAI API. The data can include selected GA4-derived report data, such as report conditions, summary metrics, daily trends, top pages, channels, sources, and regional trends.
+Generate AI Report sends the reviewed report data to the OpenAI API. The data can include selected GA4-derived report data, such as report conditions, summary metrics, daily trends, top pages, channels, sources, and regional trends. The selected report output language and locale are included so OpenAI can generate the report draft in the appropriate language.
 
 The OpenAI request uses the configured API key in the Authorization header. The plugin admin UI does not display saved key values.
 

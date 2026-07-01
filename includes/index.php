@@ -2,5 +2,5 @@
 /**
  * Silence is golden.
  *
- * @package analytics-report-ai
+ * @package studio317-report-drafts-google-analytics
  */

@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
-<ruleset name="Analytics Report AI">
-	<description>WPCS baseline for Analytics Report AI runtime PHP files.</description>
+<ruleset name="Studio317 Report Drafts for Google Analytics">
+	<description>WPCS baseline for Studio317 Report Drafts for Google Analytics runtime PHP files.</description>
 
-	<file>analytics-report-ai.php</file>
+	<file>studio317-report-drafts-google-analytics.php</file>
 	<file>includes</file>
 
 	<arg name="extensions" value="php"/>
@@ -30,7 +30,7 @@
 	<rule ref="WordPress.WP.I18n">
 		<properties>
 			<property name="text_domain" type="array">
-				<element value="analytics-report-ai"/>
+				<element value="studio317-report-drafts-google-analytics"/>
 			</property>
 		</properties>
 	</rule>

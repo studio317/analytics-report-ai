@@ -1,4 +1,4 @@
-=== Analytics Report AI ===
+=== Studio317 Report Drafts for Google Analytics ===
 Contributors: cuerda
 Tags: analytics, ai, ga4, reports
 Requires at least: 6.0
@@ -8,11 +8,13 @@ Stable tag: 0.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Creates AI-assisted Japanese report drafts from GA4 data with structured review, editing, and copy tools.
+Creates AI-assisted report drafts from GA4 data in the WordPress user language with structured review, editing, and copy tools.
 
 == Description ==
 
-Analytics Report AI helps WordPress administrators fetch selected GA4 report data, review a structured pre-send preview, generate a Japanese report draft with OpenAI, edit the draft, and copy the final text.
+Studio317 Report Drafts for Google Analytics helps WordPress administrators fetch selected GA4 report data, review a structured pre-send preview, generate a report draft in the current WordPress user language with OpenAI, edit the draft, and copy the final text.
+
+This plugin is developed by Kimiya Watabe / Studio317. It is not affiliated with, endorsed by, or sponsored by Google.
 
 This plugin is not a replacement for the Google Analytics dashboard. It provides a focused admin workflow for turning selected GA4 report data into a reviewed draft that can be edited before use.
 
@@ -25,9 +27,11 @@ This plugin is not a replacement for the Google Analytics dashboard. It provides
 5. Open Report Builder and click Fetch GA4 Data.
 6. Review the Data Preview.
 7. Click Generate AI Report to send the reviewed report data to OpenAI.
-8. Review, edit, and copy the generated Japanese draft.
+8. Review, edit, and copy the generated draft.
 
 Fetch GA4 Data and Generate AI Report are separate actions. Fetching GA4 data does not contact OpenAI. Generating an AI report does not run until the administrator reviews the Data Preview and clicks the generate button.
+
+Report output language follows the WordPress language setting for the administrator running Report Builder. If the user locale is unavailable, the plugin falls back to the site locale and then to English. The WordPress timezone is used for report periods and date handling, not for choosing the report language.
 
 = Supported site scope =
 
@@ -35,7 +39,7 @@ The initial supported scope is single-site WordPress. Multisite network activati
 
 == External Services ==
 
-Analytics Report AI contacts third-party services only when an administrator explicitly starts Google authorization, clicks Fetch GA4 Data, or clicks Generate AI Report. Viewing Settings or Report Builder alone does not contact Google or OpenAI.
+Studio317 Report Drafts for Google Analytics contacts third-party services only when an administrator explicitly starts Google authorization, clicks Fetch GA4 Data, or clicks Generate AI Report. Viewing Settings or Report Builder alone does not contact Google or OpenAI.
 
 = Google OAuth authorization =
 
@@ -78,11 +82,11 @@ Data received from Google may include:
 * Traffic sources.
 * City-level regional trends for Japan.
 
-The Google Analytics Data API request body is designed not to include the OpenAI API key, WordPress user information, cookies, or IP addresses.
+The Google Analytics Data API request body is designed not to include the OpenAI API key, WordPress user identifiers, cookies, or IP addresses.
 
 = OpenAI API =
 
-When an administrator clicks Generate AI Report, the plugin sends a request to the OpenAI API to generate a Japanese report draft from the reviewed report data.
+When an administrator clicks Generate AI Report, the plugin sends a request to the OpenAI API to generate a report draft from the reviewed report data in the selected report output language.
 
 Service URL: https://api.openai.com/v1/responses
 
@@ -90,8 +94,9 @@ Data sent to OpenAI may include:
 
 * OpenAI API key in the Authorization header.
 * Selected model name.
-* Fixed system instructions.
+* System instructions, including the selected report output language.
 * GA4-derived report data reviewed through the Data Preview.
+* Report output language and locale information resolved from WordPress locale settings.
 
 Report data sent to OpenAI may include:
 
@@ -105,7 +110,7 @@ Report data sent to OpenAI may include:
 * Traffic sources.
 * City-level regional trends.
 
-The report data sent to OpenAI is designed not to include the Google OAuth token, OpenAI API key, GA4 property ID, WordPress user information, cookies, or IP addresses.
+The report data sent to OpenAI is designed not to include the Google OAuth token, OpenAI API key, GA4 property ID, WordPress user identifiers, cookies, or IP addresses.
 
 OpenAI API usage may consume API credits or quota. Generated report text is shown for administrator review, editing, and copying. The plugin does not intentionally save generated report text. Generated report text is a draft, and administrators should review and edit it before publishing, sharing, or sending it.
 
@@ -132,9 +137,9 @@ Database administrators, backups, server administrators, or code that can read W
 
 == Installation ==
 
-1. Upload the plugin files to the `wp-content/plugins/analytics-report-ai` directory, or install the plugin ZIP through the WordPress Plugins screen.
-2. Activate Analytics Report AI.
-3. Open Analytics Report AI > Settings.
+1. Upload the plugin files to the `wp-content/plugins/studio317-report-drafts-google-analytics` directory, or install the plugin ZIP through the WordPress Plugins screen.
+2. Activate Studio317 Report Drafts for Google Analytics.
+3. Open Studio317 Report Drafts for Google Analytics > Settings.
 4. Enter the numeric GA4 property ID and optional host filter.
 5. Configure Google OAuth client settings or provide them by server configuration.
 6. Configure an OpenAI API key in Settings or provide it by server configuration.
@@ -145,7 +150,7 @@ Database administrators, backups, server administrators, or code that can read W
 
 = Does this plugin replace Google Analytics? =
 
-No. It uses selected GA4 data to help create a Japanese report draft. Use Google Analytics for full analytics exploration, attribution, and dashboard workflows.
+No. It uses selected GA4 data to help create a report draft in the current WordPress user language. Use Google Analytics for full analytics exploration, attribution, and dashboard workflows.
 
 = When does the plugin contact Google? =
 
@@ -174,5 +179,5 @@ Do not send credentials, API keys, access tokens, Authorization headers, plugin 
 == Changelog ==
 
 = 0.1.0 =
-* Added GA4 data retrieval, structured Data Preview, OpenAI Japanese report draft generation, and admin review/edit/copy workflow.
+* Added GA4 data retrieval, structured Data Preview, OpenAI report draft generation in the WordPress user language, and admin review/edit/copy workflow.
 * Added Google OAuth connection handling, hidden credential values, setup guidance, external service disclosures, data validation, and localized admin strings.

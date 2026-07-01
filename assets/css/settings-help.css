@@ -1,17 +1,17 @@
-.analytics-report-ai-admin .analytics-report-ai-help-control {
+.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-help-control {
 	position: relative;
 	display: inline-flex;
 	align-items: center;
 	margin-left: 6px;
 }
 
-.analytics-report-ai-admin .analytics-report-ai-help-button {
+.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-help-button {
 	font-size: 12px;
 	line-height: 1.4;
 	text-decoration: underline;
 }
 
-.analytics-report-ai-admin .analytics-report-ai-help-tooltip {
+.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-help-tooltip {
 	position: absolute;
 	z-index: 10;
 	top: 100%;
@@ -29,12 +29,12 @@
 	line-height: 1.4;
 }
 
-.analytics-report-ai-admin .analytics-report-ai-help-control:hover .analytics-report-ai-help-tooltip,
-.analytics-report-ai-admin .analytics-report-ai-help-control:focus-within .analytics-report-ai-help-tooltip {
+.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-help-control:hover .studio317-report-drafts-google-analytics-help-tooltip,
+.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-help-control:focus-within .studio317-report-drafts-google-analytics-help-tooltip {
 	display: block;
 }
 
-.analytics-report-ai-help-dialog-backdrop {
+.studio317-report-drafts-google-analytics-help-dialog-backdrop {
 	position: fixed;
 	z-index: 100000;
 	inset: 0;
@@ -45,11 +45,11 @@
 	background: rgba(0, 0, 0, 0.35);
 }
 
-.analytics-report-ai-help-dialog-backdrop[hidden] {
+.studio317-report-drafts-google-analytics-help-dialog-backdrop[hidden] {
 	display: none;
 }
 
-.analytics-report-ai-help-dialog {
+.studio317-report-drafts-google-analytics-help-dialog {
 	width: min(640px, 100%);
 	max-height: calc(100vh - 96px);
 	overflow: auto;
@@ -59,11 +59,11 @@
 	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
 }
 
-.analytics-report-ai-help-dialog h3 {
+.studio317-report-drafts-google-analytics-help-dialog h3 {
 	margin-top: 0;
 }
 
-.analytics-report-ai-help-dialog pre {
+.studio317-report-drafts-google-analytics-help-dialog pre {
 	overflow: auto;
 	padding: 12px;
 	background: #f6f7f7;
@@ -71,6 +71,6 @@
 	white-space: pre-wrap;
 }
 
-.analytics-report-ai-help-dialog-close {
+.studio317-report-drafts-google-analytics-help-dialog-close {
 	float: right;
 }

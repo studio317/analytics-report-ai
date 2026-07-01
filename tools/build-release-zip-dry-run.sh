@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-PLUGIN_SLUG="analytics-report-ai"
+PLUGIN_SLUG="studio317-report-drafts-google-analytics"
 
 fail() {
 	printf 'ERROR: %s\n' "$*" >&2

@@ -24,12 +24,18 @@ final class Analytics_Report_AI_Report_Data_Formatter {
 	 * @param array $current_summary    Current GA4 summary.
 	 * @param array $comparison_summary Comparison GA4 summary.
 	 * @param array $preset_reports     GA4 preset reports.
+	 * @param array $report_language    Report language profile.
 	 * @return array
 	 */
-	public static function create_payload_from_ga4_summary( $conditions, $settings, $current_summary, $comparison_summary = array(), $preset_reports = array() ) {
+	public static function create_payload_from_ga4_summary( $conditions, $settings, $current_summary, $comparison_summary = array(), $preset_reports = array(), $report_language = array() ) {
 		$has_comparison = ! empty( $conditions['comparison'] ) && 'none' !== $conditions['comparison'];
 		$row_limits     = analytics_report_ai_get_payload_row_limits();
 		$limited_reports = array();
+		$report_language = is_array( $report_language ) ? $report_language : array();
+
+		if ( is_wp_error( analytics_report_ai_validate_report_language_profile( $report_language ) ) ) {
+			$report_language = analytics_report_ai_get_report_language_profile();
+		}
 
 		foreach ( $row_limits as $preset_key => $limit ) {
 			$limited_reports[ $preset_key ] = self::limit_rows(
@@ -48,9 +54,10 @@ final class Analytics_Report_AI_Report_Data_Formatter {
 		);
 
 		return array(
-			'plugin'             => 'Analytics Report AI',
+			'plugin'             => 'Studio317 Report Drafts for Google Analytics',
 			'payload_version'    => analytics_report_ai_get_payload_version(),
-			'language'           => 'ja',
+			'language'           => $report_language['language_code'],
+			'report_language'    => $report_language,
 			'report_type'        => 'ga4_summary',
 			'payload_status'    => $metadata['payload_status'],
 			'data_availability' => $metadata['data_availability'],

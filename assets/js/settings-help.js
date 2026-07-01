@@ -2,7 +2,7 @@
 	'use strict';
 
 	function getDialog(button) {
-		var dialogId = button.getAttribute('data-analytics-report-ai-dialog-target');
+		var dialogId = button.getAttribute('data-studio317-report-drafts-google-analytics-dialog-target');
 
 		if (!dialogId) {
 			return null;
@@ -12,7 +12,7 @@
 	}
 
 	function closeDialog(dialog, returnFocus) {
-		var openerId = dialog.getAttribute('data-analytics-report-ai-opener');
+		var openerId = dialog.getAttribute('data-studio317-report-drafts-google-analytics-opener');
 		var opener = openerId ? document.getElementById(openerId) : null;
 
 		dialog.hidden = true;
@@ -25,17 +25,17 @@
 			}
 		}
 
-		dialog.removeAttribute('data-analytics-report-ai-opener');
+		dialog.removeAttribute('data-studio317-report-drafts-google-analytics-opener');
 	}
 
 	function openDialog(button, dialog) {
-		var focusTarget = dialog.querySelector('[data-analytics-report-ai-help-close]') || dialog.querySelector('[role="dialog"]');
+		var focusTarget = dialog.querySelector('[data-studio317-report-drafts-google-analytics-help-close]') || dialog.querySelector('[role="dialog"]');
 
 		if (!button.id) {
-			button.id = 'analytics-report-ai-help-button-' + Math.random().toString(36).slice(2);
+			button.id = 'studio317-report-drafts-google-analytics-help-button-' + Math.random().toString(36).slice(2);
 		}
 
-		dialog.setAttribute('data-analytics-report-ai-opener', button.id);
+		dialog.setAttribute('data-studio317-report-drafts-google-analytics-opener', button.id);
 		dialog.hidden = false;
 		button.setAttribute('aria-expanded', 'true');
 
@@ -45,8 +45,8 @@
 	}
 
 	function initializeHelpDialogs() {
-		var buttons = document.querySelectorAll('[data-analytics-report-ai-help-button]');
-		var dialogs = document.querySelectorAll('[data-analytics-report-ai-help-dialog]');
+		var buttons = document.querySelectorAll('[data-studio317-report-drafts-google-analytics-help-button]');
+		var dialogs = document.querySelectorAll('[data-studio317-report-drafts-google-analytics-help-dialog]');
 
 		if (!buttons.length || !dialogs.length) {
 			return;
@@ -70,7 +70,7 @@
 		});
 
 		Array.prototype.forEach.call(dialogs, function (dialog) {
-			var closeButton = dialog.querySelector('[data-analytics-report-ai-help-close]');
+			var closeButton = dialog.querySelector('[data-studio317-report-drafts-google-analytics-help-close]');
 
 			if (closeButton) {
 				closeButton.addEventListener('click', function () {

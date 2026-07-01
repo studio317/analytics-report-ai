@@ -71,7 +71,7 @@ final class Analytics_Report_AI_Plugin {
 	 */
 	public function load_textdomain() {
 		load_plugin_textdomain(
-			'analytics-report-ai',
+			'studio317-report-drafts-google-analytics',
 			false,
 			dirname( plugin_basename( ANALYTICS_REPORT_AI_FILE ) ) . '/languages'
 		);
