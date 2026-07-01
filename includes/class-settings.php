@@ -242,7 +242,7 @@ final class Analytics_Report_AI_Settings {
 				</ul>
 			</div>
 
-			<div class="studio317-report-drafts-google-analytics-card">
+			<div id="studio317-report-drafts-google-analytics-google-connection-settings" class="studio317-report-drafts-google-analytics-card">
 				<h2><?php echo esc_html__( 'Google connection', 'studio317-report-drafts-google-analytics' ); ?></h2>
 
 				<p>

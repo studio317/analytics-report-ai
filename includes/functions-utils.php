@@ -1387,42 +1387,42 @@ if ( ! function_exists( 'analytics_report_ai_get_summary_metric_definitions' ) )
 	function analytics_report_ai_get_summary_metric_definitions() {
 		return array(
 			'screenPageViews'        => array(
-				'label' => '表示回数',
+				'label' => __( 'Views', 'studio317-report-drafts-google-analytics' ),
 				'unit'  => 'count',
 				'type'  => 'integer',
 			),
 			'activeUsers'            => array(
-				'label' => 'アクティブユーザー数',
+				'label' => __( 'Active Users', 'studio317-report-drafts-google-analytics' ),
 				'unit'  => 'count',
 				'type'  => 'integer',
 			),
 			'newUsers'               => array(
-				'label' => '新規ユーザー数',
+				'label' => __( 'New Users', 'studio317-report-drafts-google-analytics' ),
 				'unit'  => 'count',
 				'type'  => 'integer',
 			),
 			'sessions'               => array(
-				'label' => 'セッション数',
+				'label' => __( 'Sessions', 'studio317-report-drafts-google-analytics' ),
 				'unit'  => 'count',
 				'type'  => 'integer',
 			),
 			'engagedSessions'        => array(
-				'label' => 'エンゲージメントのあったセッション数',
+				'label' => __( 'Engaged Sessions', 'studio317-report-drafts-google-analytics' ),
 				'unit'  => 'count',
 				'type'  => 'integer',
 			),
 			'engagementRate'         => array(
-				'label' => 'エンゲージメント率',
+				'label' => __( 'Engagement Rate', 'studio317-report-drafts-google-analytics' ),
 				'unit'  => 'ratio',
 				'type'  => 'float',
 			),
 			'bounceRate'             => array(
-				'label' => '直帰率',
+				'label' => __( 'Bounce Rate', 'studio317-report-drafts-google-analytics' ),
 				'unit'  => 'ratio',
 				'type'  => 'float',
 			),
 			'averageSessionDuration' => array(
-				'label' => '平均セッション時間',
+				'label' => __( 'Average Session Duration', 'studio317-report-drafts-google-analytics' ),
 				'unit'  => 'seconds',
 				'type'  => 'float',
 			),

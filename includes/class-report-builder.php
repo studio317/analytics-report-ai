@@ -54,12 +54,14 @@ final class Analytics_Report_AI_Report_Builder {
 			? (string) $credential_source['token_lifecycle_status_category']
 			: 'reconnect_required';
 		$max_report_days         = analytics_report_ai_get_max_report_days();
-		$settings_url            = admin_url( 'admin.php?page=studio317-report-drafts-google-analytics-settings' );
-		$ga4_connection_label    = $this->get_ga4_connection_label( $credential_source_label, $credential_lifecycle_status );
-		$ga4_connection_ready    = $this->is_ga4_connection_ready( $credential_source_label, $credential_lifecycle_status );
-		$ai_client_runtime_ready = function_exists( 'wp_ai_client_prompt' );
-		$ai_generation_label     = $this->get_ai_generation_readiness_label( $ai_client_runtime_ready );
-		$planned_report_language = analytics_report_ai_get_report_language_profile();
+		$settings_url                       = $this->get_settings_url();
+		$google_connection_settings_url     = $this->get_settings_url( 'studio317-report-drafts-google-analytics-google-connection-settings' );
+		$ga4_connection_label               = $this->get_ga4_connection_label( $credential_source_label, $credential_lifecycle_status );
+		$ga4_connection_ready               = $this->is_ga4_connection_ready( $credential_source_label, $credential_lifecycle_status );
+		$ga4_connection_reconnect_required  = $this->is_ga4_connection_reconnect_required( $credential_source_label, $credential_lifecycle_status );
+		$ai_client_runtime_ready            = function_exists( 'wp_ai_client_prompt' );
+		$ai_generation_label                = $this->get_ai_generation_readiness_label( $ai_client_runtime_ready );
+		$planned_report_language            = analytics_report_ai_get_report_language_profile();
 		?>
 		<div class="wrap studio317-report-drafts-google-analytics-admin">
 			<h1><?php echo esc_html__( 'Report Builder', 'studio317-report-drafts-google-analytics' ); ?></h1>
@@ -123,16 +125,23 @@ final class Analytics_Report_AI_Report_Builder {
 						<tr>
 							<th scope="row"><?php echo esc_html__( 'Google connection', 'studio317-report-drafts-google-analytics' ); ?></th>
 							<td>
-								<?php if ( ! $ga4_connection_ready ) : ?>
+								<?php if ( $ga4_connection_reconnect_required ) : ?>
+									<p class="studio317-report-drafts-google-analytics-status-warning">
+										<?php $this->render_google_reconnect_required_message( $google_connection_settings_url ); ?>
+									</p>
+								<?php elseif ( ! $ga4_connection_ready ) : ?>
 									<span class="studio317-report-drafts-google-analytics-status-warning">
 										<?php echo esc_html( $ga4_connection_label ); ?>
 									</span>
+									<p class="description">
+										<?php echo esc_html__( 'Connect or reconnect Google in Settings before fetching GA4 data. Token values are hidden.', 'studio317-report-drafts-google-analytics' ); ?>
+									</p>
 								<?php else : ?>
 									<?php echo esc_html( $ga4_connection_label ); ?>
+									<p class="description">
+										<?php echo esc_html__( 'Connect or reconnect Google in Settings before fetching GA4 data. Token values are hidden.', 'studio317-report-drafts-google-analytics' ); ?>
+									</p>
 								<?php endif; ?>
-								<p class="description">
-									<?php echo esc_html__( 'Connect or reconnect Google in Settings before fetching GA4 data. Token values are hidden.', 'studio317-report-drafts-google-analytics' ); ?>
-								</p>
 							</td>
 						</tr>
 						<tr>
@@ -430,11 +439,12 @@ final class Analytics_Report_AI_Report_Builder {
 
 		if ( '' === $access_token ) {
 			return array(
-				'status'      => 'error',
-				'errors'      => array(
+				'status'                    => 'error',
+				'errors'                    => array(
 					$this->get_ga4_credential_source_error_message( $credential_source ),
 				),
-				'form_values' => $validation_result['form_values'],
+				'google_reconnect_required' => $this->is_ga4_credential_source_reconnect_required( $credential_source ),
+				'form_values'               => $validation_result['form_values'],
 			);
 		}
 
@@ -886,6 +896,17 @@ final class Analytics_Report_AI_Report_Builder {
 		}
 
 		if ( empty( $submission_result['errors'] ) || ! is_array( $submission_result['errors'] ) ) {
+			return;
+		}
+
+		if ( ! empty( $submission_result['google_reconnect_required'] ) ) {
+			?>
+			<div class="notice notice-error">
+				<p class="studio317-report-drafts-google-analytics-status-warning">
+					<?php $this->render_google_reconnect_required_message( $this->get_settings_url( 'studio317-report-drafts-google-analytics-google-connection-settings' ) ); ?>
+				</p>
+			</div>
+			<?php
 			return;
 		}
 		?>
@@ -1395,6 +1416,59 @@ final class Analytics_Report_AI_Report_Builder {
 			),
 			true
 		);
+	}
+
+	/**
+	 * Check whether a GA4 credential source result requires reconnecting Google.
+	 *
+	 * @param array $credential_source Credential source result.
+	 * @return bool
+	 */
+	private function is_ga4_credential_source_reconnect_required( $credential_source ) {
+		$status = isset( $credential_source['status'] ) && is_scalar( $credential_source['status'] )
+			? (string) $credential_source['status']
+			: 'credential_source_missing';
+
+		return in_array(
+			$status,
+			array(
+				'credential_source_oauth_refresh_needed',
+				'credential_source_oauth_error_category',
+			),
+			true
+		);
+	}
+
+	/**
+	 * Render the Google reconnect warning with a Settings link.
+	 *
+	 * @param string $settings_url Settings URL.
+	 * @return void
+	 */
+	private function render_google_reconnect_required_message( $settings_url ) {
+		echo esc_html__( 'Reconnect Google in Settings before fetching GA4 data.', 'studio317-report-drafts-google-analytics' );
+		echo ' ';
+		?>
+		<a href="<?php echo esc_url( $settings_url ); ?>">
+			<?php echo esc_html__( 'Open Google connection settings', 'studio317-report-drafts-google-analytics' ); ?>
+		</a>
+		<?php
+	}
+
+	/**
+	 * Build the plugin Settings screen URL.
+	 *
+	 * @param string $fragment Optional fragment identifier.
+	 * @return string
+	 */
+	private function get_settings_url( $fragment = '' ) {
+		$url = admin_url( 'admin.php?page=studio317-report-drafts-google-analytics-settings' );
+
+		if ( '' === $fragment ) {
+			return $url;
+		}
+
+		return $url . '#' . rawurlencode( $fragment );
 	}
 
 	/**

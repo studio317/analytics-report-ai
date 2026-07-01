@@ -24,6 +24,11 @@
 	font-weight: 600;
 }
 
+.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-status-warning a {
+	font-weight: 400;
+	text-decoration: underline;
+}
+
 .studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-info-block {
 	margin: 16px 0;
 	padding: 12px 14px;
