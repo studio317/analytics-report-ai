@@ -63,7 +63,6 @@ if ( ! function_exists( 'analytics_report_ai_get_default_settings' ) ) {
 			'host_name'           => analytics_report_ai_get_default_host(),
 			'google_tokens'       => array(),
 			'google_oauth_client' => array(),
-			'openai_api_key'      => '',
 		);
 	}
 }
@@ -100,9 +99,7 @@ if ( ! function_exists( 'analytics_report_ai_get_settings' ) ) {
 			? analytics_report_ai_sanitize_credential_value( (string) $settings['google_oauth_client']['client_secret'] )
 			: '';
 
-		$settings['openai_api_key'] = isset( $settings['openai_api_key'] ) && is_scalar( $settings['openai_api_key'] )
-			? (string) $settings['openai_api_key']
-			: '';
+		unset( $settings['openai_api_key'] );
 
 		unset( $settings['google_tokens']['access_token'] );
 
@@ -124,6 +121,29 @@ if ( ! function_exists( 'analytics_report_ai_maybe_add_default_settings_option' 
 		}
 
 		add_option( ANALYTICS_REPORT_AI_OPTION_NAME, analytics_report_ai_get_default_settings(), '', false );
+	}
+}
+
+if ( ! function_exists( 'analytics_report_ai_cleanup_legacy_openai_api_key' ) ) {
+	/**
+	 * Remove only the retired legacy AI provider key entry from the main settings option.
+	 *
+	 * The value is never displayed, compared, logged, serialized into docs, or
+	 * copied elsewhere. Absence of the array key is the idempotent completion
+	 * condition.
+	 *
+	 * @return void
+	 */
+	function analytics_report_ai_cleanup_legacy_openai_api_key() {
+		$settings = get_option( ANALYTICS_REPORT_AI_OPTION_NAME, null );
+
+		if ( ! is_array( $settings ) || ! array_key_exists( 'openai_api_key', $settings ) ) {
+			return;
+		}
+
+		unset( $settings['openai_api_key'] );
+
+		update_option( ANALYTICS_REPORT_AI_OPTION_NAME, $settings );
 	}
 }
 
@@ -186,110 +206,6 @@ if ( ! function_exists( 'analytics_report_ai_get_non_empty_constant_value' ) ) {
 		}
 
 		return analytics_report_ai_sanitize_credential_value( (string) $value );
-	}
-}
-
-if ( ! function_exists( 'analytics_report_ai_get_openai_api_key_constant_name' ) ) {
-	/**
-	 * Get the OpenAI API key constant name without reading its value.
-	 *
-	 * @return string
-	 */
-	function analytics_report_ai_get_openai_api_key_constant_name() {
-		return 'ANALYTICS_REPORT_AI_OPENAI_API_KEY';
-	}
-}
-
-if ( ! function_exists( 'analytics_report_ai_get_openai_api_key_source' ) ) {
-	/**
-	 * Resolve the active OpenAI API key source category without exposing values.
-	 *
-	 * Credential values are intentionally not returned by this helper. Use
-	 * analytics_report_ai_resolve_openai_api_key() only at request runtime.
-	 *
-	 * @param array|null $settings Plugin settings.
-	 * @return array
-	 */
-	function analytics_report_ai_get_openai_api_key_source( $settings = null ) {
-		if ( ! is_array( $settings ) ) {
-			$settings = analytics_report_ai_get_settings();
-		}
-
-		$constant_api_key = analytics_report_ai_get_non_empty_constant_value( analytics_report_ai_get_openai_api_key_constant_name() );
-		$settings_api_key = isset( $settings['openai_api_key'] ) && is_scalar( $settings['openai_api_key'] )
-			? analytics_report_ai_sanitize_credential_value( (string) $settings['openai_api_key'] )
-			: '';
-
-		$has_constant_api_key = '' !== $constant_api_key;
-		$has_settings_api_key = '' !== $settings_api_key;
-
-		$result = array(
-			'source_category'          => 'missing',
-			'constant_status'          => $has_constant_api_key ? 'configured' : 'not_configured',
-			'settings_fallback_status' => $has_settings_api_key ? 'saved' : 'not_saved',
-			'value_hidden_status'      => 'hidden',
-			'has_constant'             => $has_constant_api_key,
-			'has_settings_fallback'    => $has_settings_api_key,
-		);
-
-		if ( $has_constant_api_key ) {
-			$result['source_category'] = 'constant_configured';
-
-			return $result;
-		}
-
-		if ( $has_settings_api_key ) {
-			$result['source_category'] = 'settings_saved';
-		}
-
-		return $result;
-	}
-}
-
-if ( ! function_exists( 'analytics_report_ai_resolve_openai_api_key' ) ) {
-	/**
-	 * Resolve the request-local OpenAI API key value.
-	 *
-	 * The returned value is credential material for immediate OpenAI request
-	 * use only. It must not be displayed, logged, stored back into settings, or
-	 * used as support/debug evidence.
-	 *
-	 * @param array|null $settings Plugin settings.
-	 * @return string
-	 */
-	function analytics_report_ai_resolve_openai_api_key( $settings = null ) {
-		if ( ! is_array( $settings ) ) {
-			$settings = analytics_report_ai_get_settings();
-		}
-
-		$constant_api_key = analytics_report_ai_get_non_empty_constant_value( analytics_report_ai_get_openai_api_key_constant_name() );
-
-		if ( '' !== $constant_api_key ) {
-			return $constant_api_key;
-		}
-
-		return isset( $settings['openai_api_key'] ) && is_scalar( $settings['openai_api_key'] )
-			? analytics_report_ai_sanitize_credential_value( (string) $settings['openai_api_key'] )
-			: '';
-	}
-}
-
-if ( ! function_exists( 'analytics_report_ai_get_openai_api_key_lifecycle_categories' ) ) {
-	/**
-	 * Get status/category labels for OpenAI API key source UI.
-	 *
-	 * @param array|null $settings Plugin settings.
-	 * @return array
-	 */
-	function analytics_report_ai_get_openai_api_key_lifecycle_categories( $settings = null ) {
-		$source = analytics_report_ai_get_openai_api_key_source( $settings );
-
-		return array(
-			'openai_api_key_source_category'          => $source['source_category'],
-			'openai_api_key_constant_status'          => $source['constant_status'],
-			'openai_api_key_settings_fallback_status' => $source['settings_fallback_status'],
-			'openai_api_key_value_visibility'         => $source['value_hidden_status'],
-		);
 	}
 }
 
@@ -536,7 +452,7 @@ if ( ! function_exists( 'analytics_report_ai_delete_google_oauth_tokens' ) ) {
 	 *
 	 * This helper deletes only the dedicated local OAuth token option. It does
 	 * not revoke provider-side access, delete saved OAuth client settings,
-	 * values, or delete the OpenAI API key.
+	 * values, or change AI provider configuration.
 	 *
 	 * @return bool
 	 */
@@ -1101,7 +1017,7 @@ if ( ! function_exists( 'analytics_report_ai_validate_report_language_profile' )
 		if ( ! is_array( $profile ) ) {
 			return new WP_Error(
 				'analytics_report_ai_report_language_not_array',
-				__( 'Data for OpenAI is invalid.', 'studio317-report-drafts-google-analytics' )
+				__( 'Data for AI generation is invalid.', 'studio317-report-drafts-google-analytics' )
 			);
 		}
 
@@ -1117,7 +1033,7 @@ if ( ! function_exists( 'analytics_report_ai_validate_report_language_profile' )
 			if ( ! isset( $profile[ $key ] ) || ! is_scalar( $profile[ $key ] ) || '' === trim( (string) $profile[ $key ] ) ) {
 				return new WP_Error(
 					'analytics_report_ai_report_language_missing_' . sanitize_key( $key ),
-					__( 'Data for OpenAI is invalid.', 'studio317-report-drafts-google-analytics' )
+					__( 'Data for AI generation is invalid.', 'studio317-report-drafts-google-analytics' )
 				);
 			}
 		}
@@ -1127,35 +1043,35 @@ if ( ! function_exists( 'analytics_report_ai_validate_report_language_profile' )
 		if ( '' === $normalized_locale ) {
 			return new WP_Error(
 				'analytics_report_ai_report_language_invalid_wordpress_locale',
-				__( 'Data for OpenAI is invalid.', 'studio317-report-drafts-google-analytics' )
+				__( 'Data for AI generation is invalid.', 'studio317-report-drafts-google-analytics' )
 			);
 		}
 
 		if ( ! preg_match( '/^[a-z]{2,3}(?:-[A-Z0-9]{2,8}){0,2}$/', (string) $profile['output_locale'] ) ) {
 			return new WP_Error(
 				'analytics_report_ai_report_language_invalid_output_locale',
-				__( 'Data for OpenAI is invalid.', 'studio317-report-drafts-google-analytics' )
+				__( 'Data for AI generation is invalid.', 'studio317-report-drafts-google-analytics' )
 			);
 		}
 
 		if ( ! preg_match( '/^[a-z]{2,3}$/', (string) $profile['language_code'] ) ) {
 			return new WP_Error(
 				'analytics_report_ai_report_language_invalid_code',
-				__( 'Data for OpenAI is invalid.', 'studio317-report-drafts-google-analytics' )
+				__( 'Data for AI generation is invalid.', 'studio317-report-drafts-google-analytics' )
 			);
 		}
 
 		if ( ! preg_match( '/^[A-Za-z][A-Za-z0-9 ()+\-]{1,80}$/', (string) $profile['language_name'] ) ) {
 			return new WP_Error(
 				'analytics_report_ai_report_language_invalid_name',
-				__( 'Data for OpenAI is invalid.', 'studio317-report-drafts-google-analytics' )
+				__( 'Data for AI generation is invalid.', 'studio317-report-drafts-google-analytics' )
 			);
 		}
 
 		if ( ! in_array( (string) $profile['source'], array( 'user_locale', 'site_locale', 'default_locale' ), true ) ) {
 			return new WP_Error(
 				'analytics_report_ai_report_language_invalid_source',
-				__( 'Data for OpenAI is invalid.', 'studio317-report-drafts-google-analytics' )
+				__( 'Data for AI generation is invalid.', 'studio317-report-drafts-google-analytics' )
 			);
 		}
 
@@ -1168,7 +1084,7 @@ if ( ! function_exists( 'analytics_report_ai_validate_report_language_profile' )
 			if ( (string) $profile[ $key ] !== (string) $expected_profile[ $key ] ) {
 				return new WP_Error(
 					'analytics_report_ai_report_language_mismatch_' . sanitize_key( $key ),
-					__( 'Data for OpenAI is invalid.', 'studio317-report-drafts-google-analytics' )
+					__( 'Data for AI generation is invalid.', 'studio317-report-drafts-google-analytics' )
 				);
 			}
 		}
@@ -1271,7 +1187,7 @@ if ( ! function_exists( 'analytics_report_ai_get_payload_row_limits' ) ) {
 
 if ( ! function_exists( 'analytics_report_ai_validate_ai_payload' ) ) {
 	/**
-	 * Validate the AI payload shape before storage or OpenAI submission.
+	 * Validate the AI payload shape before storage or AI generation.
 	 *
 	 * @param mixed $payload AI payload.
 	 * @return true|WP_Error
@@ -1280,7 +1196,7 @@ if ( ! function_exists( 'analytics_report_ai_validate_ai_payload' ) ) {
 		if ( ! is_array( $payload ) ) {
 			return new WP_Error(
 				'analytics_report_ai_payload_not_array',
-				__( 'Data for OpenAI is invalid.', 'studio317-report-drafts-google-analytics' )
+				__( 'Data for AI generation is invalid.', 'studio317-report-drafts-google-analytics' )
 			);
 		}
 
@@ -1297,7 +1213,7 @@ if ( ! function_exists( 'analytics_report_ai_validate_ai_payload' ) ) {
 			) {
 				return new WP_Error(
 					'analytics_report_ai_payload_unexpected_' . sanitize_key( $key ),
-					__( 'Data for OpenAI is invalid.', 'studio317-report-drafts-google-analytics' )
+					__( 'Data for AI generation is invalid.', 'studio317-report-drafts-google-analytics' )
 				);
 			}
 		}
@@ -1305,7 +1221,7 @@ if ( ! function_exists( 'analytics_report_ai_validate_ai_payload' ) ) {
 		if ( empty( $payload['report_language'] ) || ! is_array( $payload['report_language'] ) ) {
 			return new WP_Error(
 				'analytics_report_ai_payload_missing_report_language',
-				__( 'Data for OpenAI is invalid.', 'studio317-report-drafts-google-analytics' )
+				__( 'Data for AI generation is invalid.', 'studio317-report-drafts-google-analytics' )
 			);
 		}
 
@@ -1322,7 +1238,7 @@ if ( ! function_exists( 'analytics_report_ai_validate_ai_payload' ) ) {
 		) {
 			return new WP_Error(
 				'analytics_report_ai_payload_invalid_language_code',
-				__( 'Data for OpenAI is invalid.', 'studio317-report-drafts-google-analytics' )
+				__( 'Data for AI generation is invalid.', 'studio317-report-drafts-google-analytics' )
 			);
 		}
 
@@ -1344,7 +1260,7 @@ if ( ! function_exists( 'analytics_report_ai_validate_ai_payload' ) ) {
 			if ( ! isset( $payload[ $key ] ) || ! is_array( $payload[ $key ] ) ) {
 				return new WP_Error(
 					'analytics_report_ai_payload_missing_' . sanitize_key( $key ),
-					__( 'Data for OpenAI is invalid.', 'studio317-report-drafts-google-analytics' )
+					__( 'Data for AI generation is invalid.', 'studio317-report-drafts-google-analytics' )
 				);
 			}
 		}
@@ -1359,7 +1275,7 @@ if ( ! function_exists( 'analytics_report_ai_validate_ai_payload' ) ) {
 		) {
 			return new WP_Error(
 				'analytics_report_ai_payload_invalid_status',
-				__( 'Data for OpenAI is invalid.', 'studio317-report-drafts-google-analytics' )
+				__( 'Data for AI generation is invalid.', 'studio317-report-drafts-google-analytics' )
 			);
 		}
 
@@ -1370,7 +1286,7 @@ if ( ! function_exists( 'analytics_report_ai_validate_ai_payload' ) ) {
 		) {
 			return new WP_Error(
 				'analytics_report_ai_payload_invalid_block_reason',
-				__( 'Data for OpenAI is invalid.', 'studio317-report-drafts-google-analytics' )
+				__( 'Data for AI generation is invalid.', 'studio317-report-drafts-google-analytics' )
 			);
 		}
 
@@ -1386,7 +1302,7 @@ if ( ! function_exists( 'analytics_report_ai_validate_ai_payload' ) ) {
 			) {
 				return new WP_Error(
 					'analytics_report_ai_payload_invalid_warning',
-					__( 'Data for OpenAI is invalid.', 'studio317-report-drafts-google-analytics' )
+					__( 'Data for AI generation is invalid.', 'studio317-report-drafts-google-analytics' )
 				);
 			}
 		}
@@ -1403,7 +1319,7 @@ if ( ! function_exists( 'analytics_report_ai_validate_ai_payload' ) ) {
 		) {
 			return new WP_Error(
 				'analytics_report_ai_payload_invalid_availability',
-				__( 'Data for OpenAI is invalid.', 'studio317-report-drafts-google-analytics' )
+				__( 'Data for AI generation is invalid.', 'studio317-report-drafts-google-analytics' )
 			);
 		}
 
@@ -1416,7 +1332,7 @@ if ( ! function_exists( 'analytics_report_ai_validate_ai_payload' ) ) {
 			) {
 				return new WP_Error(
 					'analytics_report_ai_payload_invalid_detail_availability_' . sanitize_key( $key ),
-					__( 'Data for OpenAI is invalid.', 'studio317-report-drafts-google-analytics' )
+					__( 'Data for AI generation is invalid.', 'studio317-report-drafts-google-analytics' )
 				);
 			}
 		}
@@ -1429,7 +1345,7 @@ if ( ! function_exists( 'analytics_report_ai_validate_ai_payload' ) ) {
 		) {
 			return new WP_Error(
 				'analytics_report_ai_payload_invalid_value_semantics',
-				__( 'Data for OpenAI is invalid.', 'studio317-report-drafts-google-analytics' )
+				__( 'Data for AI generation is invalid.', 'studio317-report-drafts-google-analytics' )
 			);
 		}
 
@@ -1437,7 +1353,7 @@ if ( ! function_exists( 'analytics_report_ai_validate_ai_payload' ) ) {
 			if ( count( $payload[ $key ] ) > absint( $limit ) ) {
 				return new WP_Error(
 					'analytics_report_ai_payload_row_limit_' . sanitize_key( $key ),
-					__( 'Data for OpenAI is invalid.', 'studio317-report-drafts-google-analytics' )
+					__( 'Data for AI generation is invalid.', 'studio317-report-drafts-google-analytics' )
 				);
 			}
 		}
@@ -1448,7 +1364,7 @@ if ( ! function_exists( 'analytics_report_ai_validate_ai_payload' ) ) {
 
 if ( ! function_exists( 'analytics_report_ai_payload_allows_generation' ) ) {
 	/**
-	 * Check whether a validated payload permits OpenAI generation.
+	 * Check whether a validated payload permits AI generation.
 	 *
 	 * @param array $payload AI payload.
 	 * @return bool

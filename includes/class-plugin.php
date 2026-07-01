@@ -60,21 +60,7 @@ final class Analytics_Report_AI_Plugin {
 	private function __construct() {
 		$this->load_dependencies();
 
-		add_action( 'plugins_loaded', array( $this, 'load_textdomain' ) );
 		add_action( 'init', array( $this, 'boot' ) );
-	}
-
-	/**
-	 * Load bundled translations.
-	 *
-	 * @return void
-	 */
-	public function load_textdomain() {
-		load_plugin_textdomain(
-			'studio317-report-drafts-google-analytics',
-			false,
-			dirname( plugin_basename( ANALYTICS_REPORT_AI_FILE ) ) . '/languages'
-		);
 	}
 
 	/**
@@ -89,7 +75,7 @@ final class Analytics_Report_AI_Plugin {
 		require_once ANALYTICS_REPORT_AI_DIR . 'includes/class-report-builder.php';
 		require_once ANALYTICS_REPORT_AI_DIR . 'includes/class-ga4-client.php';
 		require_once ANALYTICS_REPORT_AI_DIR . 'includes/class-report-data-formatter.php';
-		require_once ANALYTICS_REPORT_AI_DIR . 'includes/class-openai-client.php';
+		require_once ANALYTICS_REPORT_AI_DIR . 'includes/class-ai-client.php';
 		require_once ANALYTICS_REPORT_AI_DIR . 'includes/class-prompt-builder.php';
 	}
 
@@ -99,6 +85,8 @@ final class Analytics_Report_AI_Plugin {
 	 * @return void
 	 */
 	public function boot() {
+		analytics_report_ai_cleanup_legacy_openai_api_key();
+
 		if ( is_admin() ) {
 			new Analytics_Report_AI_Admin();
 		}

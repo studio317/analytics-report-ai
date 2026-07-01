@@ -53,15 +53,12 @@ final class Analytics_Report_AI_Report_Builder {
 		$credential_lifecycle_status = isset( $credential_source['token_lifecycle_status_category'] ) && is_scalar( $credential_source['token_lifecycle_status_category'] )
 			? (string) $credential_source['token_lifecycle_status_category']
 			: 'reconnect_required';
-		$openai_api_key_categories = analytics_report_ai_get_openai_api_key_lifecycle_categories( $settings );
-		$openai_api_key_source_category = isset( $openai_api_key_categories['openai_api_key_source_category'] )
-			? $openai_api_key_categories['openai_api_key_source_category']
-			: 'missing';
 		$max_report_days         = analytics_report_ai_get_max_report_days();
 		$settings_url            = admin_url( 'admin.php?page=studio317-report-drafts-google-analytics-settings' );
 		$ga4_connection_label    = $this->get_ga4_connection_label( $credential_source_label, $credential_lifecycle_status );
 		$ga4_connection_ready    = $this->is_ga4_connection_ready( $credential_source_label, $credential_lifecycle_status );
-		$openai_api_key_label    = $this->get_openai_api_key_label( $openai_api_key_source_category );
+		$ai_client_runtime_ready = function_exists( 'wp_ai_client_prompt' );
+		$ai_generation_label     = $this->get_ai_generation_readiness_label( $ai_client_runtime_ready );
 		$planned_report_language = analytics_report_ai_get_report_language_profile();
 		?>
 		<div class="wrap studio317-report-drafts-google-analytics-admin">
@@ -139,17 +136,17 @@ final class Analytics_Report_AI_Report_Builder {
 							</td>
 						</tr>
 						<tr>
-							<th scope="row"><?php echo esc_html__( 'OpenAI API key', 'studio317-report-drafts-google-analytics' ); ?></th>
+							<th scope="row"><?php echo esc_html__( 'AI generation provider', 'studio317-report-drafts-google-analytics' ); ?></th>
 							<td>
-								<?php if ( 'missing' === $openai_api_key_source_category ) : ?>
+								<?php if ( ! $ai_client_runtime_ready ) : ?>
 									<span class="studio317-report-drafts-google-analytics-status-warning">
-										<?php echo esc_html( $openai_api_key_label ); ?>
+										<?php echo esc_html( $ai_generation_label ); ?>
 									</span>
 								<?php else : ?>
-									<?php echo esc_html( $openai_api_key_label ); ?>
+									<?php echo esc_html( $ai_generation_label ); ?>
 								<?php endif; ?>
 								<p class="description">
-									<?php echo esc_html__( 'Configure an OpenAI API key in Settings before generating an AI report draft. Key values are hidden.', 'studio317-report-drafts-google-analytics' ); ?>
+									<?php echo esc_html__( 'AI generation uses the provider configured by the site administrator in WordPress Settings > Connectors. Provider credentials and model details are not displayed by this plugin.', 'studio317-report-drafts-google-analytics' ); ?>
 								</p>
 							</td>
 						</tr>
@@ -166,7 +163,7 @@ final class Analytics_Report_AI_Report_Builder {
 				</table>
 
 				<p class="description">
-					<?php echo esc_html__( 'This screen uses a two-step flow: fetch GA4 data first, review the Data Preview, then generate a report draft in the current WordPress user language with OpenAI.', 'studio317-report-drafts-google-analytics' ); ?>
+					<?php echo esc_html__( 'This screen uses a two-step flow: fetch GA4 data first, review the Data Preview, then generate a report draft in the current WordPress user language through the WordPress AI Client.', 'studio317-report-drafts-google-analytics' ); ?>
 				</p>
 			</div>
 
@@ -309,7 +306,7 @@ final class Analytics_Report_AI_Report_Builder {
 
 					<ul class="studio317-report-drafts-google-analytics-notice-list">
 						<li>
-							<?php echo esc_html__( 'The OpenAI API Key is not sent to Google.', 'studio317-report-drafts-google-analytics' ); ?>
+							<?php echo esc_html__( 'AI provider credentials are not sent to Google by this plugin.', 'studio317-report-drafts-google-analytics' ); ?>
 						</li>
 						<li>
 							<?php echo esc_html__( 'WordPress user identifiers, cookies, and IP addresses are not included in this GA4 request body by design.', 'studio317-report-drafts-google-analytics' ); ?>
@@ -598,7 +595,7 @@ final class Analytics_Report_AI_Report_Builder {
 			return array(
 				'status'      => 'error',
 				'errors'      => array(
-					__( 'The GA4 data could not be converted into valid data for OpenAI. Please check the settings and try again.', 'studio317-report-drafts-google-analytics' ),
+					__( 'The GA4 data could not be converted into valid data for AI generation. Please check the settings and try again.', 'studio317-report-drafts-google-analytics' ),
 				),
 				'form_values' => $validation_result['form_values'],
 			);
@@ -690,8 +687,7 @@ final class Analytics_Report_AI_Report_Builder {
 			);
 		}
 
-		$settings    = analytics_report_ai_get_settings();
-		$report_text = Analytics_Report_AI_OpenAI_Client::generate_report( $payload, $settings );
+		$report_text = Analytics_Report_AI_AI_Client::generate_report( $payload );
 
 		if ( is_wp_error( $report_text ) ) {
 			return array(
@@ -859,7 +855,7 @@ final class Analytics_Report_AI_Report_Builder {
 			if ( ! empty( $warnings ) ) {
 				?>
 				<div class="notice notice-warning">
-					<p><strong><?php echo esc_html__( 'GA4 data was fetched and the data for OpenAI was prepared with warnings.', 'studio317-report-drafts-google-analytics' ); ?></strong></p>
+					<p><strong><?php echo esc_html__( 'GA4 data was fetched and the data for AI generation was prepared with warnings.', 'studio317-report-drafts-google-analytics' ); ?></strong></p>
 					<ul>
 						<?php foreach ( $warnings as $warning ) : ?>
 							<li><?php echo esc_html( $warning ); ?></li>
@@ -871,7 +867,7 @@ final class Analytics_Report_AI_Report_Builder {
 			}
 			?>
 			<div class="notice notice-success">
-				<p><?php echo esc_html__( 'GA4 preset reports were fetched and the data for OpenAI was prepared successfully.', 'studio317-report-drafts-google-analytics' ); ?></p>
+				<p><?php echo esc_html__( 'GA4 preset reports were fetched and the data for AI generation was prepared successfully.', 'studio317-report-drafts-google-analytics' ); ?></p>
 			</div>
 			<?php
 			return;
@@ -1017,6 +1013,8 @@ final class Analytics_Report_AI_Report_Builder {
 		$payload    = $submission_result['payload'];
 		$expiration = isset( $submission_result['expiration'] ) ? absint( $submission_result['expiration'] ) : analytics_report_ai_get_payload_transient_expiration();
 		$generation_allowed = analytics_report_ai_payload_allows_generation( $payload );
+		$ai_text_generation_available = $generation_allowed && Analytics_Report_AI_AI_Client::is_text_generation_available( $payload );
+		$generate_button_available    = $generation_allowed && $ai_text_generation_available;
 		?>
 		<div class="studio317-report-drafts-google-analytics-card">
 			<h2><?php echo esc_html__( 'AI Data Preview', 'studio317-report-drafts-google-analytics' ); ?></h2>
@@ -1025,7 +1023,7 @@ final class Analytics_Report_AI_Report_Builder {
 				<?php
 				printf(
 					/* translators: %d: number of minutes the report data is saved temporarily. */
-					esc_html__( 'The data to be sent to OpenAI has been saved temporarily for %d minutes.', 'studio317-report-drafts-google-analytics' ),
+					esc_html__( 'The data to be sent through the WordPress AI Client has been saved temporarily for %d minutes.', 'studio317-report-drafts-google-analytics' ),
 					(int) floor( $expiration / MINUTE_IN_SECONDS )
 				);
 				?>
@@ -1067,7 +1065,7 @@ final class Analytics_Report_AI_Report_Builder {
 				</p>
 
 				<p>
-					<?php echo esc_html__( 'Credentials are not included in the data sent to OpenAI. Google Access Token, OpenAI API Key, GA4 Property ID, WordPress user identifiers, cookies, and IP addresses are not included by design.', 'studio317-report-drafts-google-analytics' ); ?>
+					<?php echo esc_html__( 'Credentials are not included in the data sent through the WordPress AI Client. Google access tokens, AI provider credentials, GA4 Property ID, WordPress user identifiers, cookies, and IP addresses are not included by design.', 'studio317-report-drafts-google-analytics' ); ?>
 				</p>
 
 				<p>
@@ -1087,14 +1085,14 @@ final class Analytics_Report_AI_Report_Builder {
 			<?php $this->render_list_preview_table( __( 'Regional Trends', 'studio317-report-drafts-google-analytics' ), isset( $payload['regional_trends'] ) ? $payload['regional_trends'] : array() ); ?>
 
 			<div class="studio317-report-drafts-google-analytics-info-block">
-				<h3><?php echo esc_html__( 'Data sent to OpenAI API', 'studio317-report-drafts-google-analytics' ); ?></h3>
+				<h3><?php echo esc_html__( 'Data sent through the WordPress AI Client', 'studio317-report-drafts-google-analytics' ); ?></h3>
 
 				<p>
-					<?php echo esc_html__( 'When you generate an AI report, the reviewed report data and selected report language are sent to the OpenAI API.', 'studio317-report-drafts-google-analytics' ); ?>
+					<?php echo esc_html__( 'When you generate an AI report, the reviewed report data and selected report language are sent through the WordPress AI Client to the AI provider configured by the site administrator.', 'studio317-report-drafts-google-analytics' ); ?>
 				</p>
 
 				<p>
-					<?php echo esc_html__( 'Generating a report sends the reviewed data to OpenAI API and may consume API usage.', 'studio317-report-drafts-google-analytics' ); ?>
+					<?php echo esc_html__( 'Generating a report may consume usage with the configured AI provider. Provider terms, privacy practices, billing, retention, and credential management depend on the provider configured through WordPress.', 'studio317-report-drafts-google-analytics' ); ?>
 				</p>
 
 				<p>
@@ -1110,7 +1108,7 @@ final class Analytics_Report_AI_Report_Builder {
 						type="submit"
 						class="button button-primary"
 						data-studio317-report-drafts-google-analytics-submit-button
-						<?php disabled( ! $generation_allowed ); ?>
+						<?php disabled( ! $generate_button_available ); ?>
 						<?php if ( 'report_generated' === $submission_result['status'] ) : ?>
 							data-studio317-report-drafts-google-analytics-confirm="<?php echo esc_attr__( 'The current report text will be overwritten. Continue?', 'studio317-report-drafts-google-analytics' ); ?>"
 						<?php endif; ?>
@@ -1126,9 +1124,13 @@ final class Analytics_Report_AI_Report_Builder {
 
 			<p class="description">
 				<?php
-				echo $generation_allowed
-					? esc_html__( 'Use Generate AI Report only after reviewing the structured Data Preview and any visible warnings.', 'studio317-report-drafts-google-analytics' )
-					: esc_html__( 'AI generation is not available because the current-period data is not reportable for the selected conditions.', 'studio317-report-drafts-google-analytics' );
+				if ( ! $generation_allowed ) {
+					echo esc_html__( 'AI generation is not available because the current-period data is not reportable for the selected conditions.', 'studio317-report-drafts-google-analytics' );
+				} elseif ( ! $ai_text_generation_available ) {
+					echo esc_html__( 'AI text generation is unavailable. Configure a compatible text-generation provider in WordPress Settings > Connectors before generating a report draft.', 'studio317-report-drafts-google-analytics' );
+				} else {
+					echo esc_html__( 'Use Generate AI Report only after reviewing the structured Data Preview and any visible warnings. The report draft is generated through the WordPress AI Client.', 'studio317-report-drafts-google-analytics' );
+				}
 				?>
 			</p>
 		</div>
@@ -1396,21 +1398,17 @@ final class Analytics_Report_AI_Report_Builder {
 	}
 
 	/**
-	 * Get a user-facing OpenAI API key label.
+	 * Get a user-facing AI generation readiness label.
 	 *
-	 * @param string $source_category Internal source category.
+	 * @param bool $runtime_ready Whether the WordPress AI Client entry point is available.
 	 * @return string
 	 */
-	private function get_openai_api_key_label( $source_category ) {
-		if ( 'constant_configured' === $source_category ) {
-			return __( 'Managed by server configuration', 'studio317-report-drafts-google-analytics' );
+	private function get_ai_generation_readiness_label( $runtime_ready ) {
+		if ( $runtime_ready ) {
+			return __( 'Ready to check before generation', 'studio317-report-drafts-google-analytics' );
 		}
 
-		if ( 'settings_saved' === $source_category ) {
-			return __( 'Saved in Settings', 'studio317-report-drafts-google-analytics' );
-		}
-
-		return __( 'Not configured', 'studio317-report-drafts-google-analytics' );
+		return __( 'AI text generation unavailable', 'studio317-report-drafts-google-analytics' );
 	}
 
 	/**

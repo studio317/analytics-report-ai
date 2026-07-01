@@ -184,7 +184,6 @@ scan_stage_patterns fail \
 info "Scanning documentation keywords as warnings only."
 scan_stage_patterns warn \
 	'access_token' \
-	'openai_api_key' \
 	'client_secret'
 
 if command -v zip >/dev/null 2>&1; then

@@ -8,9 +8,9 @@ Studio317 Report Drafts for Google Analytics contacts third-party services only 
 
 - Google authorization can be started from Settings.
 - Google Analytics Data API requests run when an administrator clicks Fetch GA4 Data.
-- OpenAI API requests run when an administrator clicks Generate AI Report after reviewing the Data Preview.
+- AI generation requests run through the WordPress AI Client when an administrator clicks Generate AI Report after reviewing the Data Preview.
 
-Viewing Settings or Report Builder does not contact Google or OpenAI.
+Viewing Settings or Report Builder does not contact Google or an AI provider.
 
 ## Google
 
@@ -18,17 +18,17 @@ Google OAuth can be used to connect a Google account that can read the selected 
 
 Fetch GA4 Data sends selected report conditions and required report metrics or dimensions to the Google Analytics Data API. The request can include the GA4 property ID, date range, comparison settings, host filter, path filter, and Google OAuth access token in the Authorization header.
 
-## OpenAI
+## AI Generation Provider
 
-Generate AI Report sends the reviewed report data to the OpenAI API. The data can include selected GA4-derived report data, such as report conditions, summary metrics, daily trends, top pages, channels, sources, and regional trends. The selected report output language and locale are included so OpenAI can generate the report draft in the appropriate language.
+Generate AI Report sends the reviewed report data through the WordPress AI Client to the AI provider configured by the site administrator in WordPress Settings > Connectors. The data can include selected GA4-derived report data, such as report conditions, summary metrics, daily trends, top pages, channels, sources, and regional trends. The selected report output language and locale are included so the configured AI provider can generate the report draft in the appropriate language.
 
-The OpenAI request uses the configured API key in the Authorization header. The plugin admin UI does not display saved key values.
+This plugin does not define a fixed AI provider endpoint, store AI provider API keys, or display AI provider credential values. Provider terms, privacy practices, billing, retention, and credential management depend on the AI provider configured by the site administrator through WordPress.
 
 Generated report text is shown to the administrator as a draft for review, editing, and copying. The plugin does not intentionally save generated report text.
 
 ## Local Storage
 
-Plugin-owned settings can include the GA4 property ID, host filter settings, saved Google OAuth client settings, and a saved OpenAI API key when entered in Settings.
+Plugin-owned settings can include the GA4 property ID, host filter settings, and saved Google OAuth client settings.
 
 Google OAuth token data is stored in a dedicated plugin-owned option. Saved credential values are hidden in the admin UI.
 

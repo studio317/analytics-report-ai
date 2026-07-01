@@ -311,7 +311,7 @@ final class Analytics_Report_AI_Admin {
 	 *
 	 * This deletes only local OAuth token data. It does not contact Google,
 	 * refresh tokens, revoke provider-side access, delete the manual Google
-	 * Access Token fallback, or delete the OpenAI API key.
+	 * Access Token fallback, or change AI provider configuration.
 	 *
 	 * @return void
 	 */

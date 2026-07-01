@@ -159,47 +159,8 @@ final class Analytics_Report_AI_Settings {
 			'client_secret' => $google_oauth_client_secret,
 		);
 
-		/*
-		 * OpenAI API key Settings value.
-		 *
-		 * Empty input keeps the existing saved key. A non-empty input replaces
-		 * the saved key. The explicit clear control is the only delete path.
-		 * Server configuration, when present, still takes precedence at runtime.
-		 */
-		$openai_api_key_source = analytics_report_ai_get_openai_api_key_source( $existing );
-		$openai_api_key        = isset( $existing['openai_api_key'] ) && is_scalar( $existing['openai_api_key'] )
-			? analytics_report_ai_sanitize_credential_value( (string) $existing['openai_api_key'] )
-			: '';
-		$clear_openai_api_key  = ! empty( $input['clear_openai_api_key'] );
-		$has_openai_constant   = ! empty( $openai_api_key_source['has_constant'] );
+		unset( $settings['openai_api_key'] );
 
-		if ( $clear_openai_api_key ) {
-			$settings['openai_api_key'] = '';
-
-			add_settings_error(
-				ANALYTICS_REPORT_AI_OPTION_NAME,
-				'analytics_report_ai_openai_api_key_deleted',
-				__( 'Saved OpenAI API key was deleted. Server configuration was not changed.', 'studio317-report-drafts-google-analytics' ),
-				'updated'
-			);
-		} elseif ( ! $has_openai_constant && isset( $input['openai_api_key'] ) && is_scalar( $input['openai_api_key'] ) ) {
-			$input_openai_api_key = analytics_report_ai_sanitize_credential_value( (string) $input['openai_api_key'] );
-
-			if ( '' !== $input_openai_api_key ) {
-				$settings['openai_api_key'] = $input_openai_api_key;
-
-				add_settings_error(
-					ANALYTICS_REPORT_AI_OPTION_NAME,
-					'analytics_report_ai_openai_api_key_saved',
-					__( 'OpenAI API key was saved. The key value is hidden and will not be displayed again.', 'studio317-report-drafts-google-analytics' ),
-					'updated'
-				);
-			} else {
-				$settings['openai_api_key'] = $openai_api_key;
-			}
-		} else {
-			$settings['openai_api_key'] = $openai_api_key;
-		}
 
 		/*
 		 * Retired manual Google Access Token fallback.
@@ -224,14 +185,6 @@ final class Analytics_Report_AI_Settings {
 		}
 
 		$settings                  = analytics_report_ai_get_settings();
-		$openai_api_key_categories = analytics_report_ai_get_openai_api_key_lifecycle_categories( $settings );
-		$openai_api_key_source_category = isset( $openai_api_key_categories['openai_api_key_source_category'] )
-			? $openai_api_key_categories['openai_api_key_source_category']
-			: 'missing';
-		$openai_api_key_settings_fallback_status = isset( $openai_api_key_categories['openai_api_key_settings_fallback_status'] )
-			? $openai_api_key_categories['openai_api_key_settings_fallback_status']
-			: 'not_saved';
-		$has_openai_api_key_settings_fallback = 'saved' === $openai_api_key_settings_fallback_status;
 		$host_filter_enabled     = ! empty( $settings['host_filter_enabled'] );
 		$ga4_property_id         = isset( $settings['ga4_property_id'] ) ? $settings['ga4_property_id'] : '';
 		$host_name               = isset( $settings['host_name'] ) ? $settings['host_name'] : analytics_report_ai_get_default_host();
@@ -251,9 +204,6 @@ final class Analytics_Report_AI_Settings {
 		$google_oauth_client_fallback_label     = $this->get_google_oauth_client_fallback_label( $google_oauth_client_fallback_status );
 		$google_oauth_connection_label          = $this->get_google_oauth_connection_label( $google_oauth_connection_state );
 		$google_oauth_token_lifecycle_label     = $this->get_google_oauth_token_lifecycle_label( $google_oauth_token_lifecycle_status );
-		$openai_api_key_source_label            = $this->get_openai_api_key_source_label( $openai_api_key_source_category );
-		$openai_api_key_settings_label          = $this->get_openai_api_key_settings_label( $openai_api_key_settings_fallback_status );
-		$openai_api_key_managed_by_server       = 'constant_configured' === $openai_api_key_source_category;
 		$google_oauth_is_connected              = 'connected' === $google_oauth_connection_state && 'usable' === $google_oauth_token_lifecycle_status;
 		$google_oauth_needs_reconnect           = ! $google_oauth_is_connected && $has_google_oauth_token_storage;
 		?>
@@ -269,7 +219,7 @@ final class Analytics_Report_AI_Settings {
 				<ol>
 					<li><?php echo esc_html__( 'Configure the GA4 property and optional host filter if needed.', 'studio317-report-drafts-google-analytics' ); ?></li>
 					<li><?php echo esc_html__( 'Enter the Google OAuth client manually, or configure it in wp-config.php or another server configuration file.', 'studio317-report-drafts-google-analytics' ); ?></li>
-					<li><?php echo esc_html__( 'Enter the OpenAI API key manually, or configure it in wp-config.php or another server configuration file.', 'studio317-report-drafts-google-analytics' ); ?></li>
+					<li><?php echo esc_html__( 'Configure a compatible AI text-generation provider in WordPress Settings > Connectors.', 'studio317-report-drafts-google-analytics' ); ?></li>
 					<li><?php echo esc_html__( 'Click Connect Google Account.', 'studio317-report-drafts-google-analytics' ); ?></li>
 					<li><?php echo esc_html__( 'Open Report Builder and click Fetch GA4 Data.', 'studio317-report-drafts-google-analytics' ); ?></li>
 					<li><?php echo esc_html__( 'Review the Data Preview, generate the report draft in the current WordPress user language, then review, edit, and copy it.', 'studio317-report-drafts-google-analytics' ); ?></li>
@@ -280,13 +230,14 @@ final class Analytics_Report_AI_Settings {
 				<h2><?php echo esc_html__( 'External service usage', 'studio317-report-drafts-google-analytics' ); ?></h2>
 
 				<p>
-					<?php echo esc_html__( 'Studio317 Report Drafts for Google Analytics contacts Google only when you start Google authorization or fetch GA4 data. It contacts OpenAI only when you click Generate AI Report after reviewing the Data Preview.', 'studio317-report-drafts-google-analytics' ); ?>
+					<?php echo esc_html__( 'Studio317 Report Drafts for Google Analytics contacts Google only when you start Google authorization or fetch GA4 data. It sends reviewed report data through the WordPress AI Client only when you click Generate AI Report after reviewing the Data Preview.', 'studio317-report-drafts-google-analytics' ); ?>
 				</p>
 
 				<ul class="studio317-report-drafts-google-analytics-notice-list">
 					<li><?php echo esc_html__( 'Fetch GA4 Data sends the selected report conditions and required metrics or dimensions to the Google Analytics Data API.', 'studio317-report-drafts-google-analytics' ); ?></li>
-					<li><?php echo esc_html__( 'Generate AI Report sends the reviewed report data and selected report output language to the OpenAI API, then receives an AI-generated draft in that language.', 'studio317-report-drafts-google-analytics' ); ?></li>
-					<li><?php echo esc_html__( 'Saved credential values are hidden. Empty password fields keep existing saved values, and delete checkboxes remove only the matching saved value.', 'studio317-report-drafts-google-analytics' ); ?></li>
+					<li><?php echo esc_html__( 'Generate AI Report sends the reviewed report data and selected report output language through the WordPress AI Client to the AI provider configured by the site administrator.', 'studio317-report-drafts-google-analytics' ); ?></li>
+					<li><?php echo esc_html__( 'AI provider credentials and provider selection are managed by WordPress Connectors, not by this plugin.', 'studio317-report-drafts-google-analytics' ); ?></li>
+					<li><?php echo esc_html__( 'Saved Google credential values are hidden. Empty password fields keep existing saved values, and delete checkboxes remove only the matching saved value.', 'studio317-report-drafts-google-analytics' ); ?></li>
 					<li><?php echo esc_html__( 'For support, share visible status messages or general error names only. Do not share credentials, tokens, option values, request bodies, raw responses, AI data JSON, generated report text, screenshots, or browser Network evidence.', 'studio317-report-drafts-google-analytics' ); ?></li>
 				</ul>
 			</div>
@@ -341,7 +292,7 @@ final class Analytics_Report_AI_Settings {
 					<li><?php echo esc_html__( 'If OAuth client settings are incomplete, fix the client ID and client secret before starting Google authorization.', 'studio317-report-drafts-google-analytics' ); ?></li>
 					<li><?php echo esc_html__( 'The redirect URI above must be registered in the Google OAuth client used by this site.', 'studio317-report-drafts-google-analytics' ); ?></li>
 					<li><?php echo esc_html__( 'Refresh is not performed automatically. If the Google connection needs recovery, reconnect the Google account.', 'studio317-report-drafts-google-analytics' ); ?></li>
-					<li><?php echo esc_html__( 'Disconnecting Google deletes only Google connection data stored by this plugin. It does not contact Google, revoke provider access, delete OAuth client settings, or delete the OpenAI API key.', 'studio317-report-drafts-google-analytics' ); ?></li>
+					<li><?php echo esc_html__( 'Disconnecting Google deletes only Google connection data stored by this plugin. It does not contact Google, revoke provider access, delete OAuth client settings, or change AI provider configuration.', 'studio317-report-drafts-google-analytics' ); ?></li>
 					<li><?php echo esc_html__( 'Manual Google access token entry is not available. Use Google OAuth for GA4 access.', 'studio317-report-drafts-google-analytics' ); ?></li>
 				</ul>
 
@@ -353,7 +304,7 @@ final class Analytics_Report_AI_Settings {
 					</form>
 
 					<p class="description">
-						<?php echo esc_html__( 'This deletes only Google connection data saved by this plugin. It does not delete Google provider access, Google OAuth client settings, or the OpenAI API key.', 'studio317-report-drafts-google-analytics' ); ?>
+						<?php echo esc_html__( 'This deletes only Google connection data saved by this plugin. It does not delete Google provider access, Google OAuth client settings, or AI provider configuration.', 'studio317-report-drafts-google-analytics' ); ?>
 					</p>
 				<?php else : ?>
 					<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
@@ -367,7 +318,7 @@ final class Analytics_Report_AI_Settings {
 			<form method="post" action="options.php" class="studio317-report-drafts-google-analytics-card">
 				<?php settings_fields( $this->settings_group ); ?>
 
-				<h2><?php echo esc_html__( 'Report and API settings', 'studio317-report-drafts-google-analytics' ); ?></h2>
+				<h2><?php echo esc_html__( 'Report and service settings', 'studio317-report-drafts-google-analytics' ); ?></h2>
 
 				<table class="form-table" role="presentation">
 					<tbody>
@@ -555,75 +506,15 @@ final class Analytics_Report_AI_Settings {
 
 						<tr>
 							<th scope="row">
-								<label for="studio317-report-drafts-google-analytics-openai-api-key">
-									<?php echo esc_html__( 'OpenAI API Key', 'studio317-report-drafts-google-analytics' ); ?>
-								</label>
-								<?php
-								$this->render_help_button(
-									'studio317-report-drafts-google-analytics-openai-api-key-help',
-									__( 'OpenAI API Key setup help', 'studio317-report-drafts-google-analytics' ),
-									__( 'How to create and configure the OpenAI API key.', 'studio317-report-drafts-google-analytics' )
-								);
-								?>
+								<?php echo esc_html__( 'AI generation provider', 'studio317-report-drafts-google-analytics' ); ?>
 							</th>
 							<td>
 								<p>
-									<strong><?php echo esc_html__( 'Active configuration:', 'studio317-report-drafts-google-analytics' ); ?></strong>
-									<?php echo esc_html( $openai_api_key_source_label ); ?>
+									<?php echo esc_html__( 'AI generation uses the AI provider configured by the site administrator in WordPress Settings > Connectors.', 'studio317-report-drafts-google-analytics' ); ?>
 								</p>
-
-								<p>
-									<strong><?php echo esc_html__( 'Saved Settings value:', 'studio317-report-drafts-google-analytics' ); ?></strong>
-									<?php echo esc_html( $openai_api_key_settings_label ); ?>
-								</p>
-
-								<input
-									type="password"
-									id="studio317-report-drafts-google-analytics-openai-api-key"
-									<?php if ( ! $openai_api_key_managed_by_server ) : ?>
-										name="<?php echo esc_attr( ANALYTICS_REPORT_AI_OPTION_NAME ); ?>[openai_api_key]"
-									<?php endif; ?>
-									value=""
-									class="regular-text"
-									autocomplete="off"
-									placeholder="<?php echo esc_attr( $has_openai_api_key_settings_fallback ? __( 'Saved key is hidden. Leave blank to keep it.', 'studio317-report-drafts-google-analytics' ) : __( 'Enter an OpenAI API key.', 'studio317-report-drafts-google-analytics' ) ); ?>"
-									<?php disabled( $openai_api_key_managed_by_server ); ?>
-								/>
-
 								<p class="description">
-									<?php
-									if ( $openai_api_key_managed_by_server ) {
-										echo esc_html__( 'This value is managed by server configuration and cannot be edited here.', 'studio317-report-drafts-google-analytics' );
-									} elseif ( $has_openai_api_key_settings_fallback ) {
-										echo esc_html__( 'A saved OpenAI API key exists and is hidden. Leave this field empty to keep it, or enter a new key to replace it.', 'studio317-report-drafts-google-analytics' );
-									} else {
-										echo esc_html__( 'Enter an OpenAI API key to enable AI report generation.', 'studio317-report-drafts-google-analytics' );
-									}
-									?>
+									<?php echo esc_html__( 'This plugin does not store AI provider API keys, choose a provider, or display provider credential values.', 'studio317-report-drafts-google-analytics' ); ?>
 								</p>
-								<?php $this->render_openai_api_key_help_dialog(); ?>
-
-								<p class="description">
-									<?php echo esc_html__( 'Blank saves keep the existing saved key. A non-empty value creates or replaces the saved key. The key value is never displayed again.', 'studio317-report-drafts-google-analytics' ); ?>
-								</p>
-
-								<p class="description">
-									<?php echo esc_html__( 'For a safer setup, use a restricted OpenAI key with only the permissions needed for Responses API requests.', 'studio317-report-drafts-google-analytics' ); ?>
-								</p>
-
-								<?php if ( $has_openai_api_key_settings_fallback ) : ?>
-									<p>
-										<label for="studio317-report-drafts-google-analytics-clear-openai-api-key">
-											<input
-												type="checkbox"
-												id="studio317-report-drafts-google-analytics-clear-openai-api-key"
-												name="<?php echo esc_attr( ANALYTICS_REPORT_AI_OPTION_NAME ); ?>[clear_openai_api_key]"
-												value="1"
-											/>
-											<?php echo esc_html__( 'Delete the saved OpenAI API key. Server configuration is not changed.', 'studio317-report-drafts-google-analytics' ); ?>
-										</label>
-									</p>
-								<?php endif; ?>
 							</td>
 						</tr>
 					</tbody>
@@ -746,27 +637,6 @@ final class Analytics_Report_AI_Settings {
 	}
 
 	/**
-	 * Render the OpenAI API Key help dialog.
-	 *
-	 * @return void
-	 */
-	private function render_openai_api_key_help_dialog() {
-		$this->render_help_dialog(
-			'studio317-report-drafts-google-analytics-openai-api-key-help',
-			__( 'OpenAI API Key setup', 'studio317-report-drafts-google-analytics' ),
-			array(
-				__( 'Enter an API key created in the OpenAI API key management screen.', 'studio317-report-drafts-google-analytics' ),
-				__( 'The API key is sensitive. Do not paste it into email, chat, screenshots, public repositories, or support requests.', 'studio317-report-drafts-google-analytics' ),
-				__( 'When entering it manually, paste the value into this field and click Save Settings.', 'studio317-report-drafts-google-analytics' ),
-				__( 'Saved API keys are hidden for safety and are not displayed again.', 'studio317-report-drafts-google-analytics' ),
-				__( 'When wp-config.php or another server configuration is active, that value takes precedence and cannot be viewed, changed, or deleted on this Settings screen.', 'studio317-report-drafts-google-analytics' ),
-				__( 'If you cannot edit wp-config.php, you can use the normal input field on this screen.', 'studio317-report-drafts-google-analytics' ),
-			),
-			"define( 'ANALYTICS_REPORT_AI_OPENAI_API_KEY', 'YOUR_OPENAI_API_KEY' );"
-		);
-	}
-
-	/**
 	 * Get a user-facing Google OAuth client source label.
 	 *
 	 * @param string $source_category Internal source category.
@@ -842,38 +712,6 @@ final class Analytics_Report_AI_Settings {
 	}
 
 	/**
-	 * Get a user-facing OpenAI API key source label.
-	 *
-	 * @param string $source_category Internal source category.
-	 * @return string
-	 */
-	private function get_openai_api_key_source_label( $source_category ) {
-		switch ( $source_category ) {
-			case 'constant_configured':
-				return __( 'Managed by server configuration', 'studio317-report-drafts-google-analytics' );
-			case 'settings_saved':
-				return __( 'Saved in Settings', 'studio317-report-drafts-google-analytics' );
-			case 'missing':
-			default:
-				return __( 'Not configured', 'studio317-report-drafts-google-analytics' );
-		}
-	}
-
-	/**
-	 * Get a user-facing OpenAI API key Settings label.
-	 *
-	 * @param string $settings_status Internal Settings status.
-	 * @return string
-	 */
-	private function get_openai_api_key_settings_label( $settings_status ) {
-		if ( 'saved' === $settings_status ) {
-			return __( 'Saved and hidden', 'studio317-report-drafts-google-analytics' );
-		}
-
-		return __( 'Not saved', 'studio317-report-drafts-google-analytics' );
-	}
-
-	/**
 	 * Render a status-level notice for local Google OAuth skeleton results.
 	 *
 	 * @return void
@@ -907,7 +745,7 @@ final class Analytics_Report_AI_Settings {
 			'token_exchange_missing_token_category' => __( 'Google connection was not completed because the response did not include the required token data. Raw response details are not displayed.', 'studio317-report-drafts-google-analytics' ),
 			'token_exchange_not_executed'           => __( 'Google OAuth token exchange was not executed because the callback preconditions were not complete.', 'studio317-report-drafts-google-analytics' ),
 			'token_storage_unavailable_category'    => __( 'Google OAuth token exchange completed, but token storage did not complete. No token value is displayed.', 'studio317-report-drafts-google-analytics' ),
-			'google_oauth_local_disconnect_success' => __( 'Google connection data saved by this plugin was deleted. Google was not contacted, provider-side access was not revoked, and OAuth client settings and the OpenAI API key were not changed.', 'studio317-report-drafts-google-analytics' ),
+			'google_oauth_local_disconnect_success' => __( 'Google connection data saved by this plugin was deleted. Google was not contacted, provider-side access was not revoked, and OAuth client settings and AI provider configuration were not changed.', 'studio317-report-drafts-google-analytics' ),
 			'google_oauth_local_disconnect_failed'  => __( 'Google connection data was not deleted. Token values and option values are not displayed, and provider-side revoke was not requested.', 'studio317-report-drafts-google-analytics' ),
 		);
 
