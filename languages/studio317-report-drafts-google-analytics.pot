@@ -436,7 +436,7 @@ msgid "Use the status and warning information below to decide whether to generat
 msgstr ""
 
 #: includes/class-report-builder.php:1085
-msgid "The reviewed report data can include host name, page path, traffic channel/source, city, summary metrics, and comparison differences."
+msgid "The reviewed report data can include host name, page path, traffic channel/source, city/country regional labels, summary metrics, and comparison differences."
 msgstr ""
 
 #: includes/class-report-builder.php:1089

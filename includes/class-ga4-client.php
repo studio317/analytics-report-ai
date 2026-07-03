@@ -210,29 +210,16 @@ final class Analytics_Report_AI_GA4_Client {
 	 * @return array|WP_Error
 	 */
 	public static function run_regional_trends_report( $property_id, $access_token, $period, $settings, $conditions ) {
-		$extra_filters = array(
-			array(
-				'filter' => array(
-					'fieldName'    => 'country',
-					'stringFilter' => array(
-						'matchType' => 'EXACT',
-						'value'     => 'Japan',
-					),
-				),
-			),
-		);
-
 		$result = self::run_report(
 			$property_id,
 			$access_token,
 			$period,
 			$settings,
 			$conditions,
-			array( 'city' ),
+			array( 'city', 'country' ),
 			array( 'screenPageViews' ),
 			'screenPageViews',
-			10,
-			$extra_filters
+			10
 		);
 
 		if ( is_wp_error( $result ) ) {
@@ -241,7 +228,7 @@ final class Analytics_Report_AI_GA4_Client {
 
 		return self::extract_dimension_rows(
 			$result,
-			array( 'city' ),
+			array( 'city', 'country' ),
 			array( 'screenPageViews' )
 		);
 	}
@@ -598,20 +585,26 @@ final class Analytics_Report_AI_GA4_Client {
 			return array();
 		}
 
-		$rows = array();
+		$dimension_indexes = self::build_response_field_index_map( $data, 'dimensionHeaders', $dimension_names );
+		$metric_indexes    = self::build_response_field_index_map( $data, 'metricHeaders', $metric_names );
+		$rows              = array();
 
 		foreach ( $data['rows'] as $row ) {
 			$item = array();
 
 			foreach ( $dimension_names as $index => $dimension_name ) {
-				$item[ $dimension_name ] = isset( $row['dimensionValues'][ $index ]['value'] )
-					? sanitize_text_field( (string) $row['dimensionValues'][ $index ]['value'] )
+				$dimension_index = isset( $dimension_indexes[ $dimension_name ] ) ? $dimension_indexes[ $dimension_name ] : $index;
+
+				$item[ $dimension_name ] = isset( $row['dimensionValues'][ $dimension_index ]['value'] )
+					? sanitize_text_field( (string) $row['dimensionValues'][ $dimension_index ]['value'] )
 					: '';
 			}
 
 			foreach ( $metric_names as $index => $metric_name ) {
-				$item[ $metric_name ] = isset( $row['metricValues'][ $index ]['value'] )
-					? analytics_report_ai_cast_metric_value( $metric_name, $row['metricValues'][ $index ]['value'] )
+				$metric_index = isset( $metric_indexes[ $metric_name ] ) ? $metric_indexes[ $metric_name ] : $index;
+
+				$item[ $metric_name ] = isset( $row['metricValues'][ $metric_index ]['value'] )
+					? analytics_report_ai_cast_metric_value( $metric_name, $row['metricValues'][ $metric_index ]['value'] )
 					: 0;
 			}
 
@@ -619,6 +612,41 @@ final class Analytics_Report_AI_GA4_Client {
 		}
 
 		return $rows;
+	}
+
+	/**
+	 * Build a response-header-based field index map with request-order fallback.
+	 *
+	 * @param array  $data        GA4 response.
+	 * @param string $header_key  Header key.
+	 * @param array  $field_names Requested field names.
+	 * @return array
+	 */
+	private static function build_response_field_index_map( $data, $header_key, $field_names ) {
+		$indexes = array();
+		$headers = isset( $data[ $header_key ] ) && is_array( $data[ $header_key ] )
+			? $data[ $header_key ]
+			: array();
+
+		foreach ( $headers as $index => $header ) {
+			if ( empty( $header['name'] ) || ! is_scalar( $header['name'] ) ) {
+				continue;
+			}
+
+			$name = (string) $header['name'];
+
+			if ( in_array( $name, $field_names, true ) && ! isset( $indexes[ $name ] ) ) {
+				$indexes[ $name ] = absint( $index );
+			}
+		}
+
+		foreach ( $field_names as $fallback_index => $field_name ) {
+			if ( ! isset( $indexes[ $field_name ] ) ) {
+				$indexes[ $field_name ] = absint( $fallback_index );
+			}
+		}
+
+		return $indexes;
 	}
 
 	/**

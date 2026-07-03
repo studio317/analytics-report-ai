@@ -580,10 +580,11 @@ msgstr "以下の状態と警告情報を確認して、レポートを生成す
 #: includes/class-report-builder.php:1085
 msgid ""
 "The reviewed report data can include host name, page path, traffic channel/"
-"source, city, summary metrics, and comparison differences."
+"source, city/country regional labels, summary metrics, and comparison "
+"differences."
 msgstr ""
 "確認済みのレポートデータには、ホスト名、ページパス、トラフィックチャネル/ソー"
-"ス、都市、概要指標、比較差分が含まれる場合があります。"
+"ス、都市/国の地域ラベル、概要指標、比較差分が含まれる場合があります。"
 
 #: includes/class-report-builder.php:1089
 msgid ""

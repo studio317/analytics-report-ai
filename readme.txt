@@ -12,7 +12,7 @@ Creates AI-assisted report drafts from GA4 data in the WordPress user language w
 
 == Description ==
 
-Studio317 Report Drafts for Google Analytics helps WordPress administrators fetch selected GA4 report data, review a structured pre-send preview, generate a report draft in the current WordPress user language through the WordPress AI Client, edit the draft, and copy the final text.
+Studio317 Report Drafts for Google Analytics helps WordPress administrators fetch selected GA4 report data, review a structured pre-send preview, generate a report draft in the current WordPress user language through the WordPress AI Client, edit the draft, and copy the final text. AI provider setup and credentials are managed in WordPress Settings > Connectors, not by this plugin.
 
 This plugin is developed by Kimiya Watabe / Studio317. It is not affiliated with, endorsed by, or sponsored by Google.
 
@@ -80,7 +80,7 @@ Data received from Google may include:
 * Top pages.
 * Traffic channels.
 * Traffic sources.
-* City-level regional trends for Japan.
+* City-level regional trends, where available.
 
 The Google Analytics Data API request body is designed not to include AI provider credentials, WordPress user identifiers, cookies, or IP addresses.
 
@@ -106,7 +106,7 @@ Report data sent through the WordPress AI Client may include:
 * Top pages.
 * Traffic channels.
 * Traffic sources.
-* City-level regional trends.
+* City-level regional trends, where available.
 
 The report data sent through the WordPress AI Client is designed not to include the Google OAuth token, AI provider credentials, GA4 property ID, WordPress user identifiers, cookies, or IP addresses.
 
@@ -115,6 +115,8 @@ AI generation may consume provider usage, credits, or quota depending on the con
 == Data Storage and Review ==
 
 The plugin stores plugin-owned settings in the WordPress database. Stored settings can include the GA4 property ID, host filter settings, and saved Google OAuth client settings.
+
+The plugin does not store plugin-owned AI provider API keys. AI provider credentials and provider selection are managed through WordPress Connectors.
 
 Google OAuth token data is stored in a dedicated plugin-owned option. The option is created without autoloading on new storage. Saved credential values are not displayed again in the admin UI.
 
@@ -130,14 +132,15 @@ Database administrators, backups, server administrators, or code that can read W
 
 == Installation ==
 
-1. Upload the plugin files to the `wp-content/plugins/studio317-report-drafts-google-analytics` directory, or install the plugin ZIP through the WordPress Plugins screen.
-2. Activate Studio317 Report Drafts for Google Analytics.
-3. Open Studio317 Report Drafts for Google Analytics > Settings.
-4. Enter the numeric GA4 property ID and optional host filter.
-5. Configure Google OAuth client settings or provide them by server configuration.
-6. Configure a compatible AI text-generation provider in WordPress Settings > Connectors.
-7. Connect a Google account with access to the GA4 property.
-8. Open Report Builder to fetch GA4 data and generate a reviewed draft.
+1. In the WordPress admin area, go to Plugins > Add New.
+2. Search for `Studio317 Report Drafts for Google Analytics`.
+3. Click Install Now, then Activate.
+4. Open Studio317 Report Drafts for Google Analytics > Settings.
+5. Enter the numeric GA4 property ID and optional host filter.
+6. Configure Google OAuth client settings or provide them by server configuration.
+7. Configure a compatible text-generation provider in WordPress Settings > Connectors.
+8. Connect a Google account with access to the GA4 property.
+9. Open Report Builder to fetch GA4 data, review the Data Preview, and generate a report draft.
 
 == Frequently Asked Questions ==
 
@@ -172,5 +175,5 @@ Do not send credentials, API keys, access tokens, Authorization headers, plugin 
 == Changelog ==
 
 = 0.1.0 =
-* Added GA4 data retrieval, structured Data Preview, AI report draft generation in the WordPress user language, and admin review/edit/copy workflow.
-* Added Google OAuth connection handling, hidden credential values, setup guidance, external service disclosures, data validation, and localized admin strings.
+* Added GA4 data retrieval, structured Data Preview, AI-assisted report draft generation through the WordPress AI Client, and admin review/edit/copy workflow.
+* Added Google OAuth connection handling, hidden credential values, provider-neutral AI setup guidance, external service disclosures, data validation, and localized admin strings.

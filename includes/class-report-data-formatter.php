@@ -37,6 +37,17 @@ final class Analytics_Report_AI_Report_Data_Formatter {
 			$report_language = analytics_report_ai_get_report_language_profile();
 		}
 
+		$preset_reports = is_array( $preset_reports ) ? $preset_reports : array();
+		$preset_reports['regional_trends'] = self::build_regional_trends_payload(
+			isset( $preset_reports['regional_trends'] ) && is_array( $preset_reports['regional_trends'] )
+				? $preset_reports['regional_trends']
+				: array(),
+			$has_comparison && isset( $preset_reports['regional_trends_comparison'] ) && is_array( $preset_reports['regional_trends_comparison'] )
+				? $preset_reports['regional_trends_comparison']
+				: array(),
+			$has_comparison
+		);
+
 		foreach ( $row_limits as $preset_key => $limit ) {
 			$limited_reports[ $preset_key ] = self::limit_rows(
 				isset( $preset_reports[ $preset_key ] ) && is_array( $preset_reports[ $preset_key ] )
@@ -121,6 +132,182 @@ final class Analytics_Report_AI_Report_Data_Formatter {
 		}
 
 		return array_slice( array_values( $rows ), 0, absint( $limit ) );
+	}
+
+	/**
+	 * Build regional trends rows with country + city identity.
+	 *
+	 * @param array $current_rows    Current-period regional rows.
+	 * @param array $comparison_rows Comparison-period regional rows.
+	 * @param bool  $has_comparison  Whether comparison exists.
+	 * @return array
+	 */
+	private static function build_regional_trends_payload( $current_rows, $comparison_rows, $has_comparison ) {
+		$comparison_by_key = self::index_regional_rows_by_stable_key( $comparison_rows );
+		$rows              = array();
+
+		foreach ( $current_rows as $row ) {
+			if ( ! is_array( $row ) ) {
+				continue;
+			}
+
+			$key            = self::get_regional_row_stable_key( $row );
+			$comparison_row = isset( $comparison_by_key[ $key ] ) ? $comparison_by_key[ $key ] : array();
+			$current        = self::get_regional_screen_page_views( $row );
+			$comparison     = $has_comparison ? self::get_regional_screen_page_views( $comparison_row ) : null;
+			$diff           = null;
+			$change_rate    = null;
+
+			if ( $has_comparison ) {
+				$diff = $current - $comparison;
+
+				if ( 0.0 !== (float) $comparison ) {
+					$change_rate = $diff / $comparison;
+				}
+			}
+
+			$rows[] = array(
+				'region'          => self::build_region_label( $row ),
+				'city'            => self::get_region_component( $row, 'city' ),
+				'country'         => self::get_region_component( $row, 'country' ),
+				'screenPageViews' => $current,
+				'comparison'      => $has_comparison ? $comparison : null,
+				'diff'            => $has_comparison ? $diff : null,
+				'change_rate'     => $has_comparison ? $change_rate : null,
+			);
+		}
+
+		return $rows;
+	}
+
+	/**
+	 * Index regional rows by internal country + city key.
+	 *
+	 * @param array $rows Regional rows.
+	 * @return array
+	 */
+	private static function index_regional_rows_by_stable_key( $rows ) {
+		$indexed = array();
+
+		foreach ( $rows as $row ) {
+			if ( ! is_array( $row ) ) {
+				continue;
+			}
+
+			$key = self::get_regional_row_stable_key( $row );
+
+			if ( ! isset( $indexed[ $key ] ) ) {
+				$indexed[ $key ] = $row;
+			}
+		}
+
+		return $indexed;
+	}
+
+	/**
+	 * Get an internal stable country + city key for regional comparison.
+	 *
+	 * @param array $row Regional row.
+	 * @return string
+	 */
+	private static function get_regional_row_stable_key( $row ) {
+		$country = self::normalize_region_key_component( self::get_region_component( $row, 'country' ) );
+		$city    = self::normalize_region_key_component( self::get_region_component( $row, 'city' ) );
+
+		return $country . "\x1F" . $city;
+	}
+
+	/**
+	 * Build a human-readable regional label.
+	 *
+	 * @param array $row Regional row.
+	 * @return string
+	 */
+	private static function build_region_label( $row ) {
+		$city              = self::get_region_component( $row, 'city' );
+		$country           = self::get_region_component( $row, 'country' );
+		$city_available    = self::is_region_component_available( $city );
+		$country_available = self::is_region_component_available( $country );
+
+		if ( $city_available && $country_available ) {
+			return $city . ', ' . $country;
+		}
+
+		if ( $city_available ) {
+			return $city;
+		}
+
+		if ( $country_available ) {
+			return $country;
+		}
+
+		return '(not set)';
+	}
+
+	/**
+	 * Get a sanitized regional component.
+	 *
+	 * @param array  $row Regional row.
+	 * @param string $key Component key.
+	 * @return string
+	 */
+	private static function get_region_component( $row, $key ) {
+		if ( ! isset( $row[ $key ] ) || ! is_scalar( $row[ $key ] ) ) {
+			return '';
+		}
+
+		return sanitize_text_field( (string) $row[ $key ] );
+	}
+
+	/**
+	 * Normalize a regional component for internal matching.
+	 *
+	 * @param string $value Component value.
+	 * @return string
+	 */
+	private static function normalize_region_key_component( $value ) {
+		if ( ! self::is_region_component_available( $value ) ) {
+			return '';
+		}
+
+		return strtolower( trim( (string) $value ) );
+	}
+
+	/**
+	 * Check whether a regional component is available.
+	 *
+	 * @param string $value Component value.
+	 * @return bool
+	 */
+	private static function is_region_component_available( $value ) {
+		$value = trim( (string) $value );
+
+		if ( '' === $value ) {
+			return false;
+		}
+
+		return ! in_array(
+			strtolower( $value ),
+			array(
+				'(not set)',
+				'not set',
+				'(not provided)',
+				'not provided',
+			),
+			true
+		);
+	}
+
+	/**
+	 * Get regional screen page views.
+	 *
+	 * @param array $row Regional row.
+	 * @return int|float
+	 */
+	private static function get_regional_screen_page_views( $row ) {
+		return isset( $row['screenPageViews'] ) && is_numeric( $row['screenPageViews'] )
+			? $row['screenPageViews'] + 0
+			: 0;
 	}
 
 	/**

@@ -590,6 +590,28 @@ final class Analytics_Report_AI_Report_Builder {
 
 		$preset_reports['regional_trends'] = $regional_trends;
 
+		if ( ! empty( $conditions['comparison_period'] ) && is_array( $conditions['comparison_period'] ) ) {
+			$regional_trends_comparison = Analytics_Report_AI_GA4_Client::run_regional_trends_report(
+				$property_id,
+				$access_token,
+				$conditions['comparison_period'],
+				$settings,
+				$conditions
+			);
+
+			if ( is_wp_error( $regional_trends_comparison ) ) {
+				return array(
+					'status'      => 'error',
+					'errors'      => array(
+						$regional_trends_comparison->get_error_message(),
+					),
+					'form_values' => $validation_result['form_values'],
+				);
+			}
+
+			$preset_reports['regional_trends_comparison'] = $regional_trends_comparison;
+		}
+
 		$payload = Analytics_Report_AI_Report_Data_Formatter::create_payload_from_ga4_summary(
 			$conditions,
 			$settings,
@@ -1082,7 +1104,7 @@ final class Analytics_Report_AI_Report_Builder {
 				</p>
 
 				<p>
-					<?php echo esc_html__( 'The reviewed report data can include host name, page path, traffic channel/source, city, summary metrics, and comparison differences.', 'studio317-report-drafts-google-analytics' ); ?>
+					<?php echo esc_html__( 'The reviewed report data can include host name, page path, traffic channel/source, city/country regional labels, summary metrics, and comparison differences.', 'studio317-report-drafts-google-analytics' ); ?>
 				</p>
 
 				<p>

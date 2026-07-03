@@ -1358,6 +1358,31 @@ if ( ! function_exists( 'analytics_report_ai_validate_ai_payload' ) ) {
 			}
 		}
 
+		foreach ( $payload['regional_trends'] as $regional_row ) {
+			if (
+				! is_array( $regional_row )
+				|| empty( $regional_row['region'] )
+				|| ! is_scalar( $regional_row['region'] )
+				|| ! array_key_exists( 'city', $regional_row )
+				|| ! is_scalar( $regional_row['city'] )
+				|| ! array_key_exists( 'country', $regional_row )
+				|| ! is_scalar( $regional_row['country'] )
+				|| ! isset( $regional_row['screenPageViews'] )
+				|| ! is_numeric( $regional_row['screenPageViews'] )
+				|| ! array_key_exists( 'comparison', $regional_row )
+				|| ( null !== $regional_row['comparison'] && ! is_numeric( $regional_row['comparison'] ) )
+				|| ! array_key_exists( 'diff', $regional_row )
+				|| ( null !== $regional_row['diff'] && ! is_numeric( $regional_row['diff'] ) )
+				|| ! array_key_exists( 'change_rate', $regional_row )
+				|| ( null !== $regional_row['change_rate'] && ! is_numeric( $regional_row['change_rate'] ) )
+			) {
+				return new WP_Error(
+					'analytics_report_ai_payload_invalid_regional_trends',
+					__( 'Data for AI generation is invalid.', 'studio317-report-drafts-google-analytics' )
+				);
+			}
+		}
+
 		return true;
 	}
 }
