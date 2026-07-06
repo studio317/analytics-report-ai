@@ -1,24 +1,30 @@
 .studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-settings-form {
-	max-width: 960px;
+	box-sizing: border-box;
+	max-width: 100%;
 }
 
 .studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-settings-section {
-	margin-top: 24px;
-	padding-top: 4px;
+	margin-top: 0;
+	padding-top: 0;
 }
 
 .studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-settings-section + .studio317-report-drafts-google-analytics-settings-section {
-	margin-top: 32px;
+	margin-top: 30px;
+	padding-top: 26px;
 	border-top: 1px solid #dcdcde;
 }
 
 .studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-settings-section h2 {
-	margin: 0 0 16px;
+	margin: 0 0 18px;
 }
 
 .studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-settings-field {
 	max-width: 640px;
-	margin: 0 0 22px;
+	margin: 0 0 24px;
+}
+
+.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-settings-field:last-child {
+	margin-bottom: 0;
 }
 
 .studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-settings-label-row {
@@ -48,6 +54,19 @@
 .studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-settings-field .description {
 	max-width: 640px;
 	margin: 6px 0 0;
+}
+
+.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-settings-form .submit {
+	margin: 30px 0 0;
+	padding: 0;
+}
+
+.studio317-report-drafts-google-analytics-admin #studio317-report-drafts-google-analytics-google-connection-settings {
+	margin-top: 24px;
+}
+
+.studio317-report-drafts-google-analytics-admin #studio317-report-drafts-google-analytics-google-connection-settings form {
+	margin: 14px 0 0;
 }
 
 .studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-settings-checkbox-field label,

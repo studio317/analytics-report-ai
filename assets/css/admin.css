@@ -1,22 +1,57 @@
-.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-card {
+.studio317-report-drafts-google-analytics-admin {
 	max-width: 960px;
+}
+
+.studio317-report-drafts-google-analytics-admin > .description {
+	max-width: 760px;
+	margin: 6px 0 18px;
+}
+
+.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-card {
+	box-sizing: border-box;
+	max-width: 100%;
 	margin-top: 20px;
+	margin-bottom: 20px;
 	padding: 20px;
 	background: #fff;
 	border: 1px solid #dcdcde;
 	border-radius: 4px;
 }
 
+.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-card + .studio317-report-drafts-google-analytics-card {
+	margin-top: 24px;
+}
+
 .studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-card h2 {
-	margin-top: 0;
+	margin: 0 0 14px;
+}
+
+.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-card > :last-child {
+	margin-bottom: 0;
 }
 
 .studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-status-table {
-	margin-top: 12px;
+	table-layout: fixed;
+	margin: 12px 0 14px;
 }
 
 .studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-status-table th {
 	width: 220px;
+	font-weight: 600;
+}
+
+.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-status-table th,
+.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-status-table td {
+	vertical-align: top;
+}
+
+.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-status-table td {
+	overflow-wrap: anywhere;
+}
+
+.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-status-table td .description {
+	max-width: 640px;
+	margin: 6px 0 0;
 }
 
 .studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-status-warning {
@@ -76,32 +111,26 @@
 	font-weight: 600;
 }
 
-.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-preview-table {
+.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-report-form {
+	margin-top: 20px;
+}
+
+.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-report-form h2 + p {
+	margin-top: 0;
+	margin-bottom: 14px;
+}
+
+.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-report-form .form-table {
 	margin-top: 8px;
-	margin-bottom: 20px;
+	margin-bottom: 6px;
 }
 
-.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-json-preview {
-	margin-top: 20px;
+.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-report-form .button-primary {
+	margin-top: 8px;
 }
 
-.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-json-preview summary {
-	cursor: pointer;
-	font-weight: 600;
-}
-
-.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-json-preview pre {
-	max-height: 420px;
-	overflow: auto;
-	padding: 16px;
-	background: #1d2327;
-	color: #f0f0f1;
-	border-radius: 4px;
-	white-space: pre-wrap;
-}
-
-.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-generate-form {
-	margin-top: 20px;
+.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-report-form > .description {
+	max-width: 720px;
 }
 
 .studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-generated-report {
@@ -121,4 +150,40 @@
 .studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-copy-status {
 	color: #008a20;
 	font-weight: 600;
+}
+
+@media screen and (max-width: 782px) {
+	.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-card {
+		padding: 16px;
+	}
+
+	.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-status-table,
+	.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-status-table tbody,
+	.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-status-table tr,
+	.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-status-table th,
+	.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-status-table td {
+		display: block;
+		box-sizing: border-box;
+		width: 100%;
+	}
+
+	.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-status-table th {
+		padding-bottom: 4px;
+	}
+
+	.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-status-table td {
+		padding-top: 0;
+	}
+
+	.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-inline-label {
+		display: block;
+		margin-top: 10px;
+		margin-left: 0;
+	}
+
+	.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-copy-actions {
+		align-items: flex-start;
+		flex-direction: column;
+		gap: 8px;
+	}
 }
