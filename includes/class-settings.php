@@ -236,8 +236,8 @@ final class Analytics_Report_AI_Settings {
 					__( 'Enter the Google OAuth client manually, or configure it in wp-config.php or another server configuration file.', 'studio317-report-drafts-google-analytics' ),
 					__( 'Configure a compatible AI text-generation provider in WordPress Settings > Connectors.', 'studio317-report-drafts-google-analytics' ),
 					__( 'Click Connect Google Account.', 'studio317-report-drafts-google-analytics' ),
-					__( 'Open Report Builder and click Fetch GA4 Data.', 'studio317-report-drafts-google-analytics' ),
-					__( 'Review the Data Preview, generate the report draft in the current WordPress user language, then review, edit, and copy it.', 'studio317-report-drafts-google-analytics' ),
+					__( 'Open Report Builder, choose the report conditions, and click Create AI Report.', 'studio317-report-drafts-google-analytics' ),
+					__( 'Review the generated report draft in the current WordPress user language, then edit and copy it as needed.', 'studio317-report-drafts-google-analytics' ),
 				),
 				'',
 				'ol'
@@ -247,9 +247,9 @@ final class Analytics_Report_AI_Settings {
 				'studio317-report-drafts-google-analytics-external-service-usage-help',
 				__( 'External service usage', 'studio317-report-drafts-google-analytics' ),
 				array(
-					__( 'Studio317 Report Drafts for Google Analytics contacts Google only when you start Google authorization or fetch GA4 data. It sends reviewed report data through the WordPress AI Client only when you click Generate AI Report after reviewing the Data Preview.', 'studio317-report-drafts-google-analytics' ),
-					__( 'Fetch GA4 Data sends the selected report conditions and required metrics or dimensions to the Google Analytics Data API.', 'studio317-report-drafts-google-analytics' ),
-					__( 'Generate AI Report sends the reviewed report data and selected report output language through the WordPress AI Client to the AI provider configured by the site administrator.', 'studio317-report-drafts-google-analytics' ),
+					__( 'Studio317 Report Drafts for Google Analytics contacts Google when you start Google authorization or click Create AI Report. It sends report data through the WordPress AI Client only as part of the Create AI Report action.', 'studio317-report-drafts-google-analytics' ),
+					__( 'Create AI Report sends the selected report conditions and required metrics or dimensions to the Google Analytics Data API.', 'studio317-report-drafts-google-analytics' ),
+					__( 'Create AI Report sends the reviewed report data and selected report output language through the WordPress AI Client to the AI provider configured by the site administrator when generation is available.', 'studio317-report-drafts-google-analytics' ),
 					__( 'AI provider credentials and provider selection are managed by WordPress Connectors, not by this plugin.', 'studio317-report-drafts-google-analytics' ),
 					__( 'Saved Google credential values are hidden. Empty password fields keep existing saved values, and delete checkboxes remove only the matching saved value.', 'studio317-report-drafts-google-analytics' ),
 					__( 'For support, share visible status messages or general error names only. Do not share credentials, tokens, option values, request bodies, raw responses, AI data JSON, generated report text, screenshots, or browser Network evidence.', 'studio317-report-drafts-google-analytics' ),
