@@ -303,15 +303,58 @@ final class Analytics_Report_AI_Report_Builder {
 	 * @return array
 	 */
 	private function handle_fetch_ga4_summary( $form_values ) {
+		return $this->prepare_payload_from_report_conditions( $form_values );
+	}
+
+	/**
+	 * Prepare a validated AI payload from report conditions.
+	 *
+	 * @param array $form_values Sanitized report condition input.
+	 * @return array
+	 */
+	private function prepare_payload_from_report_conditions( $form_values ) {
 		$validation_result = $this->validate_report_conditions( $form_values );
 
 		if ( 'error' === $validation_result['status'] ) {
 			return $validation_result;
 		}
 
-		$conditions = $validation_result['conditions'];
-		$settings   = analytics_report_ai_get_settings();
+		$ga4_result = $this->fetch_ga4_data_for_conditions(
+			$validation_result['conditions'],
+			$validation_result['form_values']
+		);
 
+		if ( 'error' === $ga4_result['status'] ) {
+			return $ga4_result;
+		}
+
+		$payload_result = $this->build_payload_from_ga4_result(
+			$validation_result['conditions'],
+			$ga4_result,
+			$validation_result['form_values']
+		);
+
+		if ( 'payload_created' !== $payload_result['status'] ) {
+			return $payload_result;
+		}
+
+		$storage = $this->store_payload_for_generation( $payload_result['payload'] );
+
+		$payload_result['transient_key'] = $storage['transient_key'];
+		$payload_result['expiration']    = $storage['expiration'];
+
+		return $payload_result;
+	}
+
+	/**
+	 * Fetch GA4 data for already validated report conditions.
+	 *
+	 * @param array $conditions  Validated report conditions.
+	 * @param array $form_values Normalized form values.
+	 * @return array
+	 */
+	private function fetch_ga4_data_for_conditions( $conditions, $form_values ) {
+		$settings          = analytics_report_ai_get_settings();
 		$property_id       = isset( $settings['ga4_property_id'] ) ? (string) $settings['ga4_property_id'] : '';
 		$credential_source = analytics_report_ai_resolve_google_ga4_credential_source( $settings );
 		$access_token      = isset( $credential_source['access_token'] ) && is_scalar( $credential_source['access_token'] )
@@ -321,11 +364,12 @@ final class Analytics_Report_AI_Report_Builder {
 		if ( '' === $access_token ) {
 			return array(
 				'status'                    => 'error',
+				'error_category'            => 'ga4_credential_source_unavailable',
 				'errors'                    => array(
 					$this->get_ga4_credential_source_error_message( $credential_source ),
 				),
 				'google_reconnect_required' => $this->is_ga4_credential_source_reconnect_required( $credential_source ),
-				'form_values'               => $validation_result['form_values'],
+				'form_values'               => $form_values,
 			);
 		}
 
@@ -338,13 +382,7 @@ final class Analytics_Report_AI_Report_Builder {
 		);
 
 		if ( is_wp_error( $current_summary ) ) {
-			return array(
-				'status'      => 'error',
-				'errors'      => array(
-					$current_summary->get_error_message(),
-				),
-				'form_values' => $validation_result['form_values'],
-			);
+			return $this->build_ga4_fetch_error_result( $current_summary, $form_values );
 		}
 
 		$comparison_summary = array();
@@ -359,117 +397,67 @@ final class Analytics_Report_AI_Report_Builder {
 			);
 
 			if ( is_wp_error( $comparison_summary ) ) {
-				return array(
-					'status'      => 'error',
-					'errors'      => array(
-						$comparison_summary->get_error_message(),
-					),
-					'form_values' => $validation_result['form_values'],
-				);
+				return $this->build_ga4_fetch_error_result( $comparison_summary, $form_values );
 			}
 		}
 
+		$preset_reports = $this->fetch_ga4_preset_reports(
+			$property_id,
+			$access_token,
+			$conditions,
+			$settings,
+			$form_values
+		);
+
+		if ( 'error' === $preset_reports['status'] ) {
+			return $preset_reports;
+		}
+
+		return array(
+			'status'             => 'success',
+			'settings'           => $settings,
+			'current_summary'    => $current_summary,
+			'comparison_summary' => $comparison_summary,
+			'preset_reports'     => $preset_reports['preset_reports'],
+			'form_values'        => $form_values,
+		);
+	}
+
+	/**
+	 * Fetch GA4 preset detail reports.
+	 *
+	 * @param string $property_id  GA4 property ID.
+	 * @param string $access_token OAuth access token.
+	 * @param array  $conditions   Validated report conditions.
+	 * @param array  $settings     Plugin settings.
+	 * @param array  $form_values  Normalized form values.
+	 * @return array
+	 */
+	private function fetch_ga4_preset_reports( $property_id, $access_token, $conditions, $settings, $form_values ) {
 		$preset_reports = array();
-
-		$daily_trend = Analytics_Report_AI_GA4_Client::run_daily_trend_report(
-			$property_id,
-			$access_token,
-			$conditions['period'],
-			$settings,
-			$conditions
+		$report_methods = array(
+			'daily_trend'      => 'run_daily_trend_report',
+			'top_pages'        => 'run_top_pages_report',
+			'traffic_channels' => 'run_traffic_channels_report',
+			'traffic_sources'  => 'run_traffic_sources_report',
+			'regional_trends'  => 'run_regional_trends_report',
 		);
 
-		if ( is_wp_error( $daily_trend ) ) {
-			return array(
-				'status'      => 'error',
-				'errors'      => array(
-					$daily_trend->get_error_message(),
-				),
-				'form_values' => $validation_result['form_values'],
+		foreach ( $report_methods as $report_key => $method_name ) {
+			$report = Analytics_Report_AI_GA4_Client::$method_name(
+				$property_id,
+				$access_token,
+				$conditions['period'],
+				$settings,
+				$conditions
 			);
+
+			if ( is_wp_error( $report ) ) {
+				return $this->build_ga4_fetch_error_result( $report, $form_values );
+			}
+
+			$preset_reports[ $report_key ] = $report;
 		}
-
-		$preset_reports['daily_trend'] = $daily_trend;
-
-		$top_pages = Analytics_Report_AI_GA4_Client::run_top_pages_report(
-			$property_id,
-			$access_token,
-			$conditions['period'],
-			$settings,
-			$conditions
-		);
-
-		if ( is_wp_error( $top_pages ) ) {
-			return array(
-				'status'      => 'error',
-				'errors'      => array(
-					$top_pages->get_error_message(),
-				),
-				'form_values' => $validation_result['form_values'],
-			);
-		}
-
-		$preset_reports['top_pages'] = $top_pages;
-
-		$traffic_channels = Analytics_Report_AI_GA4_Client::run_traffic_channels_report(
-			$property_id,
-			$access_token,
-			$conditions['period'],
-			$settings,
-			$conditions
-		);
-
-		if ( is_wp_error( $traffic_channels ) ) {
-			return array(
-				'status'      => 'error',
-				'errors'      => array(
-					$traffic_channels->get_error_message(),
-				),
-				'form_values' => $validation_result['form_values'],
-			);
-		}
-
-		$preset_reports['traffic_channels'] = $traffic_channels;
-
-		$traffic_sources = Analytics_Report_AI_GA4_Client::run_traffic_sources_report(
-			$property_id,
-			$access_token,
-			$conditions['period'],
-			$settings,
-			$conditions
-		);
-
-		if ( is_wp_error( $traffic_sources ) ) {
-			return array(
-				'status'      => 'error',
-				'errors'      => array(
-					$traffic_sources->get_error_message(),
-				),
-				'form_values' => $validation_result['form_values'],
-			);
-		}
-
-		$preset_reports['traffic_sources'] = $traffic_sources;
-
-		$regional_trends = Analytics_Report_AI_GA4_Client::run_regional_trends_report(
-			$property_id,
-			$access_token,
-			$conditions['period'],
-			$settings,
-			$conditions
-		);
-
-		if ( is_wp_error( $regional_trends ) ) {
-			return array(
-				'status'      => 'error',
-				'errors'      => array(
-					$regional_trends->get_error_message(),
-				),
-				'form_values' => $validation_result['form_values'],
-			);
-		}
-
-		$preset_reports['regional_trends'] = $regional_trends;
 
 		if ( ! empty( $conditions['comparison_period'] ) && is_array( $conditions['comparison_period'] ) ) {
 			$regional_trends_comparison = Analytics_Report_AI_GA4_Client::run_regional_trends_report(
@@ -481,24 +469,51 @@ final class Analytics_Report_AI_Report_Builder {
 			);
 
 			if ( is_wp_error( $regional_trends_comparison ) ) {
-				return array(
-					'status'      => 'error',
-					'errors'      => array(
-						$regional_trends_comparison->get_error_message(),
-					),
-					'form_values' => $validation_result['form_values'],
-				);
+				return $this->build_ga4_fetch_error_result( $regional_trends_comparison, $form_values );
 			}
 
 			$preset_reports['regional_trends_comparison'] = $regional_trends_comparison;
 		}
 
+		return array(
+			'status'         => 'success',
+			'preset_reports' => $preset_reports,
+		);
+	}
+
+	/**
+	 * Build a safe GA4 fetch error result.
+	 *
+	 * @param WP_Error $error       GA4 error.
+	 * @param array    $form_values Normalized form values.
+	 * @return array
+	 */
+	private function build_ga4_fetch_error_result( $error, $form_values ) {
+		return array(
+			'status'         => 'error',
+			'error_category' => 'ga4_fetch_failed',
+			'errors'         => array(
+				$error->get_error_message(),
+			),
+			'form_values'    => $form_values,
+		);
+	}
+
+	/**
+	 * Build and validate an AI payload from fetched GA4 data.
+	 *
+	 * @param array $conditions  Validated report conditions.
+	 * @param array $ga4_result  GA4 result bundle.
+	 * @param array $form_values Normalized form values.
+	 * @return array
+	 */
+	private function build_payload_from_ga4_result( $conditions, $ga4_result, $form_values ) {
 		$payload = Analytics_Report_AI_Report_Data_Formatter::create_payload_from_ga4_summary(
 			$conditions,
-			$settings,
-			$current_summary,
-			$comparison_summary,
-			$preset_reports,
+			$ga4_result['settings'],
+			$ga4_result['current_summary'],
+			$ga4_result['comparison_summary'],
+			$ga4_result['preset_reports'],
 			analytics_report_ai_get_report_language_profile()
 		);
 
@@ -506,11 +521,12 @@ final class Analytics_Report_AI_Report_Builder {
 
 		if ( is_wp_error( $payload_validation ) ) {
 			return array(
-				'status'      => 'error',
-				'errors'      => array(
+				'status'         => 'error',
+				'error_category' => 'ai_payload_invalid',
+				'errors'         => array(
 					__( 'The GA4 data could not be converted into valid data for AI generation. Please check the settings and try again.', 'studio317-report-drafts-google-analytics' ),
 				),
-				'form_values' => $validation_result['form_values'],
+				'form_values'    => $form_values,
 			);
 		}
 
@@ -518,31 +534,61 @@ final class Analytics_Report_AI_Report_Builder {
 			delete_transient( analytics_report_ai_get_payload_transient_key() );
 
 			return array(
-				'status'      => 'no_data_blocked',
-				'errors'      => array(
+				'status'         => 'no_data_blocked',
+				'error_category' => 'current_period_not_reportable',
+				'errors'         => array(
 					$this->get_generation_block_message( $payload ),
 				),
-				'form_values' => $validation_result['form_values'],
+				'form_values'    => $form_values,
 			);
 		}
 
+		return array(
+			'status'             => 'payload_created',
+			'conditions'         => $conditions,
+			'payload'            => $payload,
+			'current_summary'    => $ga4_result['current_summary'],
+			'comparison_summary' => $ga4_result['comparison_summary'],
+			'preset_reports'     => $ga4_result['preset_reports'],
+			'warnings'           => $this->get_payload_warning_messages( $payload ),
+			'form_values'        => $form_values,
+		);
+	}
+
+	/**
+	 * Store a validated AI payload for the current user.
+	 *
+	 * @param array $payload AI payload.
+	 * @return array
+	 */
+	private function store_payload_for_generation( $payload ) {
 		$transient_key = analytics_report_ai_get_payload_transient_key();
 		$expiration    = analytics_report_ai_get_payload_transient_expiration();
 
 		set_transient( $transient_key, $payload, $expiration );
 
 		return array(
-			'status'             => 'payload_created',
-			'conditions'         => $conditions,
-			'payload'            => $payload,
-			'current_summary'    => $current_summary,
-			'comparison_summary' => $comparison_summary,
-			'preset_reports'     => $preset_reports,
-			'transient_key'      => $transient_key,
-			'expiration'         => $expiration,
-			'warnings'           => $this->get_payload_warning_messages( $payload ),
-			'form_values'        => $validation_result['form_values'],
+			'transient_key' => $transient_key,
+			'expiration'    => $expiration,
 		);
+	}
+
+	/**
+	 * Prepare and generate an AI report directly from report conditions.
+	 *
+	 * This internal path is not exposed as a POST action in this topic.
+	 *
+	 * @param array $form_values Sanitized report condition input.
+	 * @return array
+	 */
+	private function execute_ai_report_from_conditions( $form_values ) {
+		$payload_result = $this->prepare_payload_from_report_conditions( $form_values );
+
+		if ( 'payload_created' !== $payload_result['status'] ) {
+			return $payload_result;
+		}
+
+		return $this->generate_ai_report_from_payload( $payload_result['payload'] );
 	}
 
 	/**
@@ -572,6 +618,21 @@ final class Analytics_Report_AI_Report_Builder {
 	 * @return array
 	 */
 	private function handle_generate_ai_report() {
+		$payload_result = $this->load_saved_payload_for_generation();
+
+		if ( 'payload_ready' !== $payload_result['status'] ) {
+			return $payload_result;
+		}
+
+		return $this->generate_ai_report_from_payload( $payload_result['payload'] );
+	}
+
+	/**
+	 * Load and validate the saved AI payload for generation.
+	 *
+	 * @return array
+	 */
+	private function load_saved_payload_for_generation() {
 		$transient_key = analytics_report_ai_get_payload_transient_key();
 		$payload       = get_transient( $transient_key );
 
@@ -581,8 +642,9 @@ final class Analytics_Report_AI_Report_Builder {
 			delete_transient( $transient_key );
 
 			return array(
-				'status' => 'error',
-				'errors' => array(
+				'status'         => 'error',
+				'error_category' => 'saved_payload_invalid',
+				'errors'         => array(
 					__( 'The saved report data is missing, expired, or no longer valid. Please fetch GA4 data again.', 'studio317-report-drafts-google-analytics' ),
 				),
 			);
@@ -590,37 +652,60 @@ final class Analytics_Report_AI_Report_Builder {
 
 		if ( ! analytics_report_ai_payload_allows_generation( $payload ) ) {
 			return array(
-				'status'     => 'generation_blocked',
-				'errors'     => array(
+				'status'         => 'generation_blocked',
+				'error_category' => 'saved_payload_not_reportable',
+				'errors'         => array(
 					$this->get_generation_block_message( $payload ),
 				),
-				'conditions' => isset( $payload['conditions'] ) && is_array( $payload['conditions'] ) ? $payload['conditions'] : array(),
-				'payload'    => $payload,
-				'warnings'   => $this->get_payload_warning_messages( $payload ),
+				'conditions'     => $this->get_payload_conditions( $payload ),
+				'payload'        => $payload,
+				'warnings'       => $this->get_payload_warning_messages( $payload ),
 			);
 		}
 
+		return array(
+			'status'  => 'payload_ready',
+			'payload' => $payload,
+		);
+	}
+
+	/**
+	 * Generate an AI report from a validated payload.
+	 *
+	 * @param array $payload AI payload.
+	 * @return array
+	 */
+	private function generate_ai_report_from_payload( $payload ) {
 		$report_text = Analytics_Report_AI_AI_Client::generate_report( $payload );
 
 		if ( is_wp_error( $report_text ) ) {
 			return array(
-				'status'     => 'error',
-				'errors'     => array(
+				'status'         => 'error',
+				'error_category' => $report_text->get_error_code(),
+				'errors'         => array(
 					$report_text->get_error_message(),
 				),
-				'conditions' => isset( $payload['conditions'] ) && is_array( $payload['conditions'] ) ? $payload['conditions'] : array(),
-				'payload'    => $payload,
+				'conditions'     => $this->get_payload_conditions( $payload ),
+				'payload'        => $payload,
 			);
 		}
 
-		$conditions = isset( $payload['conditions'] ) && is_array( $payload['conditions'] ) ? $payload['conditions'] : array();
-
 		return array(
 			'status'      => 'report_generated',
-			'conditions'  => $conditions,
+			'conditions'  => $this->get_payload_conditions( $payload ),
 			'payload'     => $payload,
 			'report_text' => $report_text,
 		);
+	}
+
+	/**
+	 * Get validated conditions from a payload.
+	 *
+	 * @param array $payload AI payload.
+	 * @return array
+	 */
+	private function get_payload_conditions( $payload ) {
+		return isset( $payload['conditions'] ) && is_array( $payload['conditions'] ) ? $payload['conditions'] : array();
 	}
 
 	/**
