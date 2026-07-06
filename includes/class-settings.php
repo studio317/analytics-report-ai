@@ -190,7 +190,6 @@ final class Analytics_Report_AI_Settings {
 		$host_name               = isset( $settings['host_name'] ) ? $settings['host_name'] : analytics_report_ai_get_default_host();
 		$google_oauth_client_configuration      = analytics_report_ai_resolve_google_oauth_client_configuration( $settings );
 		$google_oauth_client_source_category    = isset( $google_oauth_client_configuration['source_category'] ) ? $google_oauth_client_configuration['source_category'] : 'missing';
-		$google_oauth_client_fallback_status    = isset( $google_oauth_client_configuration['settings_fallback_status'] ) ? $google_oauth_client_configuration['settings_fallback_status'] : 'not_saved';
 		$google_oauth_client_settings_status    = isset( $google_oauth_client_configuration['settings_status'] ) ? $google_oauth_client_configuration['settings_status'] : 'missing';
 		$has_google_oauth_client_fallback_id    = ! empty( $settings['google_oauth_client']['client_id'] );
 		$has_google_oauth_client_fallback_secret = ! empty( $settings['google_oauth_client']['client_secret'] );
@@ -200,10 +199,6 @@ final class Analytics_Report_AI_Settings {
 		$google_oauth_token_lifecycle_status    = isset( $google_oauth_lifecycle_categories['token_lifecycle_status_category'] ) ? $google_oauth_lifecycle_categories['token_lifecycle_status_category'] : 'reconnect_required';
 		$has_google_oauth_token_storage         = analytics_report_ai_google_oauth_token_storage_exists();
 		$google_oauth_redirect_uri              = $this->get_google_oauth_redirect_uri();
-		$google_oauth_client_source_label       = $this->get_google_oauth_client_source_label( $google_oauth_client_source_category );
-		$google_oauth_client_fallback_label     = $this->get_google_oauth_client_fallback_label( $google_oauth_client_fallback_status );
-		$google_oauth_connection_label          = $this->get_google_oauth_connection_label( $google_oauth_connection_state );
-		$google_oauth_token_lifecycle_label     = $this->get_google_oauth_token_lifecycle_label( $google_oauth_token_lifecycle_status );
 		$google_oauth_is_connected              = 'connected' === $google_oauth_connection_state && 'usable' === $google_oauth_token_lifecycle_status;
 		$google_oauth_needs_reconnect           = ! $google_oauth_is_connected && $has_google_oauth_token_storage;
 		?>
@@ -248,31 +243,6 @@ final class Analytics_Report_AI_Settings {
 				<p>
 					<?php echo esc_html__( 'Connect Google before fetching GA4 data. Token values, authorization codes, provider responses, and option values are never displayed on this screen.', 'studio317-report-drafts-google-analytics' ); ?>
 				</p>
-
-				<table class="widefat striped studio317-report-drafts-google-analytics-status-table">
-					<tbody>
-						<tr>
-							<th scope="row"><?php echo esc_html__( 'OAuth client setup', 'studio317-report-drafts-google-analytics' ); ?></th>
-							<td><?php echo esc_html( $google_oauth_client_source_label ); ?></td>
-						</tr>
-						<tr>
-							<th scope="row"><?php echo esc_html__( 'Saved Settings client', 'studio317-report-drafts-google-analytics' ); ?></th>
-							<td><?php echo esc_html( $google_oauth_client_fallback_label ); ?></td>
-						</tr>
-						<tr>
-							<th scope="row"><?php echo esc_html__( 'Value display', 'studio317-report-drafts-google-analytics' ); ?></th>
-							<td><?php echo esc_html__( 'Hidden', 'studio317-report-drafts-google-analytics' ); ?></td>
-						</tr>
-						<tr>
-							<th scope="row"><?php echo esc_html__( 'Google account connection', 'studio317-report-drafts-google-analytics' ); ?></th>
-							<td><?php echo esc_html( $google_oauth_connection_label ); ?></td>
-						</tr>
-						<tr>
-							<th scope="row"><?php echo esc_html__( 'Token status', 'studio317-report-drafts-google-analytics' ); ?></th>
-							<td><?php echo esc_html( $google_oauth_token_lifecycle_label ); ?></td>
-						</tr>
-					</tbody>
-				</table>
 
 				<p>
 					<label for="studio317-report-drafts-google-analytics-google-oauth-redirect-uri">
@@ -339,27 +309,6 @@ final class Analytics_Report_AI_Settings {
 								/>
 								<p class="description">
 									<?php echo esc_html__( 'Enter the numeric GA4 property ID. Measurement IDs such as G-XXXXXXXXXX are not supported.', 'studio317-report-drafts-google-analytics' ); ?>
-								</p>
-							</td>
-						</tr>
-
-						<tr>
-							<th scope="row">
-								<?php echo esc_html__( 'Google OAuth client settings', 'studio317-report-drafts-google-analytics' ); ?>
-							</th>
-							<td>
-								<p>
-									<strong><?php echo esc_html__( 'Active configuration:', 'studio317-report-drafts-google-analytics' ); ?></strong>
-									<?php echo esc_html( $google_oauth_client_source_label ); ?>
-								</p>
-
-								<p>
-									<strong><?php echo esc_html__( 'Saved Settings values:', 'studio317-report-drafts-google-analytics' ); ?></strong>
-									<?php echo esc_html( $google_oauth_client_fallback_label ); ?>
-								</p>
-
-								<p class="description">
-									<?php echo esc_html__( 'Saved OAuth client values are hidden and are not displayed again. Server configuration takes precedence when available.', 'studio317-report-drafts-google-analytics' ); ?>
 								</p>
 							</td>
 						</tr>
@@ -504,19 +453,6 @@ final class Analytics_Report_AI_Settings {
 							</td>
 						</tr>
 
-						<tr>
-							<th scope="row">
-								<?php echo esc_html__( 'AI generation provider', 'studio317-report-drafts-google-analytics' ); ?>
-							</th>
-							<td>
-								<p>
-									<?php echo esc_html__( 'AI generation uses the AI provider configured by the site administrator in WordPress Settings > Connectors.', 'studio317-report-drafts-google-analytics' ); ?>
-								</p>
-								<p class="description">
-									<?php echo esc_html__( 'This plugin does not store AI provider API keys, choose a provider, or display provider credential values.', 'studio317-report-drafts-google-analytics' ); ?>
-								</p>
-							</td>
-						</tr>
 					</tbody>
 				</table>
 

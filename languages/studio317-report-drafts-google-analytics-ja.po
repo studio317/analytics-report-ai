@@ -3,9 +3,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Studio317 Report Drafts for Google Analytics 0.1.0\n"
-"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/studio317-report-"
-"drafts-google-analytics\n"
-"POT-Creation-Date: 2026-07-01T18:56:17+09:00\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/analytics-report-"
+"ai\n"
+"POT-Creation-Date: 2026-07-06T19:11:28+09:00\n"
 "PO-Revision-Date: 2026-06-30 10:00+0900\n"
 "Last-Translator: Kimiya Watabe / Studio317\n"
 "Language-Team: Japanese\n"
@@ -18,8 +18,8 @@ msgstr ""
 "X-Domain: studio317-report-drafts-google-analytics\n"
 
 #. Plugin Name of the plugin
-#: studio317-report-drafts-google-analytics.php includes/class-admin.php:82
-#: includes/class-admin.php:83
+#: studio317-report-drafts-google-analytics.php includes/class-admin.php:90
+#: includes/class-admin.php:91
 msgid "Studio317 Report Drafts for Google Analytics"
 msgstr "Studio317 Report Drafts for Google Analytics"
 
@@ -42,41 +42,45 @@ msgstr "Kimiya Watabe / Studio317"
 msgid "https://business.s317.com/"
 msgstr "https://business.s317.com/"
 
-#: includes/class-admin.php:93 includes/class-admin.php:94
-#: includes/class-report-builder.php:67
+#: includes/class-admin.php:101 includes/class-admin.php:102
+#: includes/class-report-builder.php:47
 msgid "Report Builder"
 msgstr "レポートビルダー"
 
-#: includes/class-admin.php:102 includes/class-admin.php:103
-#: includes/class-report-builder.php:84
+#: includes/class-admin.php:110 includes/class-admin.php:111
+#: includes/class-status-page.php:50
+msgid "Current Status"
+msgstr "現在の状況"
+
+#: includes/class-admin.php:119 includes/class-admin.php:120
 msgid "Settings"
 msgstr "設定"
 
-#: includes/class-admin.php:142
+#: includes/class-admin.php:159
 msgid ""
 "Directory scope matches paths that start with the entered path, such as /"
 "blog/."
 msgstr ""
 "ディレクトリ範囲では、/blog/ など入力したパスで始まるページを対象にします。"
 
-#: includes/class-admin.php:143
+#: includes/class-admin.php:160
 msgid "Page scope matches the exact normalized path, such as /about."
 msgstr "ページ範囲では、/about など正規化された完全一致のパスを対象にします。"
 
-#: includes/class-admin.php:144
+#: includes/class-admin.php:161
 msgid "Copied."
 msgstr "コピーしました。"
 
-#: includes/class-admin.php:145
+#: includes/class-admin.php:162
 msgid "Copy failed. Please select and copy manually."
 msgstr "コピーできませんでした。選択して手動でコピーしてください。"
 
-#: includes/class-admin.php:146
+#: includes/class-admin.php:163
 msgid "Nothing to copy."
 msgstr "コピーする内容がありません。"
 
-#: includes/class-admin.php:183 includes/class-admin.php:276
-#: includes/class-admin.php:321
+#: includes/class-admin.php:200 includes/class-admin.php:293
+#: includes/class-admin.php:338
 msgid ""
 "You do not have permission to manage Studio317 Report Drafts for Google "
 "Analytics credentials."
@@ -84,12 +88,12 @@ msgstr ""
 "Studio317 Report Drafts for Google Analytics の認証情報を管理する権限がありま"
 "せん。"
 
-#: includes/class-admin.php:184 includes/class-admin.php:277
-#: includes/class-admin.php:322
+#: includes/class-admin.php:201 includes/class-admin.php:294
+#: includes/class-admin.php:339
 msgid "Permission denied"
 msgstr "権限がありません"
 
-#: includes/class-ai-client.php:142 includes/class-report-builder.php:1151
+#: includes/class-ai-client.php:142 includes/class-report-builder.php:1049
 msgid ""
 "AI text generation is unavailable. Configure a compatible text-generation "
 "provider in WordPress Settings > Connectors before generating a report draft."
@@ -115,11 +119,11 @@ msgstr ""
 "さい。サポート依頼では、認証情報、リクエストデータ、プロバイダーのレスポン"
 "ス、生成されたレポート本文を共有しないでください。"
 
-#: includes/class-ga4-client.php:271
+#: includes/class-ga4-client.php:258
 msgid "GA4 Property ID is not configured."
 msgstr "GA4プロパティIDが設定されていません。"
 
-#: includes/class-ga4-client.php:278
+#: includes/class-ga4-client.php:265
 msgid ""
 "No Google connection is available for GA4 Fetch. Connect Google in Settings "
 "and try again."
@@ -127,11 +131,11 @@ msgstr ""
 "GA4データ取得に使用できるGoogle接続がありません。設定でGoogleに接続してから再"
 "試行してください。"
 
-#: includes/class-ga4-client.php:290
+#: includes/class-ga4-client.php:277
 msgid "GA4 report period is invalid."
 msgstr "GA4レポート期間が無効です。"
 
-#: includes/class-ga4-client.php:344
+#: includes/class-ga4-client.php:331
 msgid ""
 "Could not connect to Google Analytics Data API. Check the server network "
 "connection and try again."
@@ -139,7 +143,7 @@ msgstr ""
 "Google Analytics Data API に接続できませんでした。サーバーのネットワーク接続"
 "を確認して再試行してください。"
 
-#: includes/class-ga4-client.php:359
+#: includes/class-ga4-client.php:346
 msgid ""
 "Google Analytics Data API returned an unreadable response. Please try again "
 "later."
@@ -147,7 +151,7 @@ msgstr ""
 "Google Analytics Data API から読み取れないレスポンスが返されました。時間をお"
 "いて再試行してください。"
 
-#: includes/class-ga4-client.php:649 includes/class-ga4-client.php:673
+#: includes/class-ga4-client.php:677 includes/class-ga4-client.php:701
 msgid ""
 "Google Analytics Data API rejected the report request. Check the GA4 "
 "property ID, date range, and report filters."
@@ -155,7 +159,7 @@ msgstr ""
 "Google Analytics Data API がレポートリクエストを拒否しました。GA4プロパティ"
 "ID、期間、レポートフィルターを確認してください。"
 
-#: includes/class-ga4-client.php:653 includes/class-ga4-client.php:677
+#: includes/class-ga4-client.php:681 includes/class-ga4-client.php:705
 msgid ""
 "Google credential is invalid or expired. Reconnect Google in Settings and "
 "try again."
@@ -163,7 +167,7 @@ msgstr ""
 "Google認証情報が無効または期限切れです。設定でGoogleに再接続してから再試行し"
 "てください。"
 
-#: includes/class-ga4-client.php:657 includes/class-ga4-client.php:681
+#: includes/class-ga4-client.php:685 includes/class-ga4-client.php:709
 msgid ""
 "Google Analytics Data API permission was denied. Check that the token has "
 "access to the selected GA4 property."
@@ -171,7 +175,7 @@ msgstr ""
 "Google Analytics Data API の権限が拒否されました。選択したGA4プロパティにトー"
 "クンがアクセスできるか確認してください。"
 
-#: includes/class-ga4-client.php:661 includes/class-ga4-client.php:685
+#: includes/class-ga4-client.php:689 includes/class-ga4-client.php:713
 msgid ""
 "GA4 property was not found. Check that the property ID is correct and that "
 "the token can access it."
@@ -179,7 +183,7 @@ msgstr ""
 "GA4プロパティが見つかりません。プロパティIDが正しいことと、トークンがアクセス"
 "できることを確認してください。"
 
-#: includes/class-ga4-client.php:665 includes/class-ga4-client.php:689
+#: includes/class-ga4-client.php:693 includes/class-ga4-client.php:717
 msgid ""
 "Google Analytics Data API rate limit may have been exceeded. Please wait and "
 "try again later."
@@ -187,14 +191,14 @@ msgstr ""
 "Google Analytics Data API のレート制限に達した可能性があります。しばらく待っ"
 "てから再試行してください。"
 
-#: includes/class-ga4-client.php:669 includes/class-ga4-client.php:693
+#: includes/class-ga4-client.php:697 includes/class-ga4-client.php:721
 msgid ""
 "Google Analytics Data API is temporarily unavailable. Please try again later."
 msgstr ""
 "Google Analytics Data API は一時的に利用できません。時間をおいて再試行してく"
 "ださい。"
 
-#: includes/class-ga4-client.php:696
+#: includes/class-ga4-client.php:724
 msgid ""
 "Google Analytics Data API returned an unexpected error. Check the settings "
 "and try again."
@@ -203,114 +207,41 @@ msgstr ""
 "再試行してください。"
 
 #. translators: 1: safe user-facing error message, 2: HTTP status code.
-#: includes/class-ga4-client.php:731
+#: includes/class-ga4-client.php:759
 #, php-format
 msgid "%1$s HTTP status: %2$d"
 msgstr "%1$s HTTPステータス: %2$d"
 
-#. translators: %s: Settings screen link.
-#: includes/class-report-builder.php:77
-#, php-format
-msgid "Current setup (configure %s first)"
-msgstr "現在の設定状況（はじめに%sしてください）"
-
-#: includes/class-report-builder.php:92 includes/class-settings.php:328
-msgid "GA4 Property ID"
-msgstr "GA4プロパティID"
-
-#: includes/class-report-builder.php:98 includes/class-report-builder.php:120
-#: includes/class-settings.php:656
-msgid "Not configured"
-msgstr "未設定"
-
-#: includes/class-report-builder.php:104 includes/class-settings.php:471
-msgid "Host Name Filter"
-msgstr "ホスト名フィルター"
-
-#: includes/class-report-builder.php:107
-msgid "Enabled"
-msgstr "有効"
-
-#: includes/class-report-builder.php:109
-msgid "Not in use"
-msgstr "未使用"
-
-#: includes/class-report-builder.php:114 includes/class-settings.php:490
-msgid "Host Name"
-msgstr "ホスト名"
-
-#: includes/class-report-builder.php:126 includes/class-settings.php:246
-msgid "Google connection"
-msgstr "Google接続"
-
-#: includes/class-report-builder.php:137 includes/class-report-builder.php:142
+#: includes/class-report-builder.php:50
 msgid ""
-"Connect or reconnect Google in Settings before fetching GA4 data. Token "
-"values are hidden."
+"AI summarizes data fetched from Google Analytics (GA4) to create a report "
+"draft."
 msgstr ""
-"GA4データを取得する前に、設定でGoogleに接続または再接続してください。トークン"
-"値は非表示です。"
+"Google Analytics (GA4) から取得したデータを AI が要約してレポートを作成。"
 
-#: includes/class-report-builder.php:148 includes/class-settings.php:509
-msgid "AI generation provider"
-msgstr "AI生成プロバイダー"
-
-#: includes/class-report-builder.php:158
-msgid ""
-"AI generation uses the provider configured by the site administrator in "
-"WordPress Settings > Connectors. Provider credentials and model details are "
-"not displayed by this plugin."
-msgstr ""
-"AI生成では、サイト管理者が WordPress 設定 > Connectors で設定したプロバイダー"
-"を使用します。このプラグインはプロバイダー認証情報やモデル詳細を表示しませ"
-"ん。"
-
-#: includes/class-report-builder.php:163
-msgid "Report language"
-msgstr "レポート言語"
-
-#: includes/class-report-builder.php:167
-msgid ""
-"The report draft language is resolved from the current WordPress user "
-"language, then the site language, then English. The WordPress timezone is "
-"not used to choose the report language."
-msgstr ""
-"レポート下書きの言語は、現在のWordPressユーザー言語、サイト言語、英語の順で決"
-"定されます。WordPressのタイムゾーンはレポート言語の判定には使用されません。"
-
-#: includes/class-report-builder.php:175
-msgid ""
-"This screen uses a two-step flow: fetch GA4 data first, review the Data "
-"Preview, then generate a report draft in the current WordPress user language "
-"through the WordPress AI Client."
-msgstr ""
-"この画面では、まずGA4データを取得し、データプレビューを確認してから、"
-"WordPress AI Client を通じて現在のWordPressユーザー言語に合わせたレポート下書"
-"きを生成します。"
-
-#: includes/class-report-builder.php:183
+#: includes/class-report-builder.php:59
 msgid "Report Conditions"
 msgstr "レポート条件"
 
-#: includes/class-report-builder.php:189 includes/class-report-builder.php:950
+#: includes/class-report-builder.php:65 includes/class-report-builder.php:848
 msgid "Date Range"
 msgstr "期間"
 
-#: includes/class-report-builder.php:193
+#: includes/class-report-builder.php:69
 msgid "Start Date"
 msgstr "開始日"
 
-#: includes/class-report-builder.php:203
+#: includes/class-report-builder.php:79
 msgid "End Date"
 msgstr "終了日"
 
-#: includes/class-report-builder.php:213
+#: includes/class-report-builder.php:89
 msgid ""
 "The default date range is the previous month based on the WordPress timezone."
 msgstr "デフォルトの期間は、WordPressのタイムゾーンに基づく前月です。"
 
 #. translators: %d: maximum number of report days.
-#: includes/class-report-builder.php:220
+#: includes/class-report-builder.php:96
 #, php-format
 msgid ""
 "The report period is limited to %d days to keep GA4 requests and report data "
@@ -319,12 +250,12 @@ msgstr ""
 "GA4リクエストとレポートデータを扱いやすく保つため、レポート期間は%d日までに制"
 "限されています。"
 
-#: includes/class-report-builder.php:230 includes/class-report-builder.php:235
-#: includes/class-report-builder.php:958 includes/class-report-builder.php:1506
+#: includes/class-report-builder.php:106 includes/class-report-builder.php:111
+#: includes/class-report-builder.php:856 includes/class-report-builder.php:1404
 msgid "Comparison"
 msgstr "比較"
 
-#: includes/class-report-builder.php:252
+#: includes/class-report-builder.php:128
 msgid ""
 "When comparison is enabled, the selected period is shifted to the previous "
 "month or previous year and fetched separately from GA4."
@@ -332,16 +263,16 @@ msgstr ""
 "比較を有効にすると、選択期間を前月または前年にずらした期間をGA4から別途取得し"
 "ます。"
 
-#: includes/class-report-builder.php:259 includes/class-report-builder.php:264
-#: includes/class-report-builder.php:974
+#: includes/class-report-builder.php:135 includes/class-report-builder.php:140
+#: includes/class-report-builder.php:872
 msgid "Data Scope"
 msgstr "データ範囲"
 
-#: includes/class-report-builder.php:283
+#: includes/class-report-builder.php:159
 msgid "Path"
 msgstr "パス"
 
-#: includes/class-report-builder.php:297
+#: includes/class-report-builder.php:173
 msgid ""
 "For directory scope, enter a path such as /blog/. For page scope, enter a "
 "path such as /about."
@@ -349,7 +280,7 @@ msgstr ""
 "ディレクトリ範囲では /blog/ のようなパスを入力します。ページ範囲では /about "
 "のようなパスを入力します。"
 
-#: includes/class-report-builder.php:302
+#: includes/class-report-builder.php:178
 msgid ""
 "Site scope covers all paths. Directory scope matches paths that start with "
 "the entered path. Page scope matches the exact normalized path. Full URLs "
@@ -359,11 +290,11 @@ msgstr ""
 "るパスに一致し、ページ範囲は正規化されたパスに完全一致します。完全なURLは使用"
 "できません。"
 
-#: includes/class-report-builder.php:310
+#: includes/class-report-builder.php:186
 msgid "Data sent to Google Analytics Data API"
 msgstr "Google Analytics Data API に送信されるデータ"
 
-#: includes/class-report-builder.php:313
+#: includes/class-report-builder.php:189
 msgid ""
 "When you click Fetch GA4 Data, the selected date range, comparison setting, "
 "data scope, host name/path filters, and required metrics/dimensions are sent "
@@ -373,11 +304,11 @@ msgstr ""
 "ト名・パスのフィルター、必要な指標とディメンションが Google Analytics Data "
 "API に送信されます。"
 
-#: includes/class-report-builder.php:318
+#: includes/class-report-builder.php:194
 msgid "AI provider credentials are not sent to Google by this plugin."
 msgstr "このプラグインは AI プロバイダー認証情報を Google に送信しません。"
 
-#: includes/class-report-builder.php:321
+#: includes/class-report-builder.php:197
 msgid ""
 "WordPress user identifiers, cookies, and IP addresses are not included in "
 "this GA4 request body by design."
@@ -385,11 +316,11 @@ msgstr ""
 "このGA4リクエスト本文には、設計上、WordPressユーザー識別子、Cookie、IPアドレ"
 "スは含まれません。"
 
-#: includes/class-report-builder.php:328
+#: includes/class-report-builder.php:204
 msgid "Fetch GA4 Data"
 msgstr "GA4データを取得"
 
-#: includes/class-report-builder.php:333
+#: includes/class-report-builder.php:209
 msgid ""
 "Fetch GA4 Data validates the conditions, fetches GA4 preset reports, and "
 "creates a Data Preview."
@@ -397,21 +328,21 @@ msgstr ""
 "「GA4データを取得」では、条件を確認し、GA4のプリセットレポートを取得して送信"
 "データのプレビューを作成します。"
 
-#: includes/class-report-builder.php:360
+#: includes/class-report-builder.php:236
 msgid "You do not have permission to perform this action."
 msgstr "この操作を行う権限がありません。"
 
-#: includes/class-report-builder.php:373
+#: includes/class-report-builder.php:249
 msgid "Security check failed. Please reload the page and try again."
 msgstr ""
 "セキュリティチェックに失敗しました。ページを再読み込みして再試行してくださ"
 "い。"
 
-#: includes/class-report-builder.php:393
+#: includes/class-report-builder.php:269
 msgid "Invalid action."
 msgstr "無効な操作です。"
 
-#: includes/class-report-builder.php:608
+#: includes/class-report-builder.php:506
 msgid ""
 "The GA4 data could not be converted into valid data for AI generation. "
 "Please check the settings and try again."
@@ -419,7 +350,7 @@ msgstr ""
 "GA4データをAI生成に使用できる有効なデータへ変換できませんでした。設定を確認し"
 "て再試行してください。"
 
-#: includes/class-report-builder.php:656
+#: includes/class-report-builder.php:554
 msgid ""
 "Google connection needs to be renewed before GA4 data can be fetched. Open "
 "Settings, reconnect Google, and try again. Credential values are not "
@@ -428,7 +359,7 @@ msgstr ""
 "GA4データを取得する前にGoogle接続の更新が必要です。設定を開いてGoogleに再接続"
 "し、再試行してください。認証情報の値は表示されません。"
 
-#: includes/class-report-builder.php:660
+#: includes/class-report-builder.php:558
 msgid ""
 "Google connection is not ready for GA4 requests. Open Settings, reconnect "
 "Google, and try again. Credential values are not displayed."
@@ -436,7 +367,7 @@ msgstr ""
 "Google接続はGA4リクエストに使用できる状態ではありません。設定を開いてGoogleに"
 "再接続し、再試行してください。認証情報の値は表示されません。"
 
-#: includes/class-report-builder.php:663
+#: includes/class-report-builder.php:561
 msgid ""
 "Google connection is not configured. Open Settings, configure Google OAuth, "
 "connect your Google account, and try again. Credential values are not "
@@ -445,7 +376,7 @@ msgstr ""
 "Google接続が設定されていません。設定を開いてGoogle OAuthを設定し、Googleアカ"
 "ウントに接続してから再試行してください。認証情報の値は表示されません。"
 
-#: includes/class-report-builder.php:683
+#: includes/class-report-builder.php:581
 msgid ""
 "The saved report data is missing, expired, or no longer valid. Please fetch "
 "GA4 data again."
@@ -453,35 +384,35 @@ msgstr ""
 "一時保存されたレポートデータが見つからない、期限切れ、または無効です。GA4デー"
 "タを再取得してください。"
 
-#: includes/class-report-builder.php:736
+#: includes/class-report-builder.php:634
 msgid "Start date is invalid."
 msgstr "開始日が無効です。"
 
-#: includes/class-report-builder.php:740
+#: includes/class-report-builder.php:638
 msgid "End date is invalid."
 msgstr "終了日が無効です。"
 
-#: includes/class-report-builder.php:748
+#: includes/class-report-builder.php:646
 msgid "End date must be the same as or later than start date."
 msgstr "終了日は開始日以降の日付にしてください。"
 
 #. translators: %d: maximum report period days.
-#: includes/class-report-builder.php:762
+#: includes/class-report-builder.php:660
 #, php-format
 msgid ""
 "The report period cannot exceed %d days. Please choose a shorter date range."
 msgstr ""
 "レポート期間は%d日を超えることはできません。より短い期間を選択してください。"
 
-#: includes/class-report-builder.php:772
+#: includes/class-report-builder.php:670
 msgid "Comparison option is invalid."
 msgstr "比較オプションが無効です。"
 
-#: includes/class-report-builder.php:780
+#: includes/class-report-builder.php:678
 msgid "Data scope is invalid."
 msgstr "データ範囲が無効です。"
 
-#: includes/class-report-builder.php:823
+#: includes/class-report-builder.php:721
 msgid ""
 "Comparison period could not be calculated. Please choose a different date "
 "range or comparison option."
@@ -489,65 +420,65 @@ msgstr ""
 "比較期間を計算できませんでした。別の期間または比較オプションを選択してくださ"
 "い。"
 
-#: includes/class-report-builder.php:868
+#: includes/class-report-builder.php:766
 msgid ""
 "GA4 data was fetched and the data for AI generation was prepared with "
 "warnings."
 msgstr "GA4データを取得し、警告付きでAI生成用データを準備しました。"
 
-#: includes/class-report-builder.php:880
+#: includes/class-report-builder.php:778
 msgid ""
 "GA4 preset reports were fetched and the data for AI generation was prepared "
 "successfully."
 msgstr "GA4のプリセットレポートを取得し、AI生成用データを準備しました。"
 
-#: includes/class-report-builder.php:890
+#: includes/class-report-builder.php:788
 msgid "AI report was generated."
 msgstr "AIレポートを生成しました。"
 
-#: includes/class-report-builder.php:891
+#: includes/class-report-builder.php:789
 msgid "View the generated report draft."
 msgstr "生成レポート下書きを見る。"
 
-#: includes/class-report-builder.php:914
+#: includes/class-report-builder.php:812
 msgid "Please fix the following errors."
 msgstr "以下のエラーを修正してください。"
 
-#: includes/class-report-builder.php:945
+#: includes/class-report-builder.php:843
 msgid "Validated Conditions"
 msgstr "検証済み条件"
 
-#: includes/class-report-builder.php:962 includes/class-report-builder.php:1297
+#: includes/class-report-builder.php:860 includes/class-report-builder.php:1195
 msgid "Comparison Period"
 msgstr "比較期間"
 
-#: includes/class-report-builder.php:969 includes/class-report-builder.php:983
+#: includes/class-report-builder.php:867 includes/class-report-builder.php:881
 msgid "None"
 msgstr "なし"
 
-#: includes/class-report-builder.php:978
+#: includes/class-report-builder.php:876
 msgid "Normalized Path"
 msgstr "正規化パス"
 
 #. translators: 1: report language name, 2: output locale.
-#: includes/class-report-builder.php:1011
+#: includes/class-report-builder.php:909 includes/class-status-page.php:357
 #, php-format
 msgid "Report language: %1$s (%2$s)"
 msgstr "生成するレポートの言語: %1$s（%2$s）"
 
-#: includes/class-report-builder.php:1041
+#: includes/class-report-builder.php:939
 msgid "AI Data Preview"
 msgstr "AI送信データのプレビュー"
 
 #. translators: %d: number of minutes the report data is saved temporarily.
-#: includes/class-report-builder.php:1047
+#: includes/class-report-builder.php:945
 #, php-format
 msgid ""
 "The data to be sent through the WordPress AI Client has been saved "
 "temporarily for %d minutes."
 msgstr "WordPress AI Client を通じて送信するデータを%d分間一時保存しました。"
 
-#: includes/class-report-builder.php:1054
+#: includes/class-report-builder.php:952
 msgid ""
 "The reviewed report data is stored temporarily for this user and expires "
 "automatically."
@@ -555,15 +486,15 @@ msgstr ""
 "確認済みのレポートデータはこのユーザー向けに一時保存され、自動的に期限切れに"
 "なります。"
 
-#: includes/class-report-builder.php:1070
+#: includes/class-report-builder.php:968
 msgid "Structured pre-send review"
 msgstr "送信前の構造化レビュー"
 
-#: includes/class-report-builder.php:1073
+#: includes/class-report-builder.php:971
 msgid "Review this structured summary before sending data to AI."
 msgstr "AIにデータを送信する前に、この構造化された要約を確認してください。"
 
-#: includes/class-report-builder.php:1077
+#: includes/class-report-builder.php:975
 msgid ""
 "This preview focuses on report conditions, data availability, warnings, and "
 "generation readiness."
@@ -571,13 +502,13 @@ msgstr ""
 "このプレビューでは、レポート条件、データの利用可否、警告、生成準備状況を確認"
 "できます。"
 
-#: includes/class-report-builder.php:1081
+#: includes/class-report-builder.php:979
 msgid ""
 "Use the status and warning information below to decide whether to generate a "
 "report."
 msgstr "以下の状態と警告情報を確認して、レポートを生成するか判断してください。"
 
-#: includes/class-report-builder.php:1085
+#: includes/class-report-builder.php:983
 msgid ""
 "The reviewed report data can include host name, page path, traffic channel/"
 "source, city/country regional labels, summary metrics, and comparison "
@@ -586,7 +517,7 @@ msgstr ""
 "確認済みのレポートデータには、ホスト名、ページパス、トラフィックチャネル/ソー"
 "ス、都市/国の地域ラベル、概要指標、比較差分が含まれる場合があります。"
 
-#: includes/class-report-builder.php:1089
+#: includes/class-report-builder.php:987
 msgid ""
 "Credentials are not included in the data sent through the WordPress AI "
 "Client. Google access tokens, AI provider credentials, GA4 Property ID, "
@@ -597,7 +528,7 @@ msgstr ""
 "クセストークン、AIプロバイダー認証情報、GA4プロパティID、WordPressユーザー識"
 "別子、Cookie、IPアドレスは設計上含まれません。"
 
-#: includes/class-report-builder.php:1093
+#: includes/class-report-builder.php:991
 msgid ""
 "Page paths and traffic sources can still be sensitive business analytics "
 "information, so review the data before sending it."
@@ -605,7 +536,7 @@ msgstr ""
 "ページパスやトラフィックソースは機密性のあるビジネス分析情報になり得るため、"
 "送信前にデータを確認してください。"
 
-#: includes/class-report-builder.php:1097
+#: includes/class-report-builder.php:995
 msgid ""
 "For support, share visible status messages, warning messages, or general "
 "error names only. Do not share credentials, option values, request or "
@@ -617,36 +548,36 @@ msgstr ""
 "文、AI送信データのJSON、生成レポート本文、スクリーンショット、ブラウザの"
 "Network証跡は共有しないでください。"
 
-#: includes/class-report-builder.php:1102
-#: includes/class-report-builder.php:1291
+#: includes/class-report-builder.php:1000
+#: includes/class-report-builder.php:1189
 msgid "Daily Trend"
 msgstr "日別推移"
 
-#: includes/class-report-builder.php:1103
-#: includes/class-report-builder.php:1292
+#: includes/class-report-builder.php:1001
+#: includes/class-report-builder.php:1190
 msgid "Top Pages"
 msgstr "上位ページ"
 
-#: includes/class-report-builder.php:1104
-#: includes/class-report-builder.php:1293
+#: includes/class-report-builder.php:1002
+#: includes/class-report-builder.php:1191
 msgid "Traffic Channels"
 msgstr "トラフィックチャネル"
 
-#: includes/class-report-builder.php:1105
-#: includes/class-report-builder.php:1294
+#: includes/class-report-builder.php:1003
+#: includes/class-report-builder.php:1192
 msgid "Traffic Sources"
 msgstr "トラフィックソース"
 
-#: includes/class-report-builder.php:1106
-#: includes/class-report-builder.php:1295
+#: includes/class-report-builder.php:1004
+#: includes/class-report-builder.php:1193
 msgid "Regional Trends"
 msgstr "地域別推移"
 
-#: includes/class-report-builder.php:1109
+#: includes/class-report-builder.php:1007
 msgid "Data sent through the WordPress AI Client"
 msgstr "WordPress AI Client を通じて送信されるデータ"
 
-#: includes/class-report-builder.php:1112
+#: includes/class-report-builder.php:1010
 msgid ""
 "When you generate an AI report, the reviewed report data and selected report "
 "language are sent through the WordPress AI Client to the AI provider "
@@ -656,7 +587,7 @@ msgstr ""
 "WordPress AI Client を通じてサイト管理者が設定したAIプロバイダーへ送信されま"
 "す。"
 
-#: includes/class-report-builder.php:1116
+#: includes/class-report-builder.php:1014
 msgid ""
 "Generating a report may consume usage with the configured AI provider. "
 "Provider terms, privacy practices, billing, retention, and credential "
@@ -666,32 +597,32 @@ msgstr ""
 "プロバイダーの規約、プライバシー慣行、課金、保持、認証情報管理は、WordPress "
 "で設定されたプロバイダーに依存します。"
 
-#: includes/class-report-builder.php:1120
+#: includes/class-report-builder.php:1018
 msgid ""
 "The generated result is a draft. Review and edit it before publishing, "
 "sharing, or sending it."
 msgstr "生成結果は下書きです。公開、共有、送信の前に確認・編集してください。"
 
-#: includes/class-report-builder.php:1134
+#: includes/class-report-builder.php:1032
 msgid "The current report text will be overwritten. Continue?"
 msgstr "現在のレポート本文が上書きされます。続行しますか？"
 
-#: includes/class-report-builder.php:1139
+#: includes/class-report-builder.php:1037
 msgid "Regenerate AI Report"
 msgstr "AIレポートを再生成"
 
-#: includes/class-report-builder.php:1140
+#: includes/class-report-builder.php:1038
 msgid "Generate AI Report"
 msgstr "AIレポートを生成"
 
-#: includes/class-report-builder.php:1149
+#: includes/class-report-builder.php:1047
 msgid ""
 "AI generation is not available because the current-period data is not "
 "reportable for the selected conditions."
 msgstr ""
 "選択条件の現在期間データがレポート可能ではないため、AI生成は利用できません。"
 
-#: includes/class-report-builder.php:1153
+#: includes/class-report-builder.php:1051
 msgid ""
 "Use Generate AI Report only after reviewing the structured Data Preview and "
 "any visible warnings. The report draft is generated through the WordPress AI "
@@ -701,11 +632,11 @@ msgstr ""
 "「AIレポートを生成」を使用してください。レポート下書きは WordPress AI Client "
 "を通じて生成されます。"
 
-#: includes/class-report-builder.php:1184
+#: includes/class-report-builder.php:1082
 msgid "Review these GA4 data warnings before generating a report."
 msgstr "レポート生成前に、これらのGA4データ警告を確認してください。"
 
-#: includes/class-report-builder.php:1190
+#: includes/class-report-builder.php:1088
 msgid ""
 "Generation is available, but warnings may limit what the generated draft "
 "should claim."
@@ -713,7 +644,7 @@ msgstr ""
 "生成は可能ですが、警告によって生成下書きで述べられる内容が制限される場合があ"
 "ります。"
 
-#: includes/class-report-builder.php:1207
+#: includes/class-report-builder.php:1105
 msgid ""
 "AI generation is not available because the current-period data is not "
 "reportable for the selected conditions. Change the date range or scope and "
@@ -722,7 +653,7 @@ msgstr ""
 "選択条件の現在期間データがレポート可能ではないため、AI生成は利用できません。"
 "期間または範囲を変更してGA4データを再取得してください。"
 
-#: includes/class-report-builder.php:1210
+#: includes/class-report-builder.php:1108
 msgid ""
 "AI generation is not available because the saved report data is not "
 "reportable. Fetch GA4 data again before generating a report."
@@ -730,7 +661,7 @@ msgstr ""
 "一時保存されたレポートデータがレポート可能ではないため、AI生成は利用できませ"
 "ん。レポート生成前にGA4データを再取得してください。"
 
-#: includes/class-report-builder.php:1249
+#: includes/class-report-builder.php:1147
 msgid ""
 "The current-period summary contains explicit zero activity. This is treated "
 "as measured zero activity, not as a GA4 API error."
@@ -738,7 +669,7 @@ msgstr ""
 "現在期間の概要には明示的なゼロ活動が含まれています。これはGA4 APIエラーではな"
 "く、測定されたゼロ活動として扱われます。"
 
-#: includes/class-report-builder.php:1253
+#: includes/class-report-builder.php:1151
 msgid ""
 "Some current-period summary metrics were unavailable, so the report should "
 "treat the summary as partial."
@@ -746,7 +677,7 @@ msgstr ""
 "現在期間の一部の概要指標が利用できないため、レポートでは概要を部分的なものと"
 "して扱う必要があります。"
 
-#: includes/class-report-builder.php:1257
+#: includes/class-report-builder.php:1155
 msgid ""
 "Current-period summary metrics were unavailable, but detail rows were "
 "present. Review the partial report data before generating."
@@ -754,7 +685,7 @@ msgstr ""
 "現在期間の概要指標は利用できませんでしたが、詳細行は存在します。生成前に部分"
 "的なレポートデータを確認してください。"
 
-#: includes/class-report-builder.php:1261
+#: includes/class-report-builder.php:1159
 msgid ""
 "Comparison-period data is unavailable. Generated text should avoid "
 "comparison claims."
@@ -762,7 +693,7 @@ msgstr ""
 "比較期間データが利用できません。生成文では比較に関する主張を避ける必要があり"
 "ます。"
 
-#: includes/class-report-builder.php:1265
+#: includes/class-report-builder.php:1163
 msgid ""
 "The comparison period contains explicit zero activity, so comparison wording "
 "may be limited."
@@ -770,7 +701,7 @@ msgstr ""
 "比較期間には明示的なゼロ活動が含まれるため、比較表現が制限される場合がありま"
 "す。"
 
-#: includes/class-report-builder.php:1269
+#: includes/class-report-builder.php:1167
 msgid ""
 "Some comparison-period summary metrics were unavailable, so comparison "
 "wording may be limited."
@@ -779,37 +710,37 @@ msgstr ""
 "す。"
 
 #. translators: %s: safe GA4 preset label.
-#: includes/class-report-builder.php:1275
+#: includes/class-report-builder.php:1173
 #, php-format
 msgid "%s rows are unavailable for the selected conditions."
 msgstr "選択条件では%sの行が利用できません。"
 
-#: includes/class-report-builder.php:1280
+#: includes/class-report-builder.php:1178
 msgid "The report data includes a GA4 data availability warning."
 msgstr "レポートデータにはGA4データ利用可否に関する警告が含まれています。"
 
-#: includes/class-report-builder.php:1296
-#: includes/class-report-builder.php:1499
+#: includes/class-report-builder.php:1194
+#: includes/class-report-builder.php:1397
 msgid "Summary Metrics"
 msgstr "概要指標"
 
-#: includes/class-report-builder.php:1300
+#: includes/class-report-builder.php:1198
 msgid "GA4 detail"
 msgstr "GA4詳細"
 
-#: includes/class-report-builder.php:1322
+#: includes/class-report-builder.php:1220
 msgid "Generated Report Draft"
 msgstr "生成レポート下書き"
 
-#: includes/class-report-builder.php:1325
+#: includes/class-report-builder.php:1223
 msgid "Review and edit the generated draft before using it."
 msgstr "使用する前に、生成された下書きを確認・編集してください。"
 
-#: includes/class-report-builder.php:1329
+#: includes/class-report-builder.php:1227
 msgid "The plugin does not save generated report text."
 msgstr "プラグインは生成レポート本文を保存しません。"
 
-#: includes/class-report-builder.php:1333
+#: includes/class-report-builder.php:1231
 msgid ""
 "This AI-generated text is a draft. Review and edit it before publishing, "
 "sharing, or sending it."
@@ -817,59 +748,60 @@ msgstr ""
 "このAI生成テキストは下書きです。公開、共有、送信の前に確認・編集してくださ"
 "い。"
 
-#: includes/class-report-builder.php:1337
+#: includes/class-report-builder.php:1235
 msgid "Copying the report text is a user-initiated action."
 msgstr "レポート本文のコピーはユーザーが開始する操作です。"
 
-#: includes/class-report-builder.php:1353
+#: includes/class-report-builder.php:1251
 msgid "Copy Report Text"
 msgstr "レポート本文をコピー"
 
-#: includes/class-report-builder.php:1374
+#: includes/class-report-builder.php:1272
 msgid "Ready to fetch GA4 data"
 msgstr "GA4データを取得できます"
 
-#: includes/class-report-builder.php:1378
+#: includes/class-report-builder.php:1276
 msgid "Reconnect Google before fetching GA4 data"
 msgstr "GA4データ取得前にGoogleへ再接続してください"
 
-#: includes/class-report-builder.php:1381 includes/class-settings.php:692
+#: includes/class-report-builder.php:1279 includes/class-settings.php:628
+#: includes/class-status-page.php:243
 msgid "Not connected"
 msgstr "未接続"
 
-#: includes/class-report-builder.php:1449
+#: includes/class-report-builder.php:1347
 msgid "Reconnect Google in Settings before fetching GA4 data."
 msgstr "GA4データ取得前にGoogleへ再接続してください。"
 
-#: includes/class-report-builder.php:1453
+#: includes/class-report-builder.php:1351 includes/class-status-page.php:150
 msgid "Open Google connection settings"
 msgstr "Google接続設定を開く"
 
-#: includes/class-report-builder.php:1482
+#: includes/class-report-builder.php:1380 includes/class-status-page.php:335
 msgid "Ready to check before generation"
 msgstr "生成前に確認できます"
 
-#: includes/class-report-builder.php:1485
+#: includes/class-report-builder.php:1383 includes/class-status-page.php:338
 msgid "AI text generation unavailable"
 msgstr "AIテキスト生成を利用できません"
 
-#: includes/class-report-builder.php:1504
+#: includes/class-report-builder.php:1402
 msgid "Metric"
 msgstr "指標"
 
-#: includes/class-report-builder.php:1505
+#: includes/class-report-builder.php:1403
 msgid "Current"
 msgstr "現在"
 
-#: includes/class-report-builder.php:1507
+#: includes/class-report-builder.php:1405
 msgid "Diff"
 msgstr "差分"
 
-#: includes/class-report-builder.php:1508
+#: includes/class-report-builder.php:1406
 msgid "Change Rate"
 msgstr "変化率"
 
-#: includes/class-report-builder.php:1509
+#: includes/class-report-builder.php:1407
 msgid "Unit"
 msgstr "単位"
 
@@ -897,19 +829,19 @@ msgstr ""
 "保存済みのGoogle OAuthクライアント設定を削除しました。サーバー設定、Google接"
 "続トークン、プロバイダー側アクセスは変更していません。"
 
-#: includes/class-settings.php:211
+#: includes/class-settings.php:206
 msgid "Studio317 Report Drafts for Google Analytics Settings"
 msgstr "Studio317 Report Drafts for Google Analytics 設定"
 
-#: includes/class-settings.php:217
+#: includes/class-settings.php:212
 msgid "Setup checklist"
 msgstr "設定チェックリスト"
 
-#: includes/class-settings.php:220
+#: includes/class-settings.php:215
 msgid "Configure the GA4 property and optional host filter if needed."
 msgstr "GA4プロパティと任意でホストフィルターを設定します。"
 
-#: includes/class-settings.php:221
+#: includes/class-settings.php:216
 msgid ""
 "Enter the Google OAuth client manually, or configure it in wp-config.php or "
 "another server configuration file."
@@ -917,7 +849,7 @@ msgstr ""
 "Google OAuthクライアントを手入力で設定するか、wp-config.php 等のサーバー設定"
 "で指定します。"
 
-#: includes/class-settings.php:222
+#: includes/class-settings.php:217
 msgid ""
 "Configure a compatible AI text-generation provider in WordPress Settings > "
 "Connectors."
@@ -925,15 +857,15 @@ msgstr ""
 "WordPress 設定 > Connectors で、互換性のあるAIテキスト生成プロバイダーを設定"
 "してください。"
 
-#: includes/class-settings.php:223
+#: includes/class-settings.php:218
 msgid "Click Connect Google Account."
 msgstr "「Googleアカウントに接続」ボタンを押します。"
 
-#: includes/class-settings.php:224
+#: includes/class-settings.php:219
 msgid "Open Report Builder and click Fetch GA4 Data."
 msgstr "レポートビルダーを開き、GA4データを取得します。"
 
-#: includes/class-settings.php:225
+#: includes/class-settings.php:220
 msgid ""
 "Review the Data Preview, generate the report draft in the current WordPress "
 "user language, then review, edit, and copy it."
@@ -941,11 +873,11 @@ msgstr ""
 "送信データのプレビューを確認し、現在のWordPressユーザー言語でレポート下書きを"
 "生成してから、確認・編集・コピーします。"
 
-#: includes/class-settings.php:230
+#: includes/class-settings.php:225
 msgid "External service usage"
 msgstr "外部サービスの利用"
 
-#: includes/class-settings.php:233
+#: includes/class-settings.php:228
 msgid ""
 "Studio317 Report Drafts for Google Analytics contacts Google only when you "
 "start Google authorization or fetch GA4 data. It sends reviewed report data "
@@ -957,7 +889,7 @@ msgstr ""
 "「AIレポートを生成」をクリックしたときにのみ、確認済みのレポートデータを "
 "WordPress AI Client を通じて送信します。"
 
-#: includes/class-settings.php:237
+#: includes/class-settings.php:232
 msgid ""
 "Fetch GA4 Data sends the selected report conditions and required metrics or "
 "dimensions to the Google Analytics Data API."
@@ -965,7 +897,7 @@ msgstr ""
 "GA4データ取得では、選択したレポート条件と必要な指標またはディメンションを"
 "Google Analytics Data APIに送信します。"
 
-#: includes/class-settings.php:238
+#: includes/class-settings.php:233
 msgid ""
 "Generate AI Report sends the reviewed report data and selected report output "
 "language through the WordPress AI Client to the AI provider configured by "
@@ -975,7 +907,7 @@ msgstr ""
 "WordPress AI Client を通じてサイト管理者が設定したAIプロバイダーへ送信しま"
 "す。"
 
-#: includes/class-settings.php:239
+#: includes/class-settings.php:234
 msgid ""
 "AI provider credentials and provider selection are managed by WordPress "
 "Connectors, not by this plugin."
@@ -983,7 +915,7 @@ msgstr ""
 "AIプロバイダー認証情報とプロバイダー選択は、このプラグインではなく WordPress "
 "Connectors で管理されます。"
 
-#: includes/class-settings.php:240
+#: includes/class-settings.php:235
 msgid ""
 "Saved Google credential values are hidden. Empty password fields keep "
 "existing saved values, and delete checkboxes remove only the matching saved "
@@ -992,7 +924,7 @@ msgstr ""
 "保存済みのGoogle認証情報値は非表示です。空のパスワード欄は既存の保存値を保持"
 "し、削除チェックボックスは該当する保存値のみを削除します。"
 
-#: includes/class-settings.php:241
+#: includes/class-settings.php:236
 msgid ""
 "For support, share visible status messages or general error names only. Do "
 "not share credentials, tokens, option values, request bodies, raw responses, "
@@ -1004,7 +936,11 @@ msgstr ""
 "AI送信データのJSON、生成レポート本文、スクリーンショット、ブラウザのNetwork証"
 "跡は共有しないでください。"
 
-#: includes/class-settings.php:249
+#: includes/class-settings.php:241
+msgid "Google connection"
+msgstr "Google接続"
+
+#: includes/class-settings.php:244
 msgid ""
 "Connect Google before fetching GA4 data. Token values, authorization codes, "
 "provider responses, and option values are never displayed on this screen."
@@ -1012,35 +948,11 @@ msgstr ""
 "GA4データを取得する前にGoogleへ接続してください。この画面には、トークン値、認"
 "可コード、プロバイダーレスポンス、オプション値は表示されません。"
 
-#: includes/class-settings.php:255
-msgid "OAuth client setup"
-msgstr "OAuthクライアント設定"
-
-#: includes/class-settings.php:259
-msgid "Saved Settings client"
-msgstr "保存済みSettingsクライアント"
-
-#: includes/class-settings.php:263
-msgid "Value display"
-msgstr "値の表示"
-
-#: includes/class-settings.php:264
-msgid "Hidden"
-msgstr "非表示"
-
-#: includes/class-settings.php:267
-msgid "Google account connection"
-msgstr "Googleアカウント接続"
-
-#: includes/class-settings.php:271
-msgid "Token status"
-msgstr "トークン状態"
-
-#: includes/class-settings.php:279
+#: includes/class-settings.php:249
 msgid "Redirect URI for Google OAuth setup:"
 msgstr "Google OAuth設定用リダイレクトURI:"
 
-#: includes/class-settings.php:291
+#: includes/class-settings.php:261
 msgid ""
 "Server configuration takes precedence over saved Settings values. When "
 "server configuration is active, it cannot be edited or deleted here."
@@ -1048,7 +960,7 @@ msgstr ""
 "サーバー設定は保存済みの設定値より優先されます。サーバー設定が有効な場合、こ"
 "こでは編集または削除できません。"
 
-#: includes/class-settings.php:292
+#: includes/class-settings.php:262
 msgid ""
 "If OAuth client settings are incomplete, fix the client ID and client secret "
 "before starting Google authorization."
@@ -1056,7 +968,7 @@ msgstr ""
 "OAuthクライアント設定が不完全な場合は、Google認可を開始する前にクライアントID"
 "とクライアントシークレットを修正してください。"
 
-#: includes/class-settings.php:293
+#: includes/class-settings.php:263
 msgid ""
 "The redirect URI above must be registered in the Google OAuth client used by "
 "this site."
@@ -1064,7 +976,7 @@ msgstr ""
 "上記のリダイレクトURIは、このサイトで使用するGoogle OAuthクライアントに登録す"
 "る必要があります。"
 
-#: includes/class-settings.php:294
+#: includes/class-settings.php:264
 msgid ""
 "Refresh is not performed automatically. If the Google connection needs "
 "recovery, reconnect the Google account."
@@ -1072,7 +984,7 @@ msgstr ""
 "更新は自動実行されません。Google接続の復旧が必要な場合は、Googleアカウントに"
 "再接続してください。"
 
-#: includes/class-settings.php:295
+#: includes/class-settings.php:265
 msgid ""
 "Disconnecting Google deletes only Google connection data stored by this "
 "plugin. It does not contact Google, revoke provider access, delete OAuth "
@@ -1082,7 +994,7 @@ msgstr ""
 "す。Googleへの通信、Google側のアクセス許可の取り消し、OAuthクライアント設定の"
 "削除、AIプロバイダー設定の変更は行いません。"
 
-#: includes/class-settings.php:296
+#: includes/class-settings.php:266
 msgid ""
 "Manual Google access token entry is not available. Use Google OAuth for GA4 "
 "access."
@@ -1090,11 +1002,11 @@ msgstr ""
 "手動のGoogleアクセストークン入力は利用できません。GA4アクセスにはGoogle OAuth"
 "を使用してください。"
 
-#: includes/class-settings.php:303
+#: includes/class-settings.php:273
 msgid "Disconnect Google Account"
 msgstr "Googleアカウントを切断"
 
-#: includes/class-settings.php:307
+#: includes/class-settings.php:277
 msgid ""
 "This deletes only Google connection data saved by this plugin. It does not "
 "delete Google provider access, Google OAuth client settings, or AI provider "
@@ -1104,19 +1016,23 @@ msgstr ""
 "側のアクセス許可、Google OAuthクライアント設定、AIプロバイダー設定は削除しま"
 "せん。"
 
-#: includes/class-settings.php:313
+#: includes/class-settings.php:283
 msgid "Reconnect Google Account"
 msgstr "Googleアカウントに再接続"
 
-#: includes/class-settings.php:313
+#: includes/class-settings.php:283
 msgid "Connect Google Account"
 msgstr "Googleアカウントに接続"
 
-#: includes/class-settings.php:321
+#: includes/class-settings.php:291
 msgid "Report and service settings"
 msgstr "レポートとサービス設定"
 
-#: includes/class-settings.php:341
+#: includes/class-settings.php:298
+msgid "GA4 Property ID"
+msgstr "GA4プロパティID"
+
+#: includes/class-settings.php:311
 msgid ""
 "Enter the numeric GA4 property ID. Measurement IDs such as G-XXXXXXXXXX are "
 "not supported."
@@ -1124,54 +1040,34 @@ msgstr ""
 "数字のみのGA4プロパティIDを入力してください。G-XXXXXXXXXX のような測定IDはサ"
 "ポートされません。"
 
-#: includes/class-settings.php:348
-msgid "Google OAuth client settings"
-msgstr "Google OAuthクライアント設定"
-
-#: includes/class-settings.php:352
-msgid "Active configuration:"
-msgstr "有効な設定:"
-
-#: includes/class-settings.php:357
-msgid "Saved Settings values:"
-msgstr "保存済みSettings値:"
-
-#: includes/class-settings.php:362
-msgid ""
-"Saved OAuth client values are hidden and are not displayed again. Server "
-"configuration takes precedence when available."
-msgstr ""
-"保存済みOAuthクライアント値は非表示で、再表示されません。サーバー設定がある場"
-"合はサーバー設定が優先されます。"
-
-#: includes/class-settings.php:370
+#: includes/class-settings.php:319
 msgid "Google OAuth Client ID"
 msgstr "Google OAuthクライアントID"
 
-#: includes/class-settings.php:375
+#: includes/class-settings.php:324
 msgid "Google OAuth Client ID setup help"
 msgstr "Google OAuthクライアントIDの設定ヘルプ"
 
-#: includes/class-settings.php:376
+#: includes/class-settings.php:325
 msgid "How to find and configure the Google OAuth Client ID."
 msgstr "Google OAuthクライアントIDの確認方法と設定方法です。"
 
-#: includes/class-settings.php:390 includes/class-settings.php:432
+#: includes/class-settings.php:339 includes/class-settings.php:381
 msgid "Saved value is hidden. Leave blank to keep it."
 msgstr "保存済みの値は非表示です。保持する場合は空欄のままにしてください。"
 
-#: includes/class-settings.php:390
+#: includes/class-settings.php:339
 msgid "Enter a client ID, or leave blank if using server configuration."
 msgstr ""
 "クライアントIDを入力するか、サーバー設定を使用する場合は空欄のままにしてくだ"
 "さい。"
 
-#: includes/class-settings.php:397 includes/class-settings.php:439
+#: includes/class-settings.php:346 includes/class-settings.php:388
 msgid ""
 "This value is managed by server configuration and cannot be edited here."
 msgstr "この値はサーバー設定で管理されており、ここでは編集できません。"
 
-#: includes/class-settings.php:399
+#: includes/class-settings.php:348
 msgid ""
 "A saved client ID exists and is hidden. Leave this field empty to keep it, "
 "or enter a new value to replace it."
@@ -1179,31 +1075,31 @@ msgstr ""
 "保存済みのクライアントIDがあり、非表示です。保持する場合は空欄のままにし、置"
 "き換える場合は新しい値を入力してください。"
 
-#: includes/class-settings.php:401
+#: includes/class-settings.php:350
 msgid "Enter the client ID from a Google OAuth web application client."
 msgstr ""
 "Google OAuthのウェブアプリケーションクライアントのクライアントIDを入力してく"
 "ださい。"
 
-#: includes/class-settings.php:412
+#: includes/class-settings.php:361
 msgid "Google OAuth Client Secret"
 msgstr "Google OAuthクライアントシークレット"
 
-#: includes/class-settings.php:417
+#: includes/class-settings.php:366
 msgid "Google OAuth Client Secret setup help"
 msgstr "Google OAuthクライアントシークレットの設定ヘルプ"
 
-#: includes/class-settings.php:418
+#: includes/class-settings.php:367
 msgid "How to find and configure the Google OAuth Client Secret."
 msgstr "Google OAuthクライアントシークレットの確認方法と設定方法です。"
 
-#: includes/class-settings.php:432
+#: includes/class-settings.php:381
 msgid "Enter a client secret, or leave blank if using server configuration."
 msgstr ""
 "クライアントシークレットを入力するか、サーバー設定を使用する場合は空欄のまま"
 "にしてください。"
 
-#: includes/class-settings.php:441
+#: includes/class-settings.php:390
 msgid ""
 "A saved client secret exists and is hidden. Leave this field empty to keep "
 "it, or enter a new value to replace it."
@@ -1211,14 +1107,14 @@ msgstr ""
 "保存済みのクライアントシークレットがあり、非表示です。保持する場合は空欄のま"
 "まにし、置き換える場合は新しい値を入力してください。"
 
-#: includes/class-settings.php:443
+#: includes/class-settings.php:392
 msgid ""
 "Enter the client secret from the same Google OAuth web application client."
 msgstr ""
 "同じGoogle OAuthウェブアプリケーションクライアントのクライアントシークレット"
 "を入力してください。"
 
-#: includes/class-settings.php:450
+#: includes/class-settings.php:399
 msgid ""
 "For support, do not share OAuth client identifiers or secrets. Share only "
 "whether the setup is configured, not configured, or needs review."
@@ -1226,7 +1122,7 @@ msgstr ""
 "サポートにはOAuthクライアントIDやシークレットを共有しないでください。設定済"
 "み、未設定、確認が必要、のいずれかだけを共有してください。"
 
-#: includes/class-settings.php:462
+#: includes/class-settings.php:411
 msgid ""
 "Delete the saved Google OAuth client settings. Server configuration, Google "
 "tokens, and provider access are not changed."
@@ -1234,51 +1130,43 @@ msgstr ""
 "保存済みのGoogle OAuthクライアント設定を削除します。サーバー設定、Googleトー"
 "クン、プロバイダー側アクセスは変更されません。"
 
-#: includes/class-settings.php:482
+#: includes/class-settings.php:420
+msgid "Host Name Filter"
+msgstr "ホスト名フィルター"
+
+#: includes/class-settings.php:431
 msgid "Filter GA4 data by host name."
 msgstr "GA4データをホスト名でフィルターします。"
 
-#: includes/class-settings.php:502
+#: includes/class-settings.php:439
+msgid "Host Name"
+msgstr "ホスト名"
+
+#: includes/class-settings.php:451
 msgid "Default value is based on home_url(). Example: example.com"
 msgstr "デフォルト値は home_url() に基づきます。例: example.com"
 
-#: includes/class-settings.php:513
-msgid ""
-"AI generation uses the AI provider configured by the site administrator in "
-"WordPress Settings > Connectors."
-msgstr ""
-"AI生成では、サイト管理者が WordPress 設定 > Connectors で設定したAIプロバイ"
-"ダーを使用します。"
-
-#: includes/class-settings.php:516
-msgid ""
-"This plugin does not store AI provider API keys, choose a provider, or "
-"display provider credential values."
-msgstr ""
-"このプラグインは、AIプロバイダーAPIキーの保存、プロバイダー選択、プロバイダー"
-"認証情報値の表示を行いません。"
-
-#: includes/class-settings.php:523
+#: includes/class-settings.php:459
 msgid "Save Settings"
 msgstr "設定を保存"
 
-#: includes/class-settings.php:552
+#: includes/class-settings.php:488
 msgid "Help"
 msgstr "ヘルプ"
 
-#: includes/class-settings.php:576
+#: includes/class-settings.php:512
 msgid "Close"
 msgstr "閉じる"
 
-#: includes/class-settings.php:585
+#: includes/class-settings.php:521
 msgid "Server configuration example:"
 msgstr "サーバー設定例:"
 
-#: includes/class-settings.php:601
+#: includes/class-settings.php:537
 msgid "Google OAuth Client ID setup"
 msgstr "Google OAuthクライアントIDの設定"
 
-#: includes/class-settings.php:603
+#: includes/class-settings.php:539
 msgid ""
 "Enter the Client ID from a Google Cloud OAuth client configured as a Web "
 "application."
@@ -1286,7 +1174,7 @@ msgstr ""
 "Google Cloudでウェブアプリケーションとして作成したOAuthクライアントのClient "
 "IDを入力します。"
 
-#: includes/class-settings.php:604
+#: includes/class-settings.php:540
 msgid ""
 "Register the Redirect URI shown on this Settings screen in the same Google "
 "OAuth client."
@@ -1295,7 +1183,7 @@ msgstr ""
 "ます。"
 
 #. translators: %s: Redirect URI field label.
-#: includes/class-settings.php:607
+#: includes/class-settings.php:543
 #, php-format
 msgid ""
 "Use the value displayed in the %s field; do not guess or share the value in "
@@ -1304,23 +1192,23 @@ msgstr ""
 "%s欄に表示されている値を使用してください。推測したり、サポート依頼で共有した"
 "りしないでください。"
 
-#: includes/class-settings.php:608
+#: includes/class-settings.php:544
 msgid "Redirect URI for Google OAuth setup"
 msgstr "Google OAuth設定用リダイレクトURI"
 
-#: includes/class-settings.php:610
+#: includes/class-settings.php:546
 msgid "Use a Client ID and Client Secret from the same OAuth client."
 msgstr ""
 "Client IDとClient Secretは、同じOAuthクライアントの組み合わせを使用してくださ"
 "い。"
 
-#: includes/class-settings.php:611 includes/class-settings.php:631
+#: includes/class-settings.php:547 includes/class-settings.php:567
 msgid ""
 "When entering it manually, paste the value into this field and click Save "
 "Settings."
 msgstr "手入力する場合は、この入力欄に値を入力して「設定を保存」を押します。"
 
-#: includes/class-settings.php:612 includes/class-settings.php:632
+#: includes/class-settings.php:548 includes/class-settings.php:568
 msgid ""
 "When wp-config.php or another server configuration is active, that value "
 "takes precedence and cannot be viewed, changed, or deleted on this Settings "
@@ -1329,23 +1217,23 @@ msgstr ""
 "wp-config.php 等のサーバー設定が有効な場合、その値が優先され、この設定画面で"
 "は表示・変更・削除できません。"
 
-#: includes/class-settings.php:613 includes/class-settings.php:633
+#: includes/class-settings.php:549 includes/class-settings.php:569
 msgid ""
 "If you cannot edit wp-config.php, you can use the normal input field on this "
 "screen."
 msgstr ""
 "wp-config.php を編集できない場合は、この画面の通常の入力欄から設定できます。"
 
-#: includes/class-settings.php:627
+#: includes/class-settings.php:563
 msgid "Google OAuth Client Secret setup"
 msgstr "Google OAuthクライアントシークレットの設定"
 
-#: includes/class-settings.php:629
+#: includes/class-settings.php:565
 msgid ""
 "Enter the Client Secret from the same Google OAuth client as the Client ID."
 msgstr "Client IDと同じGoogle OAuthクライアントのClient Secretを入力します。"
 
-#: includes/class-settings.php:630
+#: includes/class-settings.php:566
 msgid ""
 "The Client Secret is sensitive. Do not paste it into email, chat, "
 "screenshots, public repositories, or support requests."
@@ -1353,47 +1241,51 @@ msgstr ""
 "Client Secretは機密情報です。メール、チャット、スクリーンショット、公開リポジ"
 "トリ、サポート依頼に貼り付けないでください。"
 
-#: includes/class-settings.php:648
+#: includes/class-settings.php:584 includes/class-status-page.php:183
 msgid "Managed by server configuration"
 msgstr "サーバー設定で管理されています"
 
-#: includes/class-settings.php:650
+#: includes/class-settings.php:586 includes/class-status-page.php:185
 msgid "Saved in Settings"
 msgstr "設定に保存済み"
 
-#: includes/class-settings.php:653
+#: includes/class-settings.php:589 includes/class-status-page.php:188
 msgid "Needs review"
 msgstr "確認が必要"
 
-#: includes/class-settings.php:669
+#: includes/class-settings.php:592 includes/class-status-page.php:191
+msgid "Not configured"
+msgstr "未設定"
+
+#: includes/class-settings.php:605 includes/class-status-page.php:204
 msgid "Saved and hidden"
 msgstr "保存済み、非表示"
 
-#: includes/class-settings.php:671
+#: includes/class-settings.php:607 includes/class-status-page.php:206
 msgid "Partially saved; review both fields"
 msgstr "一部のみ保存済み。両方の欄を確認してください"
 
-#: includes/class-settings.php:674
+#: includes/class-settings.php:610 includes/class-status-page.php:209
 msgid "Not saved"
 msgstr "未保存"
 
-#: includes/class-settings.php:687
+#: includes/class-settings.php:623 includes/class-status-page.php:236
 msgid "Connected"
 msgstr "接続済み"
 
-#: includes/class-settings.php:689
+#: includes/class-settings.php:625 includes/class-status-page.php:240
 msgid "Reconnect required"
 msgstr "再接続が必要"
 
-#: includes/class-settings.php:705
+#: includes/class-settings.php:641 includes/class-status-page.php:256
 msgid "Ready for GA4 requests"
 msgstr "GA4リクエストに使用できます"
 
-#: includes/class-settings.php:710
+#: includes/class-settings.php:646 includes/class-status-page.php:261
 msgid "Reconnect before fetching GA4 data"
 msgstr "GA4データ取得前に再接続してください"
 
-#: includes/class-settings.php:728
+#: includes/class-settings.php:664
 msgid ""
 "Google connection was not started. No Google request was made and no token "
 "was saved."
@@ -1401,7 +1293,7 @@ msgstr ""
 "Google接続は開始されませんでした。Googleへのリクエストは行われず、トークンは"
 "保存されていません。"
 
-#: includes/class-settings.php:729
+#: includes/class-settings.php:665
 msgid ""
 "Google authorization was prepared. You may be redirected to Google to "
 "continue. Token values are not displayed."
@@ -1409,7 +1301,7 @@ msgstr ""
 "Google認可の準備が完了しました。続行するためにGoogleへリダイレクトされる場合"
 "があります。トークン値は表示されません。"
 
-#: includes/class-settings.php:730
+#: includes/class-settings.php:666
 msgid ""
 "Google authorization cannot start because OAuth client settings are not "
 "configured. Google was not contacted and no token was saved."
@@ -1417,7 +1309,7 @@ msgstr ""
 "OAuthクライアント設定が未設定のため、Google認可を開始できません。Googleには接"
 "続しておらず、トークンは保存されていません。"
 
-#: includes/class-settings.php:731
+#: includes/class-settings.php:667
 msgid ""
 "Google authorization cannot start because OAuth client settings are missing, "
 "incomplete, or need review. Google was not contacted and no token was saved."
@@ -1425,7 +1317,7 @@ msgstr ""
 "OAuthクライアント設定が不足、不完全、または確認が必要なため、Google認可を開始"
 "できません。Googleには接続しておらず、トークンは保存されていません。"
 
-#: includes/class-settings.php:732
+#: includes/class-settings.php:668
 msgid ""
 "Google authorization could not be prepared. Google was not contacted and no "
 "token was saved."
@@ -1433,7 +1325,7 @@ msgstr ""
 "Google認可を準備できませんでした。Googleには接続しておらず、トークンは保存さ"
 "れていません。"
 
-#: includes/class-settings.php:733
+#: includes/class-settings.php:669
 msgid ""
 "Google returned to the site, but the connection was not completed. No token "
 "was saved."
@@ -1441,7 +1333,7 @@ msgstr ""
 "Googleからサイトへ戻りましたが、接続は完了しませんでした。トークンは保存され"
 "ていません。"
 
-#: includes/class-settings.php:734
+#: includes/class-settings.php:670
 msgid ""
 "Google connection could not be completed because the return request was "
 "missing required state information. No token exchange was attempted."
@@ -1449,7 +1341,7 @@ msgstr ""
 "戻りリクエストに必要なstate情報がないため、Google接続を完了できませんでした。"
 "トークン交換は試行されていません。"
 
-#: includes/class-settings.php:735
+#: includes/class-settings.php:671
 msgid ""
 "Google connection could not be completed because the local authorization "
 "state expired. Start Google authorization again."
@@ -1457,7 +1349,7 @@ msgstr ""
 "ローカル認可stateが期限切れのため、Google接続を完了できませんでした。Google認"
 "可を再度開始してください。"
 
-#: includes/class-settings.php:736
+#: includes/class-settings.php:672
 msgid ""
 "Google connection could not be completed because the return request did not "
 "match the local authorization state. No token exchange was attempted."
@@ -1465,7 +1357,7 @@ msgstr ""
 "戻りリクエストがローカル認可stateと一致しないため、Google接続を完了できません"
 "でした。トークン交換は試行されていません。"
 
-#: includes/class-settings.php:737
+#: includes/class-settings.php:673
 msgid ""
 "Google returned an authorization error. Raw provider details are not "
 "displayed or saved."
@@ -1473,14 +1365,14 @@ msgstr ""
 "Googleから認可エラーが返されました。プロバイダーの詳細情報は表示または保存さ"
 "れません。"
 
-#: includes/class-settings.php:738
+#: includes/class-settings.php:674
 msgid ""
 "Google returned authorization information, but it was not displayed or saved "
 "directly."
 msgstr ""
 "Googleから認可情報が返されましたが、直接表示または保存はされませんでした。"
 
-#: includes/class-settings.php:739
+#: includes/class-settings.php:675
 msgid ""
 "Google connection could not be completed because the return request did not "
 "include the required authorization result. No token exchange was attempted."
@@ -1488,7 +1380,7 @@ msgstr ""
 "戻りリクエストに必要な認可結果が含まれていないため、Google接続を完了できませ"
 "んでした。トークン交換は試行されていません。"
 
-#: includes/class-settings.php:740
+#: includes/class-settings.php:676
 msgid ""
 "Google OAuth token exchange completed and the OAuth connection state was "
 "updated. Token values are not displayed."
@@ -1496,7 +1388,7 @@ msgstr ""
 "Google OAuthのトークン交換が完了し、OAuth接続状態を更新しました。トークン値は"
 "表示されません。"
 
-#: includes/class-settings.php:741
+#: includes/class-settings.php:677
 msgid ""
 "Google connection was not completed because the authorization result was "
 "rejected. No token value is displayed."
@@ -1504,7 +1396,7 @@ msgstr ""
 "認可結果が拒否されたため、Google接続は完了しませんでした。トークン値は表示さ"
 "れません。"
 
-#: includes/class-settings.php:742
+#: includes/class-settings.php:678
 msgid ""
 "Google connection was not completed because Google returned an error. Raw "
 "provider details are not displayed."
@@ -1512,7 +1404,7 @@ msgstr ""
 "Googleからエラーが返されたため、Google接続は完了しませんでした。プロバイダー"
 "の詳細情報は表示されません。"
 
-#: includes/class-settings.php:743
+#: includes/class-settings.php:679
 msgid ""
 "Google connection was not completed because the token request failed. "
 "Request and response details are not displayed."
@@ -1520,7 +1412,7 @@ msgstr ""
 "トークンリクエストに失敗したため、Google接続は完了しませんでした。リクエスト"
 "とレスポンスの詳細は表示されません。"
 
-#: includes/class-settings.php:744
+#: includes/class-settings.php:680
 msgid ""
 "Google connection was not completed because the token response could not be "
 "read safely. Raw response details are not displayed."
@@ -1528,7 +1420,7 @@ msgstr ""
 "トークンレスポンスを安全に読み取れなかったため、Google接続は完了しませんでし"
 "た。rawレスポンスの詳細は表示されません。"
 
-#: includes/class-settings.php:745
+#: includes/class-settings.php:681
 msgid ""
 "Google connection was not completed because the response did not include the "
 "required token data. Raw response details are not displayed."
@@ -1536,7 +1428,7 @@ msgstr ""
 "レスポンスに必要なトークンデータが含まれていなかったため、Google接続は完了し"
 "ませんでした。rawレスポンスの詳細は表示されません。"
 
-#: includes/class-settings.php:746
+#: includes/class-settings.php:682
 msgid ""
 "Google OAuth token exchange was not executed because the callback "
 "preconditions were not complete."
@@ -1544,7 +1436,7 @@ msgstr ""
 "callbackの前提条件が揃っていないため、Google OAuthのトークン交換は実行されま"
 "せんでした。"
 
-#: includes/class-settings.php:747
+#: includes/class-settings.php:683
 msgid ""
 "Google OAuth token exchange completed, but token storage did not complete. "
 "No token value is displayed."
@@ -1552,7 +1444,7 @@ msgstr ""
 "Google OAuthのトークン交換は完了しましたが、トークン保存は完了しませんでし"
 "た。トークン値は表示されません。"
 
-#: includes/class-settings.php:748
+#: includes/class-settings.php:684
 msgid ""
 "Google connection data saved by this plugin was deleted. Google was not "
 "contacted, provider-side access was not revoked, and OAuth client settings "
@@ -1562,13 +1454,135 @@ msgstr ""
 "らず、Google側のアクセス許可、OAuthクライアント設定、AIプロバイダー設定は変更"
 "していません。"
 
-#: includes/class-settings.php:749
+#: includes/class-settings.php:685
 msgid ""
 "Google connection data was not deleted. Token values and option values are "
 "not displayed, and provider-side revoke was not requested."
 msgstr ""
 "Google接続情報を削除できませんでした。トークン値とオプション値は表示されず、"
 "Google側のアクセス許可の取り消しも要求していません。"
+
+#: includes/class-status-page.php:53
+msgid ""
+"Review the current setup and Google connection status. This page is read-"
+"only and does not display credential, token, option, analytics, or generated "
+"report values."
+msgstr ""
+"現在の設定とGoogle接続の状態を確認できます。このページは読み取り専用で、認証"
+"情報、トークン、オプション、アクセス解析、生成レポートの値は表示しません。"
+
+#: includes/class-status-page.php:57
+msgid "Current Settings"
+msgstr "現在の設定"
+
+#: includes/class-status-page.php:62
+msgid "OAuth client setup"
+msgstr "OAuthクライアント設定"
+
+#: includes/class-status-page.php:66
+msgid "Saved Settings client"
+msgstr "保存済みSettingsクライアント"
+
+#: includes/class-status-page.php:70
+msgid "Value display"
+msgstr "値の表示"
+
+#: includes/class-status-page.php:74
+msgid "AI generation provider"
+msgstr "AI生成プロバイダー"
+
+#: includes/class-status-page.php:84
+msgid ""
+"AI provider credentials and model details are managed by WordPress Settings "
+"> Connectors and are not displayed by this plugin."
+msgstr ""
+"AIプロバイダー認証情報とモデルの詳細は WordPress Settings > Connectors で管理"
+"され、このプラグインでは表示されません。"
+
+#: includes/class-status-page.php:89
+msgid "Report language"
+msgstr "レポート言語"
+
+#: includes/class-status-page.php:99
+msgid "Open Settings"
+msgstr "設定を開く"
+
+#: includes/class-status-page.php:105
+msgid "Google Connection"
+msgstr "Google接続"
+
+#: includes/class-status-page.php:110
+msgid "Google account connection"
+msgstr "Googleアカウント接続"
+
+#: includes/class-status-page.php:114
+msgid "Token status"
+msgstr "トークン状態"
+
+#: includes/class-status-page.php:126
+msgid "Token storage"
+msgstr "トークン保存"
+
+#: includes/class-status-page.php:130
+msgid "Refresh handling"
+msgstr "更新の扱い"
+
+#: includes/class-status-page.php:134
+msgid "Disconnect handling"
+msgstr "接続解除の扱い"
+
+#: includes/class-status-page.php:138
+msgid "Provider revoke handling"
+msgstr "プロバイダー側取り消しの扱い"
+
+#: includes/class-status-page.php:145
+msgid ""
+"Refresh requests and provider-side revoke are not performed automatically. "
+"If Google access needs recovery, use the Google connection controls in "
+"Settings."
+msgstr ""
+"更新リクエストとプロバイダー側の取り消しは自動実行されません。Googleアクセス"
+"の復旧が必要な場合は、設定のGoogle接続コントロールを使用してください。"
+
+#: includes/class-status-page.php:221 includes/class-status-page.php:224
+msgid "Hidden"
+msgstr "非表示"
+
+#: includes/class-status-page.php:273
+msgid "Stored locally by this plugin; values are hidden"
+msgstr "このプラグインにローカル保存済み。値は非表示です"
+
+#: includes/class-status-page.php:276
+msgid "Not stored"
+msgstr "未保存"
+
+#: includes/class-status-page.php:288
+msgid "Not attempted"
+msgstr "未試行"
+
+#: includes/class-status-page.php:290
+msgid "Deferred; reconnect Google if recovery is needed"
+msgstr "保留中。復旧が必要な場合はGoogleに再接続してください"
+
+#: includes/class-status-page.php:293
+msgid "Unavailable; reconnect Google if needed"
+msgstr "利用不可。必要に応じてGoogleに再接続してください"
+
+#: includes/class-status-page.php:306
+msgid "Local Google connection data deleted"
+msgstr "ローカルのGoogle接続データを削除済み"
+
+#: includes/class-status-page.php:309
+msgid "Not requested"
+msgstr "未要求"
+
+#: includes/class-status-page.php:321 includes/class-status-page.php:324
+msgid "Deferred; provider-side revoke is not performed by this plugin"
+msgstr "保留中。このプラグインはプロバイダー側の取り消しを実行しません"
+
+#: includes/class-status-page.php:350 includes/functions-utils.php:1114
+msgid "English"
+msgstr "英語"
 
 #: includes/functions-utils.php:617
 msgid "No comparison"
@@ -1619,6 +1633,7 @@ msgstr "クエリ文字列とフラグメントを除去した後のパスが空
 #: includes/functions-utils.php:1289 includes/functions-utils.php:1305
 #: includes/functions-utils.php:1322 includes/functions-utils.php:1335
 #: includes/functions-utils.php:1348 includes/functions-utils.php:1356
+#: includes/functions-utils.php:1381
 msgid "Data for AI generation is invalid."
 msgstr "AI生成用データが無効です。"
 
@@ -1629,10 +1644,6 @@ msgstr "アラビア語"
 #: includes/functions-utils.php:1113
 msgid "German"
 msgstr "ドイツ語"
-
-#: includes/functions-utils.php:1114
-msgid "English"
-msgstr "英語"
 
 #: includes/functions-utils.php:1115
 msgid "English (United Kingdom)"
@@ -1719,34 +1730,108 @@ msgstr "簡体字中国語"
 msgid "Traditional Chinese"
 msgstr "繁体字中国語"
 
-#: includes/functions-utils.php:1390
+#: includes/functions-utils.php:1415
 msgid "Views"
 msgstr "表示回数"
 
-#: includes/functions-utils.php:1395
+#: includes/functions-utils.php:1420
 msgid "Active Users"
 msgstr "アクティブユーザー数"
 
-#: includes/functions-utils.php:1400
+#: includes/functions-utils.php:1425
 msgid "New Users"
 msgstr "新規ユーザー数"
 
-#: includes/functions-utils.php:1405
+#: includes/functions-utils.php:1430
 msgid "Sessions"
 msgstr "セッション数"
 
-#: includes/functions-utils.php:1410
+#: includes/functions-utils.php:1435
 msgid "Engaged Sessions"
 msgstr "エンゲージメントのあったセッション数"
 
-#: includes/functions-utils.php:1415
+#: includes/functions-utils.php:1440
 msgid "Engagement Rate"
 msgstr "エンゲージメント率"
 
-#: includes/functions-utils.php:1420
+#: includes/functions-utils.php:1445
 msgid "Bounce Rate"
 msgstr "直帰率"
 
-#: includes/functions-utils.php:1425
+#: includes/functions-utils.php:1450
 msgid "Average Session Duration"
 msgstr "平均セッション時間"
+
+#~ msgid ""
+#~ "AI generation uses the AI provider configured by the site administrator "
+#~ "in WordPress Settings > Connectors."
+#~ msgstr ""
+#~ "AI生成では、サイト管理者が WordPress 設定 > Connectors で設定したAIプロバ"
+#~ "イダーを使用します。"
+
+#~ msgid ""
+#~ "This plugin does not store AI provider API keys, choose a provider, or "
+#~ "display provider credential values."
+#~ msgstr ""
+#~ "このプラグインは、AIプロバイダーAPIキーの保存、プロバイダー選択、プロバイ"
+#~ "ダー認証情報値の表示を行いません。"
+
+#, php-format
+#~ msgid "Current setup (configure %s first)"
+#~ msgstr "現在の設定状況（はじめに%sしてください）"
+
+#~ msgid "Enabled"
+#~ msgstr "有効"
+
+#~ msgid "Not in use"
+#~ msgstr "未使用"
+
+#~ msgid ""
+#~ "Connect or reconnect Google in Settings before fetching GA4 data. Token "
+#~ "values are hidden."
+#~ msgstr ""
+#~ "GA4データを取得する前に、設定でGoogleに接続または再接続してください。トー"
+#~ "クン値は非表示です。"
+
+#~ msgid ""
+#~ "AI generation uses the provider configured by the site administrator in "
+#~ "WordPress Settings > Connectors. Provider credentials and model details "
+#~ "are not displayed by this plugin."
+#~ msgstr ""
+#~ "AI生成では、サイト管理者が WordPress 設定 > Connectors で設定したプロバイ"
+#~ "ダーを使用します。このプラグインはプロバイダー認証情報やモデル詳細を表示し"
+#~ "ません。"
+
+#~ msgid ""
+#~ "The report draft language is resolved from the current WordPress user "
+#~ "language, then the site language, then English. The WordPress timezone is "
+#~ "not used to choose the report language."
+#~ msgstr ""
+#~ "レポート下書きの言語は、現在のWordPressユーザー言語、サイト言語、英語の順"
+#~ "で決定されます。WordPressのタイムゾーンはレポート言語の判定には使用されま"
+#~ "せん。"
+
+#~ msgid ""
+#~ "This screen uses a two-step flow: fetch GA4 data first, review the Data "
+#~ "Preview, then generate a report draft in the current WordPress user "
+#~ "language through the WordPress AI Client."
+#~ msgstr ""
+#~ "この画面では、まずGA4データを取得し、データプレビューを確認してから、"
+#~ "WordPress AI Client を通じて現在のWordPressユーザー言語に合わせたレポート"
+#~ "下書きを生成します。"
+
+#~ msgid "Google OAuth client settings"
+#~ msgstr "Google OAuthクライアント設定"
+
+#~ msgid "Active configuration:"
+#~ msgstr "有効な設定:"
+
+#~ msgid "Saved Settings values:"
+#~ msgstr "保存済みSettings値:"
+
+#~ msgid ""
+#~ "Saved OAuth client values are hidden and are not displayed again. Server "
+#~ "configuration takes precedence when available."
+#~ msgstr ""
+#~ "保存済みOAuthクライアント値は非表示で、再表示されません。サーバー設定があ"
+#~ "る場合はサーバー設定が優先されます。"

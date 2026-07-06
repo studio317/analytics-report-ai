@@ -59,11 +59,19 @@ final class Analytics_Report_AI_Admin {
 	private $report_builder;
 
 	/**
+	 * Current status screen instance.
+	 *
+	 * @var Analytics_Report_AI_Status_Page
+	 */
+	private $status_page;
+
+	/**
 	 * Constructor.
 	 */
 	public function __construct() {
 		$this->settings       = new Analytics_Report_AI_Settings();
 		$this->report_builder = new Analytics_Report_AI_Report_Builder();
+		$this->status_page    = new Analytics_Report_AI_Status_Page();
 
 		add_action( 'admin_menu', array( $this, 'register_menus' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
@@ -95,6 +103,15 @@ final class Analytics_Report_AI_Admin {
 			'manage_options',
 			'studio317-report-drafts-google-analytics',
 			array( $this->report_builder, 'render_page' )
+		);
+
+		add_submenu_page(
+			'studio317-report-drafts-google-analytics',
+			__( 'Current Status', 'studio317-report-drafts-google-analytics' ),
+			__( 'Current Status', 'studio317-report-drafts-google-analytics' ),
+			'manage_options',
+			'studio317-report-drafts-google-analytics-status',
+			array( $this->status_page, 'render_page' )
 		);
 
 		add_submenu_page(

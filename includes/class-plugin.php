@@ -73,6 +73,7 @@ final class Analytics_Report_AI_Plugin {
 		require_once ANALYTICS_REPORT_AI_DIR . 'includes/class-admin.php';
 		require_once ANALYTICS_REPORT_AI_DIR . 'includes/class-settings.php';
 		require_once ANALYTICS_REPORT_AI_DIR . 'includes/class-report-builder.php';
+		require_once ANALYTICS_REPORT_AI_DIR . 'includes/class-status-page.php';
 		require_once ANALYTICS_REPORT_AI_DIR . 'includes/class-ga4-client.php';
 		require_once ANALYTICS_REPORT_AI_DIR . 'includes/class-report-data-formatter.php';
 		require_once ANALYTICS_REPORT_AI_DIR . 'includes/class-ai-client.php';

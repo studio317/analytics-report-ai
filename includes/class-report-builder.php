@@ -26,7 +26,6 @@ final class Analytics_Report_AI_Report_Builder {
 			return;
 		}
 
-		$settings          = analytics_report_ai_get_settings();
 		$default_period    = analytics_report_ai_get_default_report_period();
 		$submission_result = $this->maybe_handle_request();
 
@@ -42,139 +41,16 @@ final class Analytics_Report_AI_Report_Builder {
 			$form_values = wp_parse_args( $submission_result['form_values'], $form_values );
 		}
 
-		$ga4_property_id         = isset( $settings['ga4_property_id'] ) ? $settings['ga4_property_id'] : '';
-		$host_filter_enabled     = ! empty( $settings['host_filter_enabled'] );
-		$host_name               = isset( $settings['host_name'] ) ? $settings['host_name'] : '';
-		$display_host_name       = '' !== $host_name ? $host_name : analytics_report_ai_get_default_host();
-		$credential_source       = analytics_report_ai_resolve_google_ga4_credential_source( $settings );
-		$credential_source_label = isset( $credential_source['status'] ) && is_scalar( $credential_source['status'] )
-			? (string) $credential_source['status']
-			: 'credential_source_missing';
-		$credential_lifecycle_status = isset( $credential_source['token_lifecycle_status_category'] ) && is_scalar( $credential_source['token_lifecycle_status_category'] )
-			? (string) $credential_source['token_lifecycle_status_category']
-			: 'reconnect_required';
 		$max_report_days         = analytics_report_ai_get_max_report_days();
-		$settings_url                       = $this->get_settings_url();
-		$google_connection_settings_url     = $this->get_settings_url( 'studio317-report-drafts-google-analytics-google-connection-settings' );
-		$ga4_connection_label               = $this->get_ga4_connection_label( $credential_source_label, $credential_lifecycle_status );
-		$ga4_connection_ready               = $this->is_ga4_connection_ready( $credential_source_label, $credential_lifecycle_status );
-		$ga4_connection_reconnect_required  = $this->is_ga4_connection_reconnect_required( $credential_source_label, $credential_lifecycle_status );
-		$ai_client_runtime_ready            = function_exists( 'wp_ai_client_prompt' );
-		$ai_generation_label                = $this->get_ai_generation_readiness_label( $ai_client_runtime_ready );
-		$planned_report_language            = analytics_report_ai_get_report_language_profile();
 		?>
 		<div class="wrap studio317-report-drafts-google-analytics-admin">
 			<h1><?php echo esc_html__( 'Report Builder', 'studio317-report-drafts-google-analytics' ); ?></h1>
 
+			<p class="description">
+				<?php echo esc_html__( 'AI summarizes data fetched from Google Analytics (GA4) to create a report draft.', 'studio317-report-drafts-google-analytics' ); ?>
+			</p>
+
 			<?php $this->render_submission_notices( $submission_result ); ?>
-
-			<div class="studio317-report-drafts-google-analytics-card">
-				<h2>
-					<?php
-					printf(
-						wp_kses(
-							/* translators: %s: Settings screen link. */
-							__( 'Current setup (configure %s first)', 'studio317-report-drafts-google-analytics' ),
-							array(
-								'a' => array(
-									'href' => array(),
-								),
-							)
-						),
-						'<a href="' . esc_url( $settings_url ) . '">' . esc_html__( 'Settings', 'studio317-report-drafts-google-analytics' ) . '</a>'
-					);
-					?>
-				</h2>
-
-				<table class="widefat striped studio317-report-drafts-google-analytics-status-table">
-					<tbody>
-						<tr>
-							<th scope="row"><?php echo esc_html__( 'GA4 Property ID', 'studio317-report-drafts-google-analytics' ); ?></th>
-							<td>
-								<?php if ( '' !== $ga4_property_id ) : ?>
-									<code><?php echo esc_html( $ga4_property_id ); ?></code>
-								<?php else : ?>
-									<span class="studio317-report-drafts-google-analytics-status-warning">
-										<?php echo esc_html__( 'Not configured', 'studio317-report-drafts-google-analytics' ); ?>
-									</span>
-								<?php endif; ?>
-							</td>
-						</tr>
-						<tr>
-							<th scope="row"><?php echo esc_html__( 'Host Name Filter', 'studio317-report-drafts-google-analytics' ); ?></th>
-							<td>
-								<?php if ( $host_filter_enabled ) : ?>
-									<?php echo esc_html__( 'Enabled', 'studio317-report-drafts-google-analytics' ); ?>
-								<?php else : ?>
-									<?php echo esc_html__( 'Not in use', 'studio317-report-drafts-google-analytics' ); ?>
-								<?php endif; ?>
-							</td>
-						</tr>
-						<tr>
-							<th scope="row"><?php echo esc_html__( 'Host Name', 'studio317-report-drafts-google-analytics' ); ?></th>
-							<td>
-								<?php if ( '' !== $display_host_name ) : ?>
-									<code><?php echo esc_html( $display_host_name ); ?></code>
-								<?php else : ?>
-									<span class="studio317-report-drafts-google-analytics-status-warning">
-										<?php echo esc_html__( 'Not configured', 'studio317-report-drafts-google-analytics' ); ?>
-									</span>
-								<?php endif; ?>
-							</td>
-						</tr>
-						<tr>
-							<th scope="row"><?php echo esc_html__( 'Google connection', 'studio317-report-drafts-google-analytics' ); ?></th>
-							<td>
-								<?php if ( $ga4_connection_reconnect_required ) : ?>
-									<p class="studio317-report-drafts-google-analytics-status-warning">
-										<?php $this->render_google_reconnect_required_message( $google_connection_settings_url ); ?>
-									</p>
-								<?php elseif ( ! $ga4_connection_ready ) : ?>
-									<span class="studio317-report-drafts-google-analytics-status-warning">
-										<?php echo esc_html( $ga4_connection_label ); ?>
-									</span>
-									<p class="description">
-										<?php echo esc_html__( 'Connect or reconnect Google in Settings before fetching GA4 data. Token values are hidden.', 'studio317-report-drafts-google-analytics' ); ?>
-									</p>
-								<?php else : ?>
-									<?php echo esc_html( $ga4_connection_label ); ?>
-									<p class="description">
-										<?php echo esc_html__( 'Connect or reconnect Google in Settings before fetching GA4 data. Token values are hidden.', 'studio317-report-drafts-google-analytics' ); ?>
-									</p>
-								<?php endif; ?>
-							</td>
-						</tr>
-						<tr>
-							<th scope="row"><?php echo esc_html__( 'AI generation provider', 'studio317-report-drafts-google-analytics' ); ?></th>
-							<td>
-								<?php if ( ! $ai_client_runtime_ready ) : ?>
-									<span class="studio317-report-drafts-google-analytics-status-warning">
-										<?php echo esc_html( $ai_generation_label ); ?>
-									</span>
-								<?php else : ?>
-									<?php echo esc_html( $ai_generation_label ); ?>
-								<?php endif; ?>
-								<p class="description">
-									<?php echo esc_html__( 'AI generation uses the provider configured by the site administrator in WordPress Settings > Connectors. Provider credentials and model details are not displayed by this plugin.', 'studio317-report-drafts-google-analytics' ); ?>
-								</p>
-							</td>
-						</tr>
-						<tr>
-							<th scope="row"><?php echo esc_html__( 'Report language', 'studio317-report-drafts-google-analytics' ); ?></th>
-							<td>
-								<?php $this->render_report_language_summary( $planned_report_language ); ?>
-								<p class="description">
-									<?php echo esc_html__( 'The report draft language is resolved from the current WordPress user language, then the site language, then English. The WordPress timezone is not used to choose the report language.', 'studio317-report-drafts-google-analytics' ); ?>
-								</p>
-							</td>
-						</tr>
-					</tbody>
-				</table>
-
-				<p class="description">
-					<?php echo esc_html__( 'This screen uses a two-step flow: fetch GA4 data first, review the Data Preview, then generate a report draft in the current WordPress user language through the WordPress AI Client.', 'studio317-report-drafts-google-analytics' ); ?>
-				</p>
-			</div>
 
 			<form method="post" action="" class="studio317-report-drafts-google-analytics-card studio317-report-drafts-google-analytics-report-form">
 				<?php wp_nonce_field( 'analytics_report_ai_report_builder_action', 'analytics_report_ai_report_builder_nonce' ); ?>
