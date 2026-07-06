@@ -257,6 +257,229 @@ final class Analytics_Report_AI_Settings {
 			);
 			?>
 
+			<form method="post" action="options.php" class="studio317-report-drafts-google-analytics-card studio317-report-drafts-google-analytics-settings-form">
+				<?php settings_fields( $this->settings_group ); ?>
+
+				<section class="studio317-report-drafts-google-analytics-settings-section" aria-labelledby="studio317-report-drafts-google-analytics-ga4-report-settings-heading">
+					<h2 id="studio317-report-drafts-google-analytics-ga4-report-settings-heading"><?php echo esc_html__( 'GA4 report settings', 'studio317-report-drafts-google-analytics' ); ?></h2>
+
+					<div class="studio317-report-drafts-google-analytics-settings-field">
+						<label class="studio317-report-drafts-google-analytics-settings-label" for="studio317-report-drafts-google-analytics-ga4-property-id">
+							<?php echo esc_html__( 'GA4 Property ID', 'studio317-report-drafts-google-analytics' ); ?>
+						</label>
+						<input
+							type="text"
+							id="studio317-report-drafts-google-analytics-ga4-property-id"
+							name="<?php echo esc_attr( ANALYTICS_REPORT_AI_OPTION_NAME ); ?>[ga4_property_id]"
+							value="<?php echo esc_attr( $ga4_property_id ); ?>"
+							class="regular-text studio317-report-drafts-google-analytics-settings-input"
+							inputmode="numeric"
+							placeholder="<?php echo esc_attr__( 'Enter the GA4 Property ID', 'studio317-report-drafts-google-analytics' ); ?>"
+							aria-describedby="studio317-report-drafts-google-analytics-ga4-property-id-description studio317-report-drafts-google-analytics-ga4-property-id-link"
+						/>
+						<p id="studio317-report-drafts-google-analytics-ga4-property-id-description" class="description">
+							<?php echo esc_html__( 'Enter numbers only for the GA4 Property ID. Measurement IDs that start with G- cannot be used.', 'studio317-report-drafts-google-analytics' ); ?>
+						</p>
+						<p id="studio317-report-drafts-google-analytics-ga4-property-id-link" class="description">
+							<?php
+							echo wp_kses(
+								sprintf(
+									/* translators: %s: analytics.google.com external link. */
+									__( 'Open %s in a new tab to find your GA4 property.', 'studio317-report-drafts-google-analytics' ),
+									$this->get_external_link_html(
+										'https://analytics.google.com/',
+										__( 'analytics.google.com', 'studio317-report-drafts-google-analytics' ),
+										__( 'Open analytics.google.com in a new tab', 'studio317-report-drafts-google-analytics' )
+									)
+								),
+								$this->get_external_link_allowed_html()
+							);
+							?>
+						</p>
+					</div>
+
+					<div class="studio317-report-drafts-google-analytics-settings-field studio317-report-drafts-google-analytics-settings-checkbox-field">
+						<label for="studio317-report-drafts-google-analytics-host-filter-enabled">
+							<input
+								type="checkbox"
+								id="studio317-report-drafts-google-analytics-host-filter-enabled"
+								name="<?php echo esc_attr( ANALYTICS_REPORT_AI_OPTION_NAME ); ?>[host_filter_enabled]"
+								value="1"
+								<?php checked( $host_filter_enabled ); ?>
+							/>
+							<?php echo esc_html__( 'Host Name Filter', 'studio317-report-drafts-google-analytics' ); ?>
+						</label>
+					</div>
+
+					<div class="studio317-report-drafts-google-analytics-settings-field">
+						<label class="studio317-report-drafts-google-analytics-settings-label" for="studio317-report-drafts-google-analytics-host-name">
+							<?php echo esc_html__( 'Host Name', 'studio317-report-drafts-google-analytics' ); ?>
+						</label>
+						<input
+							type="text"
+							id="studio317-report-drafts-google-analytics-host-name"
+							name="<?php echo esc_attr( ANALYTICS_REPORT_AI_OPTION_NAME ); ?>[host_name]"
+							value="<?php echo esc_attr( $host_name ); ?>"
+							class="regular-text studio317-report-drafts-google-analytics-settings-input"
+							placeholder="example.com"
+							aria-describedby="studio317-report-drafts-google-analytics-host-name-description"
+						/>
+						<p id="studio317-report-drafts-google-analytics-host-name-description" class="description">
+							<?php echo esc_html__( 'When Host Name Filter is enabled, GA4 data is filtered by this host name.', 'studio317-report-drafts-google-analytics' ); ?>
+						</p>
+					</div>
+				</section>
+
+				<section class="studio317-report-drafts-google-analytics-settings-section" aria-labelledby="studio317-report-drafts-google-analytics-google-oauth-client-settings-heading">
+					<h2 id="studio317-report-drafts-google-analytics-google-oauth-client-settings-heading"><?php echo esc_html__( 'Google OAuth client settings', 'studio317-report-drafts-google-analytics' ); ?></h2>
+
+					<div class="studio317-report-drafts-google-analytics-settings-field">
+						<div class="studio317-report-drafts-google-analytics-settings-label-row">
+							<label class="studio317-report-drafts-google-analytics-settings-label" for="studio317-report-drafts-google-analytics-google-oauth-client-id">
+								<?php echo esc_html__( 'Google OAuth Client ID', 'studio317-report-drafts-google-analytics' ); ?>
+							</label>
+							<?php
+							Analytics_Report_AI_Help_Dialog::render_button(
+								'studio317-report-drafts-google-analytics-google-oauth-client-id-help',
+								__( 'Google OAuth Client ID Help', 'studio317-report-drafts-google-analytics' )
+							);
+							?>
+						</div>
+						<input
+							type="password"
+							id="studio317-report-drafts-google-analytics-google-oauth-client-id"
+							<?php if ( 'constants' !== $google_oauth_client_source_category ) : ?>
+								name="<?php echo esc_attr( ANALYTICS_REPORT_AI_OPTION_NAME ); ?>[google_oauth_client][client_id]"
+							<?php endif; ?>
+							value=""
+							class="regular-text studio317-report-drafts-google-analytics-settings-input"
+							autocomplete="off"
+							placeholder="<?php echo esc_attr( $has_google_oauth_client_fallback_id ? __( '****************', 'studio317-report-drafts-google-analytics' ) : __( 'Enter the client ID', 'studio317-report-drafts-google-analytics' ) ); ?>"
+							aria-describedby="studio317-report-drafts-google-analytics-google-oauth-client-id-description"
+							<?php disabled( 'constants' === $google_oauth_client_source_category ); ?>
+						/>
+						<p id="studio317-report-drafts-google-analytics-google-oauth-client-id-description" class="description">
+							<?php
+							if ( 'constants' === $google_oauth_client_source_category ) {
+								echo esc_html__( 'This value is managed by server configuration and cannot be edited on this screen.', 'studio317-report-drafts-google-analytics' );
+							} elseif ( $has_google_oauth_client_fallback_id ) {
+								echo wp_kses(
+									sprintf(
+										/* translators: %s: Google Cloud Console credentials external link. */
+										__( 'The client ID is stored securely. Use %s to review or recreate it.', 'studio317-report-drafts-google-analytics' ),
+										$this->get_external_link_html(
+											'https://console.cloud.google.com/apis/credentials',
+											__( 'console.cloud.google.com', 'studio317-report-drafts-google-analytics' ),
+											__( 'Open Google Cloud credentials in a new tab', 'studio317-report-drafts-google-analytics' )
+										)
+									),
+									$this->get_external_link_allowed_html()
+								);
+							} else {
+								echo wp_kses(
+									sprintf(
+										/* translators: %s: Google Cloud Console credentials external link. */
+										__( '%s to get the client ID.', 'studio317-report-drafts-google-analytics' ),
+										$this->get_external_link_html(
+											'https://console.cloud.google.com/apis/credentials',
+											__( 'console.cloud.google.com', 'studio317-report-drafts-google-analytics' ),
+											__( 'Open Google Cloud credentials in a new tab', 'studio317-report-drafts-google-analytics' )
+										)
+									),
+									$this->get_external_link_allowed_html()
+								);
+							}
+							?>
+						</p>
+						<?php $this->render_google_oauth_client_id_help_dialog(); ?>
+					</div>
+
+					<div class="studio317-report-drafts-google-analytics-settings-field">
+						<div class="studio317-report-drafts-google-analytics-settings-label-row">
+							<label class="studio317-report-drafts-google-analytics-settings-label" for="studio317-report-drafts-google-analytics-google-oauth-client-secret">
+								<?php echo esc_html__( 'Google OAuth Client Secret', 'studio317-report-drafts-google-analytics' ); ?>
+							</label>
+							<?php
+							Analytics_Report_AI_Help_Dialog::render_button(
+								'studio317-report-drafts-google-analytics-google-oauth-client-secret-help',
+								__( 'Google OAuth Client Secret Help', 'studio317-report-drafts-google-analytics' )
+							);
+							?>
+						</div>
+						<input
+							type="password"
+							id="studio317-report-drafts-google-analytics-google-oauth-client-secret"
+							<?php if ( 'constants' !== $google_oauth_client_source_category ) : ?>
+								name="<?php echo esc_attr( ANALYTICS_REPORT_AI_OPTION_NAME ); ?>[google_oauth_client][client_secret]"
+							<?php endif; ?>
+							value=""
+							class="regular-text studio317-report-drafts-google-analytics-settings-input"
+							autocomplete="off"
+							placeholder="<?php echo esc_attr( $has_google_oauth_client_fallback_secret ? __( '****************', 'studio317-report-drafts-google-analytics' ) : __( 'Enter the client secret', 'studio317-report-drafts-google-analytics' ) ); ?>"
+							aria-describedby="studio317-report-drafts-google-analytics-google-oauth-client-secret-description"
+							<?php disabled( 'constants' === $google_oauth_client_source_category ); ?>
+						/>
+						<p id="studio317-report-drafts-google-analytics-google-oauth-client-secret-description" class="description">
+							<?php
+							if ( 'constants' === $google_oauth_client_source_category ) {
+								echo esc_html__( 'This value is managed by server configuration and cannot be edited on this screen.', 'studio317-report-drafts-google-analytics' );
+							} elseif ( $has_google_oauth_client_fallback_secret ) {
+								echo wp_kses(
+									sprintf(
+										/* translators: %s: Google Cloud Console credentials external link. */
+										__( 'The client secret is stored securely. Use %s to review or recreate it.', 'studio317-report-drafts-google-analytics' ),
+										$this->get_external_link_html(
+											'https://console.cloud.google.com/apis/credentials',
+											__( 'console.cloud.google.com', 'studio317-report-drafts-google-analytics' ),
+											__( 'Open Google Cloud credentials in a new tab', 'studio317-report-drafts-google-analytics' )
+										)
+									),
+									$this->get_external_link_allowed_html()
+								);
+							} else {
+								echo wp_kses(
+									sprintf(
+										/* translators: %s: Google Cloud Console credentials external link. */
+										__( '%s to confirm the client secret.', 'studio317-report-drafts-google-analytics' ),
+										$this->get_external_link_html(
+											'https://console.cloud.google.com/apis/credentials',
+											__( 'console.cloud.google.com', 'studio317-report-drafts-google-analytics' ),
+											__( 'Open Google Cloud credentials in a new tab', 'studio317-report-drafts-google-analytics' )
+										)
+									),
+									$this->get_external_link_allowed_html()
+								);
+							}
+							?>
+						</p>
+						<?php $this->render_google_oauth_client_secret_help_dialog(); ?>
+					</div>
+
+					<p class="description">
+						<?php echo esc_html__( 'For support, do not share OAuth client identifiers or secrets. Share only whether the setup is configured, not configured, or needs review.', 'studio317-report-drafts-google-analytics' ); ?>
+					</p>
+
+					<?php if ( $has_google_oauth_client_fallback ) : ?>
+						<div class="studio317-report-drafts-google-analytics-settings-field studio317-report-drafts-google-analytics-settings-delete-field">
+							<label for="studio317-report-drafts-google-analytics-clear-google-oauth-client-fallback">
+								<input
+									type="checkbox"
+									id="studio317-report-drafts-google-analytics-clear-google-oauth-client-fallback"
+									name="<?php echo esc_attr( ANALYTICS_REPORT_AI_OPTION_NAME ); ?>[clear_google_oauth_client_fallback]"
+									value="1"
+								/>
+								<?php echo esc_html__( 'Delete saved Google OAuth client settings', 'studio317-report-drafts-google-analytics' ); ?>
+							</label>
+							<p class="description">
+								<?php echo esc_html__( 'Entering a new client ID and client secret and saving will replace the saved settings.', 'studio317-report-drafts-google-analytics' ); ?>
+							</p>
+						</div>
+					<?php endif; ?>
+				</section>
+
+				<?php submit_button( __( 'Save Settings', 'studio317-report-drafts-google-analytics' ) ); ?>
+			</form>
+
 			<div id="studio317-report-drafts-google-analytics-google-connection-settings" class="studio317-report-drafts-google-analytics-card">
 				<h2><?php echo esc_html__( 'Google connection', 'studio317-report-drafts-google-analytics' ); ?></h2>
 
@@ -289,18 +512,22 @@ final class Analytics_Report_AI_Settings {
 				);
 				?>
 
-				<p>
-					<label for="studio317-report-drafts-google-analytics-google-oauth-redirect-uri">
-						<strong><?php echo esc_html__( 'Redirect URI for Google OAuth setup:', 'studio317-report-drafts-google-analytics' ); ?></strong>
+				<div class="studio317-report-drafts-google-analytics-settings-field">
+					<label class="studio317-report-drafts-google-analytics-settings-label" for="studio317-report-drafts-google-analytics-google-oauth-redirect-uri">
+						<?php echo esc_html__( 'Redirect URI for Google OAuth setup', 'studio317-report-drafts-google-analytics' ); ?>
 					</label>
 					<input
 						type="text"
 						id="studio317-report-drafts-google-analytics-google-oauth-redirect-uri"
 						value="<?php echo esc_attr( $google_oauth_redirect_uri ); ?>"
-						class="large-text code"
+						class="large-text code studio317-report-drafts-google-analytics-settings-input"
 						readonly="readonly"
+						aria-describedby="studio317-report-drafts-google-analytics-google-oauth-redirect-uri-description"
 					/>
-				</p>
+					<p id="studio317-report-drafts-google-analytics-google-oauth-redirect-uri-description" class="description">
+						<?php echo esc_html__( 'Register this read-only URI in the Google OAuth client. Do not share it in support requests.', 'studio317-report-drafts-google-analytics' ); ?>
+					</p>
+				</div>
 
 				<?php if ( $google_oauth_is_connected ) : ?>
 					<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
@@ -320,180 +547,46 @@ final class Analytics_Report_AI_Settings {
 					</form>
 				<?php endif; ?>
 			</div>
-
-			<form method="post" action="options.php" class="studio317-report-drafts-google-analytics-card">
-				<?php settings_fields( $this->settings_group ); ?>
-
-				<h2><?php echo esc_html__( 'Report and service settings', 'studio317-report-drafts-google-analytics' ); ?></h2>
-
-				<table class="form-table" role="presentation">
-					<tbody>
-						<tr>
-							<th scope="row">
-								<label for="studio317-report-drafts-google-analytics-ga4-property-id">
-									<?php echo esc_html__( 'GA4 Property ID', 'studio317-report-drafts-google-analytics' ); ?>
-								</label>
-							</th>
-							<td>
-								<input
-									type="text"
-									id="studio317-report-drafts-google-analytics-ga4-property-id"
-									name="<?php echo esc_attr( ANALYTICS_REPORT_AI_OPTION_NAME ); ?>[ga4_property_id]"
-									value="<?php echo esc_attr( $ga4_property_id ); ?>"
-									class="regular-text"
-									inputmode="numeric"
-								/>
-								<p class="description">
-									<?php echo esc_html__( 'Enter the numeric GA4 property ID. Measurement IDs such as G-XXXXXXXXXX are not supported.', 'studio317-report-drafts-google-analytics' ); ?>
-								</p>
-							</td>
-						</tr>
-
-						<tr>
-							<th scope="row">
-								<label for="studio317-report-drafts-google-analytics-google-oauth-client-id">
-									<?php echo esc_html__( 'Google OAuth Client ID', 'studio317-report-drafts-google-analytics' ); ?>
-								</label>
-								<?php
-								Analytics_Report_AI_Help_Dialog::render_button(
-									'studio317-report-drafts-google-analytics-google-oauth-client-id-help',
-									__( 'Google OAuth Client ID Help', 'studio317-report-drafts-google-analytics' )
-								);
-								?>
-							</th>
-							<td>
-								<input
-									type="password"
-									id="studio317-report-drafts-google-analytics-google-oauth-client-id"
-									<?php if ( 'constants' !== $google_oauth_client_source_category ) : ?>
-										name="<?php echo esc_attr( ANALYTICS_REPORT_AI_OPTION_NAME ); ?>[google_oauth_client][client_id]"
-									<?php endif; ?>
-									value=""
-									class="regular-text"
-									autocomplete="off"
-									placeholder="<?php echo esc_attr( $has_google_oauth_client_fallback_id ? __( 'Saved value is hidden. Leave blank to keep it.', 'studio317-report-drafts-google-analytics' ) : __( 'Enter a client ID, or leave blank if using server configuration.', 'studio317-report-drafts-google-analytics' ) ); ?>"
-									<?php disabled( 'constants' === $google_oauth_client_source_category ); ?>
-								/>
-
-								<p class="description">
-									<?php
-									if ( 'constants' === $google_oauth_client_source_category ) {
-										echo esc_html__( 'This value is managed by server configuration and cannot be edited here.', 'studio317-report-drafts-google-analytics' );
-									} elseif ( $has_google_oauth_client_fallback_id ) {
-										echo esc_html__( 'A saved client ID exists and is hidden. Leave this field empty to keep it, or enter a new value to replace it.', 'studio317-report-drafts-google-analytics' );
-									} else {
-										echo esc_html__( 'Enter the client ID from a Google OAuth web application client.', 'studio317-report-drafts-google-analytics' );
-									}
-									?>
-								</p>
-								<?php $this->render_google_oauth_client_id_help_dialog(); ?>
-							</td>
-						</tr>
-
-						<tr>
-							<th scope="row">
-								<label for="studio317-report-drafts-google-analytics-google-oauth-client-secret">
-									<?php echo esc_html__( 'Google OAuth Client Secret', 'studio317-report-drafts-google-analytics' ); ?>
-								</label>
-								<?php
-								Analytics_Report_AI_Help_Dialog::render_button(
-									'studio317-report-drafts-google-analytics-google-oauth-client-secret-help',
-									__( 'Google OAuth Client Secret Help', 'studio317-report-drafts-google-analytics' )
-								);
-								?>
-							</th>
-							<td>
-								<input
-									type="password"
-									id="studio317-report-drafts-google-analytics-google-oauth-client-secret"
-									<?php if ( 'constants' !== $google_oauth_client_source_category ) : ?>
-										name="<?php echo esc_attr( ANALYTICS_REPORT_AI_OPTION_NAME ); ?>[google_oauth_client][client_secret]"
-									<?php endif; ?>
-									value=""
-									class="regular-text"
-									autocomplete="off"
-									placeholder="<?php echo esc_attr( $has_google_oauth_client_fallback_secret ? __( 'Saved value is hidden. Leave blank to keep it.', 'studio317-report-drafts-google-analytics' ) : __( 'Enter a client secret, or leave blank if using server configuration.', 'studio317-report-drafts-google-analytics' ) ); ?>"
-									<?php disabled( 'constants' === $google_oauth_client_source_category ); ?>
-								/>
-
-								<p class="description">
-									<?php
-									if ( 'constants' === $google_oauth_client_source_category ) {
-										echo esc_html__( 'This value is managed by server configuration and cannot be edited here.', 'studio317-report-drafts-google-analytics' );
-									} elseif ( $has_google_oauth_client_fallback_secret ) {
-										echo esc_html__( 'A saved client secret exists and is hidden. Leave this field empty to keep it, or enter a new value to replace it.', 'studio317-report-drafts-google-analytics' );
-									} else {
-										echo esc_html__( 'Enter the client secret from the same Google OAuth web application client.', 'studio317-report-drafts-google-analytics' );
-									}
-									?>
-								</p>
-								<?php $this->render_google_oauth_client_secret_help_dialog(); ?>
-
-								<p class="description">
-									<?php echo esc_html__( 'For support, do not share OAuth client identifiers or secrets. Share only whether the setup is configured, not configured, or needs review.', 'studio317-report-drafts-google-analytics' ); ?>
-								</p>
-
-								<?php if ( $has_google_oauth_client_fallback ) : ?>
-									<p>
-										<label for="studio317-report-drafts-google-analytics-clear-google-oauth-client-fallback">
-											<input
-												type="checkbox"
-												id="studio317-report-drafts-google-analytics-clear-google-oauth-client-fallback"
-												name="<?php echo esc_attr( ANALYTICS_REPORT_AI_OPTION_NAME ); ?>[clear_google_oauth_client_fallback]"
-												value="1"
-											/>
-											<?php echo esc_html__( 'Delete the saved Google OAuth client settings. Server configuration, Google tokens, and provider access are not changed.', 'studio317-report-drafts-google-analytics' ); ?>
-										</label>
-									</p>
-								<?php endif; ?>
-							</td>
-						</tr>
-
-						<tr>
-							<th scope="row">
-								<?php echo esc_html__( 'Host Name Filter', 'studio317-report-drafts-google-analytics' ); ?>
-							</th>
-							<td>
-								<label for="studio317-report-drafts-google-analytics-host-filter-enabled">
-									<input
-										type="checkbox"
-										id="studio317-report-drafts-google-analytics-host-filter-enabled"
-										name="<?php echo esc_attr( ANALYTICS_REPORT_AI_OPTION_NAME ); ?>[host_filter_enabled]"
-										value="1"
-										<?php checked( $host_filter_enabled ); ?>
-									/>
-									<?php echo esc_html__( 'Filter GA4 data by host name.', 'studio317-report-drafts-google-analytics' ); ?>
-								</label>
-							</td>
-						</tr>
-
-						<tr>
-							<th scope="row">
-								<label for="studio317-report-drafts-google-analytics-host-name">
-									<?php echo esc_html__( 'Host Name', 'studio317-report-drafts-google-analytics' ); ?>
-								</label>
-							</th>
-							<td>
-								<input
-									type="text"
-									id="studio317-report-drafts-google-analytics-host-name"
-									name="<?php echo esc_attr( ANALYTICS_REPORT_AI_OPTION_NAME ); ?>[host_name]"
-									value="<?php echo esc_attr( $host_name ); ?>"
-									class="regular-text"
-								/>
-								<p class="description">
-									<?php echo esc_html__( 'Default value is based on home_url(). Example: example.com', 'studio317-report-drafts-google-analytics' ); ?>
-								</p>
-							</td>
-						</tr>
-
-					</tbody>
-				</table>
-
-				<?php submit_button( __( 'Save Settings', 'studio317-report-drafts-google-analytics' ) ); ?>
-			</form>
 		</div>
 		<?php
+	}
+
+	/**
+	 * Build a safe external-link HTML fragment for Settings helper text.
+	 *
+	 * @param string $url        Link URL.
+	 * @param string $label      Visible link label.
+	 * @param string $aria_label Accessible link label.
+	 * @return string
+	 */
+	private function get_external_link_html( $url, $label, $aria_label ) {
+		return sprintf(
+			'<a class="studio317-report-drafts-google-analytics-settings-external-link" href="%1$s" target="_blank" rel="external noreferrer noopener" aria-label="%2$s">%3$s <span class="studio317-report-drafts-google-analytics-settings-external-icon" aria-hidden="true">&#8599;</span></a>',
+			esc_url( $url ),
+			esc_attr( $aria_label ),
+			esc_html( $label )
+		);
+	}
+
+	/**
+	 * Get allowed HTML for Settings helper text that contains external links.
+	 *
+	 * @return array
+	 */
+	private function get_external_link_allowed_html() {
+		return array(
+			'a'    => array(
+				'aria-label' => true,
+				'class'      => true,
+				'href'       => true,
+				'rel'        => true,
+				'target'     => true,
+			),
+			'span' => array(
+				'aria-hidden' => true,
+				'class'       => true,
+			),
+		);
 	}
 
 	/**

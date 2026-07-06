@@ -235,6 +235,20 @@ final class Analytics_Report_AI_Admin {
 			$help_dialog_script_version,
 			true
 		);
+
+		if ( $this->settings_hook_suffix !== $hook_suffix ) {
+			return;
+		}
+
+		$settings_form_css_path    = ANALYTICS_REPORT_AI_DIR . 'assets/css/settings-form.css';
+		$settings_form_css_version = file_exists( $settings_form_css_path ) ? (string) filemtime( $settings_form_css_path ) : ANALYTICS_REPORT_AI_VERSION;
+
+		wp_enqueue_style(
+			'studio317-report-drafts-google-analytics-settings-form',
+			ANALYTICS_REPORT_AI_URL . 'assets/css/settings-form.css',
+			array( 'studio317-report-drafts-google-analytics-admin' ),
+			$settings_form_css_version
+		);
 	}
 
 	/**

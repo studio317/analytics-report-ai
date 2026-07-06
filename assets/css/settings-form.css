@@ -1,0 +1,65 @@
+.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-settings-form {
+	max-width: 960px;
+}
+
+.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-settings-section {
+	margin-top: 24px;
+	padding-top: 4px;
+}
+
+.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-settings-section + .studio317-report-drafts-google-analytics-settings-section {
+	margin-top: 32px;
+	border-top: 1px solid #dcdcde;
+}
+
+.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-settings-section h2 {
+	margin: 0 0 16px;
+}
+
+.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-settings-field {
+	max-width: 640px;
+	margin: 0 0 22px;
+}
+
+.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-settings-label-row {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	gap: 6px;
+	margin-bottom: 6px;
+}
+
+.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-settings-label {
+	display: block;
+	margin-bottom: 6px;
+	font-weight: 600;
+}
+
+.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-settings-label-row .studio317-report-drafts-google-analytics-settings-label {
+	margin-bottom: 0;
+}
+
+.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-settings-input {
+	display: block;
+	width: min(100%, 420px);
+	max-width: 100%;
+}
+
+.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-settings-field .description {
+	max-width: 640px;
+	margin: 6px 0 0;
+}
+
+.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-settings-checkbox-field label,
+.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-settings-delete-field label {
+	font-weight: 600;
+}
+
+.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-settings-external-link {
+	text-decoration: underline;
+}
+
+.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-settings-external-icon {
+	display: inline-block;
+	margin-left: 2px;
+}

@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Studio317 Report Drafts for Google Analytics 0.1.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/analytics-report-"
 "ai\n"
-"POT-Creation-Date: 2026-07-06T20:14:49+09:00\n"
+"POT-Creation-Date: 2026-07-07T05:46:53+09:00\n"
 "PO-Revision-Date: 2026-06-30 10:00+0900\n"
 "Last-Translator: Kimiya Watabe / Studio317\n"
 "Language-Team: Japanese\n"
@@ -79,8 +79,8 @@ msgstr "コピーできませんでした。選択して手動でコピーして
 msgid "Nothing to copy."
 msgstr "コピーする内容がありません。"
 
-#: includes/class-admin.php:252 includes/class-admin.php:345
-#: includes/class-admin.php:390
+#: includes/class-admin.php:266 includes/class-admin.php:359
+#: includes/class-admin.php:404
 msgid ""
 "You do not have permission to manage Studio317 Report Drafts for Google "
 "Analytics credentials."
@@ -88,8 +88,8 @@ msgstr ""
 "Studio317 Report Drafts for Google Analytics の認証情報を管理する権限がありま"
 "せん。"
 
-#: includes/class-admin.php:253 includes/class-admin.php:346
-#: includes/class-admin.php:391
+#: includes/class-admin.php:267 includes/class-admin.php:360
+#: includes/class-admin.php:405
 msgid "Permission denied"
 msgstr "権限がありません"
 
@@ -777,7 +777,7 @@ msgstr "GA4データを取得できます"
 msgid "Reconnect Google before fetching GA4 data"
 msgstr "GA4データ取得前にGoogleへ再接続してください"
 
-#: includes/class-report-builder.php:1284 includes/class-settings.php:598
+#: includes/class-report-builder.php:1284 includes/class-settings.php:691
 #: includes/class-status-page.php:243
 msgid "Not connected"
 msgstr "未接続"
@@ -959,11 +959,156 @@ msgstr ""
 "AI送信データのJSON、生成レポート本文、スクリーンショット、ブラウザのNetwork証"
 "跡は共有しないでください。"
 
-#: includes/class-settings.php:261
+#: includes/class-settings.php:264
+msgid "GA4 report settings"
+msgstr "GA4レポート設定"
+
+#: includes/class-settings.php:268
+msgid "GA4 Property ID"
+msgstr "GA4 Property ID"
+
+#: includes/class-settings.php:277
+msgid "Enter the GA4 Property ID"
+msgstr "GA4 Property IDを入力してください"
+
+#: includes/class-settings.php:281
+msgid ""
+"Enter numbers only for the GA4 Property ID. Measurement IDs that start with "
+"G- cannot be used."
+msgstr ""
+"数字のみのGA4 Property IDを入力してください。G- で始まる測定IDは使用できませ"
+"ん。"
+
+#. translators: %s: analytics.google.com external link.
+#: includes/class-settings.php:288
+#, php-format
+msgid "Open %s in a new tab to find your GA4 property."
+msgstr "%s を新しいタブで開き、GA4 Property IDを確認できます。"
+
+#: includes/class-settings.php:291
+msgid "analytics.google.com"
+msgstr "analytics.google.com"
+
+#: includes/class-settings.php:292
+msgid "Open analytics.google.com in a new tab"
+msgstr "analytics.google.com を新しいタブで開く"
+
+#: includes/class-settings.php:310
+msgid "Host Name Filter"
+msgstr "ホスト名フィルター"
+
+#: includes/class-settings.php:316
+msgid "Host Name"
+msgstr "ホスト名"
+
+#: includes/class-settings.php:328
+msgid ""
+"When Host Name Filter is enabled, GA4 data is filtered by this host name."
+msgstr ""
+"ホスト名フィルターを有効にした場合に、GA4データをこのホスト名で絞り込みます。"
+
+#: includes/class-settings.php:334
+msgid "Google OAuth client settings"
+msgstr "Google OAuthクライアント設定"
+
+#: includes/class-settings.php:339
+msgid "Google OAuth Client ID"
+msgstr "Google OAuthクライアントID"
+
+#: includes/class-settings.php:344
+msgid "Google OAuth Client ID Help"
+msgstr "Google OAuthクライアントID ヘルプ"
+
+#: includes/class-settings.php:357 includes/class-settings.php:418
+msgid "****************"
+msgstr "****************"
+
+#: includes/class-settings.php:357
+msgid "Enter the client ID"
+msgstr "クライアントIDを入力してください"
+
+#: includes/class-settings.php:364 includes/class-settings.php:425
+msgid ""
+"This value is managed by server configuration and cannot be edited on this "
+"screen."
+msgstr "この値はサーバー設定で管理されています。この画面では編集できません。"
+
+#. translators: %s: Google Cloud Console credentials external link.
+#: includes/class-settings.php:369
+#, php-format
+msgid "The client ID is stored securely. Use %s to review or recreate it."
+msgstr "クライアントIDを安全に保管しています。%s から確認・再作成できます。"
+
+#: includes/class-settings.php:372 includes/class-settings.php:385
+#: includes/class-settings.php:433 includes/class-settings.php:446
+msgid "console.cloud.google.com"
+msgstr "console.cloud.google.com"
+
+#: includes/class-settings.php:373 includes/class-settings.php:386
+#: includes/class-settings.php:434 includes/class-settings.php:447
+msgid "Open Google Cloud credentials in a new tab"
+msgstr "Google Cloud の認証情報を新しいタブで開く"
+
+#. translators: %s: Google Cloud Console credentials external link.
+#: includes/class-settings.php:382
+#, php-format
+msgid "%s to get the client ID."
+msgstr "%s でクライアントIDを取得"
+
+#: includes/class-settings.php:400
+msgid "Google OAuth Client Secret"
+msgstr "Google OAuthクライアントシークレット"
+
+#: includes/class-settings.php:405
+msgid "Google OAuth Client Secret Help"
+msgstr "Google OAuthクライアントシークレット ヘルプ"
+
+#: includes/class-settings.php:418
+msgid "Enter the client secret"
+msgstr "クライアントシークレットを入力してください"
+
+#. translators: %s: Google Cloud Console credentials external link.
+#: includes/class-settings.php:430
+#, php-format
+msgid "The client secret is stored securely. Use %s to review or recreate it."
+msgstr ""
+"クライアントシークレットを安全に保管しています。%s から確認・再作成できます。"
+
+#. translators: %s: Google Cloud Console credentials external link.
+#: includes/class-settings.php:443
+#, php-format
+msgid "%s to confirm the client secret."
+msgstr "%s でクライアントシークレットを確認"
+
+#: includes/class-settings.php:459
+msgid ""
+"For support, do not share OAuth client identifiers or secrets. Share only "
+"whether the setup is configured, not configured, or needs review."
+msgstr ""
+"サポートにはOAuthクライアントIDやシークレットを共有しないでください。設定済"
+"み、未設定、確認が必要、のいずれかだけを共有してください。"
+
+#: includes/class-settings.php:471
+msgid "Delete saved Google OAuth client settings"
+msgstr "保存済みのGoogle OAuthクライアント設定を削除する"
+
+#: includes/class-settings.php:474
+msgid ""
+"Entering a new client ID and client secret and saving will replace the saved "
+"settings."
+msgstr ""
+"新しいクライアントIDとクライアントシークレットを入力して保存すると、保存済み"
+"の設定を置き換えます。"
+
+#: includes/class-settings.php:480
+msgid "Save Settings"
+msgstr "設定を保存"
+
+#: includes/class-settings.php:484
 msgid "Google connection"
 msgstr "Google接続"
 
-#: includes/class-settings.php:264
+#: includes/class-settings.php:487
 msgid ""
 "Connect Google before fetching GA4 data. Token values, authorization codes, "
 "provider responses, and option values are never displayed on this screen."
@@ -971,12 +1116,12 @@ msgstr ""
 "GA4データを取得する前にGoogleへ接続してください。この画面には、トークン値、認"
 "可コード、プロバイダーレスポンス、オプション値は表示されません。"
 
-#: includes/class-settings.php:271 includes/class-settings.php:272
-#: includes/class-settings.php:280
+#: includes/class-settings.php:494 includes/class-settings.php:495
+#: includes/class-settings.php:503
 msgid "Google OAuth setup"
 msgstr "Google OAuth設定"
 
-#: includes/class-settings.php:282
+#: includes/class-settings.php:505
 msgid ""
 "Server configuration takes precedence over saved Settings values. When "
 "server configuration is active, it cannot be edited or deleted here."
@@ -984,7 +1129,7 @@ msgstr ""
 "サーバー設定は保存済みの設定値より優先されます。サーバー設定が有効な場合、こ"
 "こでは編集または削除できません。"
 
-#: includes/class-settings.php:283
+#: includes/class-settings.php:506
 msgid ""
 "If OAuth client settings are incomplete, fix the client ID and client secret "
 "before starting Google authorization."
@@ -992,7 +1137,7 @@ msgstr ""
 "OAuthクライアント設定が不完全な場合は、Google認可を開始する前にクライアントID"
 "とクライアントシークレットを修正してください。"
 
-#: includes/class-settings.php:284
+#: includes/class-settings.php:507
 msgid ""
 "The redirect URI shown on this screen must be registered in the Google OAuth "
 "client used by this site."
@@ -1000,7 +1145,7 @@ msgstr ""
 "この画面に表示されているリダイレクトURIは、このサイトで使用するGoogle OAuthク"
 "ライアントに登録する必要があります。"
 
-#: includes/class-settings.php:285
+#: includes/class-settings.php:508
 msgid ""
 "Refresh is not performed automatically. If the Google connection needs "
 "recovery, reconnect the Google account."
@@ -1008,7 +1153,7 @@ msgstr ""
 "更新は自動実行されません。Google接続の復旧が必要な場合は、Googleアカウントに"
 "再接続してください。"
 
-#: includes/class-settings.php:286
+#: includes/class-settings.php:509
 msgid ""
 "Disconnecting Google deletes only Google connection data stored by this "
 "plugin. It does not contact Google, revoke provider access, delete OAuth "
@@ -1018,7 +1163,7 @@ msgstr ""
 "す。Googleへの通信、Google側のアクセス許可の取り消し、OAuthクライアント設定の"
 "削除、AIプロバイダー設定の変更は行いません。"
 
-#: includes/class-settings.php:287
+#: includes/class-settings.php:510
 msgid ""
 "Manual Google access token entry is not available. Use Google OAuth for GA4 "
 "access."
@@ -1026,15 +1171,23 @@ msgstr ""
 "手動のGoogleアクセストークン入力は利用できません。GA4アクセスにはGoogle OAuth"
 "を使用してください。"
 
-#: includes/class-settings.php:294
-msgid "Redirect URI for Google OAuth setup:"
-msgstr "Google OAuth設定用リダイレクトURI:"
+#: includes/class-settings.php:517 includes/class-settings.php:607
+msgid "Redirect URI for Google OAuth setup"
+msgstr "Google OAuth設定用リダイレクトURI"
 
-#: includes/class-settings.php:309
+#: includes/class-settings.php:528
+msgid ""
+"Register this read-only URI in the Google OAuth client. Do not share it in "
+"support requests."
+msgstr ""
+"この読み取り専用URIをGoogle OAuthクライアントに登録してください。サポート依頼"
+"では共有しないでください。"
+
+#: includes/class-settings.php:536
 msgid "Disconnect Google Account"
 msgstr "Googleアカウントを切断"
 
-#: includes/class-settings.php:313
+#: includes/class-settings.php:540
 msgid ""
 "This deletes only Google connection data saved by this plugin. It does not "
 "delete Google provider access, Google OAuth client settings, or AI provider "
@@ -1044,137 +1197,19 @@ msgstr ""
 "側のアクセス許可、Google OAuthクライアント設定、AIプロバイダー設定は削除しま"
 "せん。"
 
-#: includes/class-settings.php:319
+#: includes/class-settings.php:546
 msgid "Reconnect Google Account"
 msgstr "Googleアカウントに再接続"
 
-#: includes/class-settings.php:319
+#: includes/class-settings.php:546
 msgid "Connect Google Account"
 msgstr "Googleアカウントに接続"
 
-#: includes/class-settings.php:327
-msgid "Report and service settings"
-msgstr "レポートとサービス設定"
-
-#: includes/class-settings.php:334
-msgid "GA4 Property ID"
-msgstr "GA4プロパティID"
-
-#: includes/class-settings.php:347
-msgid ""
-"Enter the numeric GA4 property ID. Measurement IDs such as G-XXXXXXXXXX are "
-"not supported."
-msgstr ""
-"数字のみのGA4プロパティIDを入力してください。G-XXXXXXXXXX のような測定IDはサ"
-"ポートされません。"
-
-#: includes/class-settings.php:355
-msgid "Google OAuth Client ID"
-msgstr "Google OAuthクライアントID"
-
-#: includes/class-settings.php:360
-msgid "Google OAuth Client ID Help"
-msgstr "Google OAuthクライアントID ヘルプ"
-
-#: includes/class-settings.php:374 includes/class-settings.php:415
-msgid "Saved value is hidden. Leave blank to keep it."
-msgstr "保存済みの値は非表示です。保持する場合は空欄のままにしてください。"
-
-#: includes/class-settings.php:374
-msgid "Enter a client ID, or leave blank if using server configuration."
-msgstr ""
-"クライアントIDを入力するか、サーバー設定を使用する場合は空欄のままにしてくだ"
-"さい。"
-
-#: includes/class-settings.php:381 includes/class-settings.php:422
-msgid ""
-"This value is managed by server configuration and cannot be edited here."
-msgstr "この値はサーバー設定で管理されており、ここでは編集できません。"
-
-#: includes/class-settings.php:383
-msgid ""
-"A saved client ID exists and is hidden. Leave this field empty to keep it, "
-"or enter a new value to replace it."
-msgstr ""
-"保存済みのクライアントIDがあり、非表示です。保持する場合は空欄のままにし、置"
-"き換える場合は新しい値を入力してください。"
-
-#: includes/class-settings.php:385
-msgid "Enter the client ID from a Google OAuth web application client."
-msgstr ""
-"Google OAuthのウェブアプリケーションクライアントのクライアントIDを入力してく"
-"ださい。"
-
-#: includes/class-settings.php:396
-msgid "Google OAuth Client Secret"
-msgstr "Google OAuthクライアントシークレット"
-
-#: includes/class-settings.php:401
-msgid "Google OAuth Client Secret Help"
-msgstr "Google OAuthクライアントシークレット ヘルプ"
-
-#: includes/class-settings.php:415
-msgid "Enter a client secret, or leave blank if using server configuration."
-msgstr ""
-"クライアントシークレットを入力するか、サーバー設定を使用する場合は空欄のまま"
-"にしてください。"
-
-#: includes/class-settings.php:424
-msgid ""
-"A saved client secret exists and is hidden. Leave this field empty to keep "
-"it, or enter a new value to replace it."
-msgstr ""
-"保存済みのクライアントシークレットがあり、非表示です。保持する場合は空欄のま"
-"まにし、置き換える場合は新しい値を入力してください。"
-
-#: includes/class-settings.php:426
-msgid ""
-"Enter the client secret from the same Google OAuth web application client."
-msgstr ""
-"同じGoogle OAuthウェブアプリケーションクライアントのクライアントシークレット"
-"を入力してください。"
-
-#: includes/class-settings.php:433
-msgid ""
-"For support, do not share OAuth client identifiers or secrets. Share only "
-"whether the setup is configured, not configured, or needs review."
-msgstr ""
-"サポートにはOAuthクライアントIDやシークレットを共有しないでください。設定済"
-"み、未設定、確認が必要、のいずれかだけを共有してください。"
-
-#: includes/class-settings.php:445
-msgid ""
-"Delete the saved Google OAuth client settings. Server configuration, Google "
-"tokens, and provider access are not changed."
-msgstr ""
-"保存済みのGoogle OAuthクライアント設定を削除します。サーバー設定、Googleトー"
-"クン、プロバイダー側アクセスは変更されません。"
-
-#: includes/class-settings.php:454
-msgid "Host Name Filter"
-msgstr "ホスト名フィルター"
-
-#: includes/class-settings.php:465
-msgid "Filter GA4 data by host name."
-msgstr "GA4データをホスト名でフィルターします。"
-
-#: includes/class-settings.php:473
-msgid "Host Name"
-msgstr "ホスト名"
-
-#: includes/class-settings.php:485
-msgid "Default value is based on home_url(). Example: example.com"
-msgstr "デフォルト値は home_url() に基づきます。例: example.com"
-
-#: includes/class-settings.php:493
-msgid "Save Settings"
-msgstr "設定を保存"
-
-#: includes/class-settings.php:507
+#: includes/class-settings.php:600
 msgid "Google OAuth Client ID setup"
 msgstr "Google OAuthクライアントIDの設定"
 
-#: includes/class-settings.php:509
+#: includes/class-settings.php:602
 msgid ""
 "Enter the Client ID from a Google Cloud OAuth client configured as a Web "
 "application."
@@ -1182,7 +1217,7 @@ msgstr ""
 "Google Cloudでウェブアプリケーションとして作成したOAuthクライアントのClient "
 "IDを入力します。"
 
-#: includes/class-settings.php:510
+#: includes/class-settings.php:603
 msgid ""
 "Register the Redirect URI shown on this Settings screen in the same Google "
 "OAuth client."
@@ -1191,7 +1226,7 @@ msgstr ""
 "ます。"
 
 #. translators: %s: Redirect URI field label.
-#: includes/class-settings.php:513
+#: includes/class-settings.php:606
 #, php-format
 msgid ""
 "Use the value displayed in the %s field; do not guess or share the value in "
@@ -1200,23 +1235,19 @@ msgstr ""
 "%s欄に表示されている値を使用してください。推測したり、サポート依頼で共有した"
 "りしないでください。"
 
-#: includes/class-settings.php:514
-msgid "Redirect URI for Google OAuth setup"
-msgstr "Google OAuth設定用リダイレクトURI"
-
-#: includes/class-settings.php:516
+#: includes/class-settings.php:609
 msgid "Use a Client ID and Client Secret from the same OAuth client."
 msgstr ""
 "Client IDとClient Secretは、同じOAuthクライアントの組み合わせを使用してくださ"
 "い。"
 
-#: includes/class-settings.php:517 includes/class-settings.php:537
+#: includes/class-settings.php:610 includes/class-settings.php:630
 msgid ""
 "When entering it manually, paste the value into this field and click Save "
 "Settings."
 msgstr "手入力する場合は、この入力欄に値を入力して「設定を保存」を押します。"
 
-#: includes/class-settings.php:518 includes/class-settings.php:538
+#: includes/class-settings.php:611 includes/class-settings.php:631
 msgid ""
 "When wp-config.php or another server configuration is active, that value "
 "takes precedence and cannot be viewed, changed, or deleted on this Settings "
@@ -1225,23 +1256,23 @@ msgstr ""
 "wp-config.php 等のサーバー設定が有効な場合、その値が優先され、この設定画面で"
 "は表示・変更・削除できません。"
 
-#: includes/class-settings.php:519 includes/class-settings.php:539
+#: includes/class-settings.php:612 includes/class-settings.php:632
 msgid ""
 "If you cannot edit wp-config.php, you can use the normal input field on this "
 "screen."
 msgstr ""
 "wp-config.php を編集できない場合は、この画面の通常の入力欄から設定できます。"
 
-#: includes/class-settings.php:533
+#: includes/class-settings.php:626
 msgid "Google OAuth Client Secret setup"
 msgstr "Google OAuthクライアントシークレットの設定"
 
-#: includes/class-settings.php:535
+#: includes/class-settings.php:628
 msgid ""
 "Enter the Client Secret from the same Google OAuth client as the Client ID."
 msgstr "Client IDと同じGoogle OAuthクライアントのClient Secretを入力します。"
 
-#: includes/class-settings.php:536
+#: includes/class-settings.php:629
 msgid ""
 "The Client Secret is sensitive. Do not paste it into email, chat, "
 "screenshots, public repositories, or support requests."
@@ -1249,51 +1280,51 @@ msgstr ""
 "Client Secretは機密情報です。メール、チャット、スクリーンショット、公開リポジ"
 "トリ、サポート依頼に貼り付けないでください。"
 
-#: includes/class-settings.php:554 includes/class-status-page.php:183
+#: includes/class-settings.php:647 includes/class-status-page.php:183
 msgid "Managed by server configuration"
 msgstr "サーバー設定で管理されています"
 
-#: includes/class-settings.php:556 includes/class-status-page.php:185
+#: includes/class-settings.php:649 includes/class-status-page.php:185
 msgid "Saved in Settings"
 msgstr "設定に保存済み"
 
-#: includes/class-settings.php:559 includes/class-status-page.php:188
+#: includes/class-settings.php:652 includes/class-status-page.php:188
 msgid "Needs review"
 msgstr "確認が必要"
 
-#: includes/class-settings.php:562 includes/class-status-page.php:191
+#: includes/class-settings.php:655 includes/class-status-page.php:191
 msgid "Not configured"
 msgstr "未設定"
 
-#: includes/class-settings.php:575 includes/class-status-page.php:204
+#: includes/class-settings.php:668 includes/class-status-page.php:204
 msgid "Saved and hidden"
 msgstr "保存済み、非表示"
 
-#: includes/class-settings.php:577 includes/class-status-page.php:206
+#: includes/class-settings.php:670 includes/class-status-page.php:206
 msgid "Partially saved; review both fields"
 msgstr "一部のみ保存済み。両方の欄を確認してください"
 
-#: includes/class-settings.php:580 includes/class-status-page.php:209
+#: includes/class-settings.php:673 includes/class-status-page.php:209
 msgid "Not saved"
 msgstr "未保存"
 
-#: includes/class-settings.php:593 includes/class-status-page.php:236
+#: includes/class-settings.php:686 includes/class-status-page.php:236
 msgid "Connected"
 msgstr "接続済み"
 
-#: includes/class-settings.php:595 includes/class-status-page.php:240
+#: includes/class-settings.php:688 includes/class-status-page.php:240
 msgid "Reconnect required"
 msgstr "再接続が必要"
 
-#: includes/class-settings.php:611 includes/class-status-page.php:256
+#: includes/class-settings.php:704 includes/class-status-page.php:256
 msgid "Ready for GA4 requests"
 msgstr "GA4リクエストに使用できます"
 
-#: includes/class-settings.php:616 includes/class-status-page.php:261
+#: includes/class-settings.php:709 includes/class-status-page.php:261
 msgid "Reconnect before fetching GA4 data"
 msgstr "GA4データ取得前に再接続してください"
 
-#: includes/class-settings.php:634
+#: includes/class-settings.php:727
 msgid ""
 "Google connection was not started. No Google request was made and no token "
 "was saved."
@@ -1301,7 +1332,7 @@ msgstr ""
 "Google接続は開始されませんでした。Googleへのリクエストは行われず、トークンは"
 "保存されていません。"
 
-#: includes/class-settings.php:635
+#: includes/class-settings.php:728
 msgid ""
 "Google authorization was prepared. You may be redirected to Google to "
 "continue. Token values are not displayed."
@@ -1309,7 +1340,7 @@ msgstr ""
 "Google認可の準備が完了しました。続行するためにGoogleへリダイレクトされる場合"
 "があります。トークン値は表示されません。"
 
-#: includes/class-settings.php:636
+#: includes/class-settings.php:729
 msgid ""
 "Google authorization cannot start because OAuth client settings are not "
 "configured. Google was not contacted and no token was saved."
@@ -1317,7 +1348,7 @@ msgstr ""
 "OAuthクライアント設定が未設定のため、Google認可を開始できません。Googleには接"
 "続しておらず、トークンは保存されていません。"
 
-#: includes/class-settings.php:637
+#: includes/class-settings.php:730
 msgid ""
 "Google authorization cannot start because OAuth client settings are missing, "
 "incomplete, or need review. Google was not contacted and no token was saved."
@@ -1325,7 +1356,7 @@ msgstr ""
 "OAuthクライアント設定が不足、不完全、または確認が必要なため、Google認可を開始"
 "できません。Googleには接続しておらず、トークンは保存されていません。"
 
-#: includes/class-settings.php:638
+#: includes/class-settings.php:731
 msgid ""
 "Google authorization could not be prepared. Google was not contacted and no "
 "token was saved."
@@ -1333,7 +1364,7 @@ msgstr ""
 "Google認可を準備できませんでした。Googleには接続しておらず、トークンは保存さ"
 "れていません。"
 
-#: includes/class-settings.php:639
+#: includes/class-settings.php:732
 msgid ""
 "Google returned to the site, but the connection was not completed. No token "
 "was saved."
@@ -1341,7 +1372,7 @@ msgstr ""
 "Googleからサイトへ戻りましたが、接続は完了しませんでした。トークンは保存され"
 "ていません。"
 
-#: includes/class-settings.php:640
+#: includes/class-settings.php:733
 msgid ""
 "Google connection could not be completed because the return request was "
 "missing required state information. No token exchange was attempted."
@@ -1349,7 +1380,7 @@ msgstr ""
 "戻りリクエストに必要なstate情報がないため、Google接続を完了できませんでした。"
 "トークン交換は試行されていません。"
 
-#: includes/class-settings.php:641
+#: includes/class-settings.php:734
 msgid ""
 "Google connection could not be completed because the local authorization "
 "state expired. Start Google authorization again."
@@ -1357,7 +1388,7 @@ msgstr ""
 "ローカル認可stateが期限切れのため、Google接続を完了できませんでした。Google認"
 "可を再度開始してください。"
 
-#: includes/class-settings.php:642
+#: includes/class-settings.php:735
 msgid ""
 "Google connection could not be completed because the return request did not "
 "match the local authorization state. No token exchange was attempted."
@@ -1365,7 +1396,7 @@ msgstr ""
 "戻りリクエストがローカル認可stateと一致しないため、Google接続を完了できません"
 "でした。トークン交換は試行されていません。"
 
-#: includes/class-settings.php:643
+#: includes/class-settings.php:736
 msgid ""
 "Google returned an authorization error. Raw provider details are not "
 "displayed or saved."
@@ -1373,14 +1404,14 @@ msgstr ""
 "Googleから認可エラーが返されました。プロバイダーの詳細情報は表示または保存さ"
 "れません。"
 
-#: includes/class-settings.php:644
+#: includes/class-settings.php:737
 msgid ""
 "Google returned authorization information, but it was not displayed or saved "
 "directly."
 msgstr ""
 "Googleから認可情報が返されましたが、直接表示または保存はされませんでした。"
 
-#: includes/class-settings.php:645
+#: includes/class-settings.php:738
 msgid ""
 "Google connection could not be completed because the return request did not "
 "include the required authorization result. No token exchange was attempted."
@@ -1388,7 +1419,7 @@ msgstr ""
 "戻りリクエストに必要な認可結果が含まれていないため、Google接続を完了できませ"
 "んでした。トークン交換は試行されていません。"
 
-#: includes/class-settings.php:646
+#: includes/class-settings.php:739
 msgid ""
 "Google OAuth token exchange completed and the OAuth connection state was "
 "updated. Token values are not displayed."
@@ -1396,7 +1427,7 @@ msgstr ""
 "Google OAuthのトークン交換が完了し、OAuth接続状態を更新しました。トークン値は"
 "表示されません。"
 
-#: includes/class-settings.php:647
+#: includes/class-settings.php:740
 msgid ""
 "Google connection was not completed because the authorization result was "
 "rejected. No token value is displayed."
@@ -1404,7 +1435,7 @@ msgstr ""
 "認可結果が拒否されたため、Google接続は完了しませんでした。トークン値は表示さ"
 "れません。"
 
-#: includes/class-settings.php:648
+#: includes/class-settings.php:741
 msgid ""
 "Google connection was not completed because Google returned an error. Raw "
 "provider details are not displayed."
@@ -1412,7 +1443,7 @@ msgstr ""
 "Googleからエラーが返されたため、Google接続は完了しませんでした。プロバイダー"
 "の詳細情報は表示されません。"
 
-#: includes/class-settings.php:649
+#: includes/class-settings.php:742
 msgid ""
 "Google connection was not completed because the token request failed. "
 "Request and response details are not displayed."
@@ -1420,7 +1451,7 @@ msgstr ""
 "トークンリクエストに失敗したため、Google接続は完了しませんでした。リクエスト"
 "とレスポンスの詳細は表示されません。"
 
-#: includes/class-settings.php:650
+#: includes/class-settings.php:743
 msgid ""
 "Google connection was not completed because the token response could not be "
 "read safely. Raw response details are not displayed."
@@ -1428,7 +1459,7 @@ msgstr ""
 "トークンレスポンスを安全に読み取れなかったため、Google接続は完了しませんでし"
 "た。rawレスポンスの詳細は表示されません。"
 
-#: includes/class-settings.php:651
+#: includes/class-settings.php:744
 msgid ""
 "Google connection was not completed because the response did not include the "
 "required token data. Raw response details are not displayed."
@@ -1436,7 +1467,7 @@ msgstr ""
 "レスポンスに必要なトークンデータが含まれていなかったため、Google接続は完了し"
 "ませんでした。rawレスポンスの詳細は表示されません。"
 
-#: includes/class-settings.php:652
+#: includes/class-settings.php:745
 msgid ""
 "Google OAuth token exchange was not executed because the callback "
 "preconditions were not complete."
@@ -1444,7 +1475,7 @@ msgstr ""
 "callbackの前提条件が揃っていないため、Google OAuthのトークン交換は実行されま"
 "せんでした。"
 
-#: includes/class-settings.php:653
+#: includes/class-settings.php:746
 msgid ""
 "Google OAuth token exchange completed, but token storage did not complete. "
 "No token value is displayed."
@@ -1452,7 +1483,7 @@ msgstr ""
 "Google OAuthのトークン交換は完了しましたが、トークン保存は完了しませんでし"
 "た。トークン値は表示されません。"
 
-#: includes/class-settings.php:654
+#: includes/class-settings.php:747
 msgid ""
 "Google connection data saved by this plugin was deleted. Google was not "
 "contacted, provider-side access was not revoked, and OAuth client settings "
@@ -1462,7 +1493,7 @@ msgstr ""
 "らず、Google側のアクセス許可、OAuthクライアント設定、AIプロバイダー設定は変更"
 "していません。"
 
-#: includes/class-settings.php:655
+#: includes/class-settings.php:748
 msgid ""
 "Google connection data was not deleted. Token values and option values are "
 "not displayed, and provider-side revoke was not requested."
@@ -1769,6 +1800,63 @@ msgstr "直帰率"
 #: includes/functions-utils.php:1450
 msgid "Average Session Duration"
 msgstr "平均セッション時間"
+
+#~ msgid "Redirect URI for Google OAuth setup:"
+#~ msgstr "Google OAuth設定用リダイレクトURI:"
+
+#~ msgid "Report and service settings"
+#~ msgstr "レポートとサービス設定"
+
+#~ msgid "Saved value is hidden. Leave blank to keep it."
+#~ msgstr "保存済みの値は非表示です。保持する場合は空欄のままにしてください。"
+
+#~ msgid "Enter a client ID, or leave blank if using server configuration."
+#~ msgstr ""
+#~ "クライアントIDを入力するか、サーバー設定を使用する場合は空欄のままにしてく"
+#~ "ださい。"
+
+#~ msgid ""
+#~ "A saved client ID exists and is hidden. Leave this field empty to keep "
+#~ "it, or enter a new value to replace it."
+#~ msgstr ""
+#~ "保存済みのクライアントIDがあり、非表示です。保持する場合は空欄のままにし、"
+#~ "置き換える場合は新しい値を入力してください。"
+
+#~ msgid "Enter the client ID from a Google OAuth web application client."
+#~ msgstr ""
+#~ "Google OAuthのウェブアプリケーションクライアントのクライアントIDを入力して"
+#~ "ください。"
+
+#~ msgid "Enter a client secret, or leave blank if using server configuration."
+#~ msgstr ""
+#~ "クライアントシークレットを入力するか、サーバー設定を使用する場合は空欄のま"
+#~ "まにしてください。"
+
+#~ msgid ""
+#~ "A saved client secret exists and is hidden. Leave this field empty to "
+#~ "keep it, or enter a new value to replace it."
+#~ msgstr ""
+#~ "保存済みのクライアントシークレットがあり、非表示です。保持する場合は空欄の"
+#~ "ままにし、置き換える場合は新しい値を入力してください。"
+
+#~ msgid ""
+#~ "Enter the client secret from the same Google OAuth web application client."
+#~ msgstr ""
+#~ "同じGoogle OAuthウェブアプリケーションクライアントのクライアントシークレッ"
+#~ "トを入力してください。"
+
+#~ msgid ""
+#~ "Delete the saved Google OAuth client settings. Server configuration, "
+#~ "Google tokens, and provider access are not changed."
+#~ msgstr ""
+#~ "保存済みのGoogle OAuthクライアント設定を削除します。サーバー設定、Google"
+#~ "トークン、プロバイダー側アクセスは変更されません。"
+
+#~ msgid "Filter GA4 data by host name."
+#~ msgstr "GA4データをホスト名でフィルターします。"
+
+#~ msgid "Default value is based on home_url(). Example: example.com"
+#~ msgstr "デフォルト値は home_url() に基づきます。例: example.com"
 
 #~ msgid ""
 #~ "AI generation uses the AI provider configured by the site administrator "

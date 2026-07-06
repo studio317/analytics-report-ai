@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-07-06T20:14:49+09:00\n"
+"POT-Creation-Date: 2026-07-07T05:46:53+09:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: studio317-report-drafts-google-analytics\n"
@@ -73,15 +73,15 @@ msgstr ""
 msgid "Nothing to copy."
 msgstr ""
 
-#: includes/class-admin.php:252
-#: includes/class-admin.php:345
-#: includes/class-admin.php:390
+#: includes/class-admin.php:266
+#: includes/class-admin.php:359
+#: includes/class-admin.php:404
 msgid "You do not have permission to manage Studio317 Report Drafts for Google Analytics credentials."
 msgstr ""
 
-#: includes/class-admin.php:253
-#: includes/class-admin.php:346
-#: includes/class-admin.php:391
+#: includes/class-admin.php:267
+#: includes/class-admin.php:360
+#: includes/class-admin.php:405
 msgid "Permission denied"
 msgstr ""
 
@@ -562,7 +562,7 @@ msgid "Reconnect Google before fetching GA4 data"
 msgstr ""
 
 #: includes/class-report-builder.php:1284
-#: includes/class-settings.php:598
+#: includes/class-settings.php:691
 #: includes/class-status-page.php:243
 msgid "Not connected"
 msgstr ""
@@ -690,347 +690,392 @@ msgstr ""
 msgid "For support, share visible status messages or general error names only. Do not share credentials, tokens, option values, request bodies, raw responses, AI data JSON, generated report text, screenshots, or browser Network evidence."
 msgstr ""
 
-#: includes/class-settings.php:261
-msgid "Google connection"
-msgstr ""
-
 #: includes/class-settings.php:264
-msgid "Connect Google before fetching GA4 data. Token values, authorization codes, provider responses, and option values are never displayed on this screen."
+msgid "GA4 report settings"
 msgstr ""
 
-#: includes/class-settings.php:271
-#: includes/class-settings.php:272
-#: includes/class-settings.php:280
-msgid "Google OAuth setup"
-msgstr ""
-
-#: includes/class-settings.php:282
-msgid "Server configuration takes precedence over saved Settings values. When server configuration is active, it cannot be edited or deleted here."
-msgstr ""
-
-#: includes/class-settings.php:283
-msgid "If OAuth client settings are incomplete, fix the client ID and client secret before starting Google authorization."
-msgstr ""
-
-#: includes/class-settings.php:284
-msgid "The redirect URI shown on this screen must be registered in the Google OAuth client used by this site."
-msgstr ""
-
-#: includes/class-settings.php:285
-msgid "Refresh is not performed automatically. If the Google connection needs recovery, reconnect the Google account."
-msgstr ""
-
-#: includes/class-settings.php:286
-msgid "Disconnecting Google deletes only Google connection data stored by this plugin. It does not contact Google, revoke provider access, delete OAuth client settings, or change AI provider configuration."
-msgstr ""
-
-#: includes/class-settings.php:287
-msgid "Manual Google access token entry is not available. Use Google OAuth for GA4 access."
-msgstr ""
-
-#: includes/class-settings.php:294
-msgid "Redirect URI for Google OAuth setup:"
-msgstr ""
-
-#: includes/class-settings.php:309
-msgid "Disconnect Google Account"
-msgstr ""
-
-#: includes/class-settings.php:313
-msgid "This deletes only Google connection data saved by this plugin. It does not delete Google provider access, Google OAuth client settings, or AI provider configuration."
-msgstr ""
-
-#: includes/class-settings.php:319
-msgid "Reconnect Google Account"
-msgstr ""
-
-#: includes/class-settings.php:319
-msgid "Connect Google Account"
-msgstr ""
-
-#: includes/class-settings.php:327
-msgid "Report and service settings"
-msgstr ""
-
-#: includes/class-settings.php:334
+#: includes/class-settings.php:268
 msgid "GA4 Property ID"
 msgstr ""
 
-#: includes/class-settings.php:347
-msgid "Enter the numeric GA4 property ID. Measurement IDs such as G-XXXXXXXXXX are not supported."
+#: includes/class-settings.php:277
+msgid "Enter the GA4 Property ID"
 msgstr ""
 
-#: includes/class-settings.php:355
-msgid "Google OAuth Client ID"
+#: includes/class-settings.php:281
+msgid "Enter numbers only for the GA4 Property ID. Measurement IDs that start with G- cannot be used."
 msgstr ""
 
-#: includes/class-settings.php:360
-msgid "Google OAuth Client ID Help"
+#. translators: %s: analytics.google.com external link.
+#: includes/class-settings.php:288
+#, php-format
+msgid "Open %s in a new tab to find your GA4 property."
 msgstr ""
 
-#: includes/class-settings.php:374
-#: includes/class-settings.php:415
-msgid "Saved value is hidden. Leave blank to keep it."
+#: includes/class-settings.php:291
+msgid "analytics.google.com"
 msgstr ""
 
-#: includes/class-settings.php:374
-msgid "Enter a client ID, or leave blank if using server configuration."
+#: includes/class-settings.php:292
+msgid "Open analytics.google.com in a new tab"
 msgstr ""
 
-#: includes/class-settings.php:381
-#: includes/class-settings.php:422
-msgid "This value is managed by server configuration and cannot be edited here."
-msgstr ""
-
-#: includes/class-settings.php:383
-msgid "A saved client ID exists and is hidden. Leave this field empty to keep it, or enter a new value to replace it."
-msgstr ""
-
-#: includes/class-settings.php:385
-msgid "Enter the client ID from a Google OAuth web application client."
-msgstr ""
-
-#: includes/class-settings.php:396
-msgid "Google OAuth Client Secret"
-msgstr ""
-
-#: includes/class-settings.php:401
-msgid "Google OAuth Client Secret Help"
-msgstr ""
-
-#: includes/class-settings.php:415
-msgid "Enter a client secret, or leave blank if using server configuration."
-msgstr ""
-
-#: includes/class-settings.php:424
-msgid "A saved client secret exists and is hidden. Leave this field empty to keep it, or enter a new value to replace it."
-msgstr ""
-
-#: includes/class-settings.php:426
-msgid "Enter the client secret from the same Google OAuth web application client."
-msgstr ""
-
-#: includes/class-settings.php:433
-msgid "For support, do not share OAuth client identifiers or secrets. Share only whether the setup is configured, not configured, or needs review."
-msgstr ""
-
-#: includes/class-settings.php:445
-msgid "Delete the saved Google OAuth client settings. Server configuration, Google tokens, and provider access are not changed."
-msgstr ""
-
-#: includes/class-settings.php:454
+#: includes/class-settings.php:310
 msgid "Host Name Filter"
 msgstr ""
 
-#: includes/class-settings.php:465
-msgid "Filter GA4 data by host name."
-msgstr ""
-
-#: includes/class-settings.php:473
+#: includes/class-settings.php:316
 msgid "Host Name"
 msgstr ""
 
-#: includes/class-settings.php:485
-msgid "Default value is based on home_url(). Example: example.com"
+#: includes/class-settings.php:328
+msgid "When Host Name Filter is enabled, GA4 data is filtered by this host name."
 msgstr ""
 
-#: includes/class-settings.php:493
+#: includes/class-settings.php:334
+msgid "Google OAuth client settings"
+msgstr ""
+
+#: includes/class-settings.php:339
+msgid "Google OAuth Client ID"
+msgstr ""
+
+#: includes/class-settings.php:344
+msgid "Google OAuth Client ID Help"
+msgstr ""
+
+#: includes/class-settings.php:357
+#: includes/class-settings.php:418
+msgid "****************"
+msgstr ""
+
+#: includes/class-settings.php:357
+msgid "Enter the client ID"
+msgstr ""
+
+#: includes/class-settings.php:364
+#: includes/class-settings.php:425
+msgid "This value is managed by server configuration and cannot be edited on this screen."
+msgstr ""
+
+#. translators: %s: Google Cloud Console credentials external link.
+#: includes/class-settings.php:369
+#, php-format
+msgid "The client ID is stored securely. Use %s to review or recreate it."
+msgstr ""
+
+#: includes/class-settings.php:372
+#: includes/class-settings.php:385
+#: includes/class-settings.php:433
+#: includes/class-settings.php:446
+msgid "console.cloud.google.com"
+msgstr ""
+
+#: includes/class-settings.php:373
+#: includes/class-settings.php:386
+#: includes/class-settings.php:434
+#: includes/class-settings.php:447
+msgid "Open Google Cloud credentials in a new tab"
+msgstr ""
+
+#. translators: %s: Google Cloud Console credentials external link.
+#: includes/class-settings.php:382
+#, php-format
+msgid "%s to get the client ID."
+msgstr ""
+
+#: includes/class-settings.php:400
+msgid "Google OAuth Client Secret"
+msgstr ""
+
+#: includes/class-settings.php:405
+msgid "Google OAuth Client Secret Help"
+msgstr ""
+
+#: includes/class-settings.php:418
+msgid "Enter the client secret"
+msgstr ""
+
+#. translators: %s: Google Cloud Console credentials external link.
+#: includes/class-settings.php:430
+#, php-format
+msgid "The client secret is stored securely. Use %s to review or recreate it."
+msgstr ""
+
+#. translators: %s: Google Cloud Console credentials external link.
+#: includes/class-settings.php:443
+#, php-format
+msgid "%s to confirm the client secret."
+msgstr ""
+
+#: includes/class-settings.php:459
+msgid "For support, do not share OAuth client identifiers or secrets. Share only whether the setup is configured, not configured, or needs review."
+msgstr ""
+
+#: includes/class-settings.php:471
+msgid "Delete saved Google OAuth client settings"
+msgstr ""
+
+#: includes/class-settings.php:474
+msgid "Entering a new client ID and client secret and saving will replace the saved settings."
+msgstr ""
+
+#: includes/class-settings.php:480
 msgid "Save Settings"
 msgstr ""
 
+#: includes/class-settings.php:484
+msgid "Google connection"
+msgstr ""
+
+#: includes/class-settings.php:487
+msgid "Connect Google before fetching GA4 data. Token values, authorization codes, provider responses, and option values are never displayed on this screen."
+msgstr ""
+
+#: includes/class-settings.php:494
+#: includes/class-settings.php:495
+#: includes/class-settings.php:503
+msgid "Google OAuth setup"
+msgstr ""
+
+#: includes/class-settings.php:505
+msgid "Server configuration takes precedence over saved Settings values. When server configuration is active, it cannot be edited or deleted here."
+msgstr ""
+
+#: includes/class-settings.php:506
+msgid "If OAuth client settings are incomplete, fix the client ID and client secret before starting Google authorization."
+msgstr ""
+
 #: includes/class-settings.php:507
-msgid "Google OAuth Client ID setup"
+msgid "The redirect URI shown on this screen must be registered in the Google OAuth client used by this site."
+msgstr ""
+
+#: includes/class-settings.php:508
+msgid "Refresh is not performed automatically. If the Google connection needs recovery, reconnect the Google account."
 msgstr ""
 
 #: includes/class-settings.php:509
-msgid "Enter the Client ID from a Google Cloud OAuth client configured as a Web application."
+msgid "Disconnecting Google deletes only Google connection data stored by this plugin. It does not contact Google, revoke provider access, delete OAuth client settings, or change AI provider configuration."
 msgstr ""
 
 #: includes/class-settings.php:510
+msgid "Manual Google access token entry is not available. Use Google OAuth for GA4 access."
+msgstr ""
+
+#: includes/class-settings.php:517
+#: includes/class-settings.php:607
+msgid "Redirect URI for Google OAuth setup"
+msgstr ""
+
+#: includes/class-settings.php:528
+msgid "Register this read-only URI in the Google OAuth client. Do not share it in support requests."
+msgstr ""
+
+#: includes/class-settings.php:536
+msgid "Disconnect Google Account"
+msgstr ""
+
+#: includes/class-settings.php:540
+msgid "This deletes only Google connection data saved by this plugin. It does not delete Google provider access, Google OAuth client settings, or AI provider configuration."
+msgstr ""
+
+#: includes/class-settings.php:546
+msgid "Reconnect Google Account"
+msgstr ""
+
+#: includes/class-settings.php:546
+msgid "Connect Google Account"
+msgstr ""
+
+#: includes/class-settings.php:600
+msgid "Google OAuth Client ID setup"
+msgstr ""
+
+#: includes/class-settings.php:602
+msgid "Enter the Client ID from a Google Cloud OAuth client configured as a Web application."
+msgstr ""
+
+#: includes/class-settings.php:603
 msgid "Register the Redirect URI shown on this Settings screen in the same Google OAuth client."
 msgstr ""
 
 #. translators: %s: Redirect URI field label.
-#: includes/class-settings.php:513
+#: includes/class-settings.php:606
 #, php-format
 msgid "Use the value displayed in the %s field; do not guess or share the value in support requests."
 msgstr ""
 
-#: includes/class-settings.php:514
-msgid "Redirect URI for Google OAuth setup"
-msgstr ""
-
-#: includes/class-settings.php:516
+#: includes/class-settings.php:609
 msgid "Use a Client ID and Client Secret from the same OAuth client."
 msgstr ""
 
-#: includes/class-settings.php:517
-#: includes/class-settings.php:537
+#: includes/class-settings.php:610
+#: includes/class-settings.php:630
 msgid "When entering it manually, paste the value into this field and click Save Settings."
 msgstr ""
 
-#: includes/class-settings.php:518
-#: includes/class-settings.php:538
+#: includes/class-settings.php:611
+#: includes/class-settings.php:631
 msgid "When wp-config.php or another server configuration is active, that value takes precedence and cannot be viewed, changed, or deleted on this Settings screen."
 msgstr ""
 
-#: includes/class-settings.php:519
-#: includes/class-settings.php:539
+#: includes/class-settings.php:612
+#: includes/class-settings.php:632
 msgid "If you cannot edit wp-config.php, you can use the normal input field on this screen."
 msgstr ""
 
-#: includes/class-settings.php:533
+#: includes/class-settings.php:626
 msgid "Google OAuth Client Secret setup"
 msgstr ""
 
-#: includes/class-settings.php:535
+#: includes/class-settings.php:628
 msgid "Enter the Client Secret from the same Google OAuth client as the Client ID."
 msgstr ""
 
-#: includes/class-settings.php:536
+#: includes/class-settings.php:629
 msgid "The Client Secret is sensitive. Do not paste it into email, chat, screenshots, public repositories, or support requests."
 msgstr ""
 
-#: includes/class-settings.php:554
+#: includes/class-settings.php:647
 #: includes/class-status-page.php:183
 msgid "Managed by server configuration"
 msgstr ""
 
-#: includes/class-settings.php:556
+#: includes/class-settings.php:649
 #: includes/class-status-page.php:185
 msgid "Saved in Settings"
 msgstr ""
 
-#: includes/class-settings.php:559
+#: includes/class-settings.php:652
 #: includes/class-status-page.php:188
 msgid "Needs review"
 msgstr ""
 
-#: includes/class-settings.php:562
+#: includes/class-settings.php:655
 #: includes/class-status-page.php:191
 msgid "Not configured"
 msgstr ""
 
-#: includes/class-settings.php:575
+#: includes/class-settings.php:668
 #: includes/class-status-page.php:204
 msgid "Saved and hidden"
 msgstr ""
 
-#: includes/class-settings.php:577
+#: includes/class-settings.php:670
 #: includes/class-status-page.php:206
 msgid "Partially saved; review both fields"
 msgstr ""
 
-#: includes/class-settings.php:580
+#: includes/class-settings.php:673
 #: includes/class-status-page.php:209
 msgid "Not saved"
 msgstr ""
 
-#: includes/class-settings.php:593
+#: includes/class-settings.php:686
 #: includes/class-status-page.php:236
 msgid "Connected"
 msgstr ""
 
-#: includes/class-settings.php:595
+#: includes/class-settings.php:688
 #: includes/class-status-page.php:240
 msgid "Reconnect required"
 msgstr ""
 
-#: includes/class-settings.php:611
+#: includes/class-settings.php:704
 #: includes/class-status-page.php:256
 msgid "Ready for GA4 requests"
 msgstr ""
 
-#: includes/class-settings.php:616
+#: includes/class-settings.php:709
 #: includes/class-status-page.php:261
 msgid "Reconnect before fetching GA4 data"
 msgstr ""
 
-#: includes/class-settings.php:634
+#: includes/class-settings.php:727
 msgid "Google connection was not started. No Google request was made and no token was saved."
 msgstr ""
 
-#: includes/class-settings.php:635
+#: includes/class-settings.php:728
 msgid "Google authorization was prepared. You may be redirected to Google to continue. Token values are not displayed."
 msgstr ""
 
-#: includes/class-settings.php:636
+#: includes/class-settings.php:729
 msgid "Google authorization cannot start because OAuth client settings are not configured. Google was not contacted and no token was saved."
 msgstr ""
 
-#: includes/class-settings.php:637
+#: includes/class-settings.php:730
 msgid "Google authorization cannot start because OAuth client settings are missing, incomplete, or need review. Google was not contacted and no token was saved."
 msgstr ""
 
-#: includes/class-settings.php:638
+#: includes/class-settings.php:731
 msgid "Google authorization could not be prepared. Google was not contacted and no token was saved."
 msgstr ""
 
-#: includes/class-settings.php:639
+#: includes/class-settings.php:732
 msgid "Google returned to the site, but the connection was not completed. No token was saved."
 msgstr ""
 
-#: includes/class-settings.php:640
+#: includes/class-settings.php:733
 msgid "Google connection could not be completed because the return request was missing required state information. No token exchange was attempted."
 msgstr ""
 
-#: includes/class-settings.php:641
+#: includes/class-settings.php:734
 msgid "Google connection could not be completed because the local authorization state expired. Start Google authorization again."
 msgstr ""
 
-#: includes/class-settings.php:642
+#: includes/class-settings.php:735
 msgid "Google connection could not be completed because the return request did not match the local authorization state. No token exchange was attempted."
 msgstr ""
 
-#: includes/class-settings.php:643
+#: includes/class-settings.php:736
 msgid "Google returned an authorization error. Raw provider details are not displayed or saved."
 msgstr ""
 
-#: includes/class-settings.php:644
+#: includes/class-settings.php:737
 msgid "Google returned authorization information, but it was not displayed or saved directly."
 msgstr ""
 
-#: includes/class-settings.php:645
+#: includes/class-settings.php:738
 msgid "Google connection could not be completed because the return request did not include the required authorization result. No token exchange was attempted."
 msgstr ""
 
-#: includes/class-settings.php:646
+#: includes/class-settings.php:739
 msgid "Google OAuth token exchange completed and the OAuth connection state was updated. Token values are not displayed."
 msgstr ""
 
-#: includes/class-settings.php:647
+#: includes/class-settings.php:740
 msgid "Google connection was not completed because the authorization result was rejected. No token value is displayed."
 msgstr ""
 
-#: includes/class-settings.php:648
+#: includes/class-settings.php:741
 msgid "Google connection was not completed because Google returned an error. Raw provider details are not displayed."
 msgstr ""
 
-#: includes/class-settings.php:649
+#: includes/class-settings.php:742
 msgid "Google connection was not completed because the token request failed. Request and response details are not displayed."
 msgstr ""
 
-#: includes/class-settings.php:650
+#: includes/class-settings.php:743
 msgid "Google connection was not completed because the token response could not be read safely. Raw response details are not displayed."
 msgstr ""
 
-#: includes/class-settings.php:651
+#: includes/class-settings.php:744
 msgid "Google connection was not completed because the response did not include the required token data. Raw response details are not displayed."
 msgstr ""
 
-#: includes/class-settings.php:652
+#: includes/class-settings.php:745
 msgid "Google OAuth token exchange was not executed because the callback preconditions were not complete."
 msgstr ""
 
-#: includes/class-settings.php:653
+#: includes/class-settings.php:746
 msgid "Google OAuth token exchange completed, but token storage did not complete. No token value is displayed."
 msgstr ""
 
-#: includes/class-settings.php:654
+#: includes/class-settings.php:747
 msgid "Google connection data saved by this plugin was deleted. Google was not contacted, provider-side access was not revoked, and OAuth client settings and AI provider configuration were not changed."
 msgstr ""
 
-#: includes/class-settings.php:655
+#: includes/class-settings.php:748
 msgid "Google connection data was not deleted. Token values and option values are not displayed, and provider-side revoke was not requested."
 msgstr ""
 
