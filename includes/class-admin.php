@@ -66,6 +66,34 @@ final class Analytics_Report_AI_Admin {
 	private $status_page;
 
 	/**
+	 * Report Builder top-level hook suffix.
+	 *
+	 * @var string
+	 */
+	private $report_builder_hook_suffix = '';
+
+	/**
+	 * Report Builder submenu hook suffix.
+	 *
+	 * @var string
+	 */
+	private $report_builder_submenu_hook_suffix = '';
+
+	/**
+	 * Current Status submenu hook suffix.
+	 *
+	 * @var string
+	 */
+	private $current_status_hook_suffix = '';
+
+	/**
+	 * Settings submenu hook suffix.
+	 *
+	 * @var string
+	 */
+	private $settings_hook_suffix = '';
+
+	/**
 	 * Constructor.
 	 */
 	public function __construct() {
@@ -86,7 +114,7 @@ final class Analytics_Report_AI_Admin {
 	 * @return void
 	 */
 	public function register_menus() {
-		add_menu_page(
+		$this->report_builder_hook_suffix = add_menu_page(
 			__( 'Studio317 Report Drafts for Google Analytics', 'studio317-report-drafts-google-analytics' ),
 			__( 'Studio317 Report Drafts for Google Analytics', 'studio317-report-drafts-google-analytics' ),
 			'manage_options',
@@ -96,7 +124,7 @@ final class Analytics_Report_AI_Admin {
 			65
 		);
 
-		add_submenu_page(
+		$this->report_builder_submenu_hook_suffix = add_submenu_page(
 			'studio317-report-drafts-google-analytics',
 			__( 'Report Builder', 'studio317-report-drafts-google-analytics' ),
 			__( 'Report Builder', 'studio317-report-drafts-google-analytics' ),
@@ -105,7 +133,7 @@ final class Analytics_Report_AI_Admin {
 			array( $this->report_builder, 'render_page' )
 		);
 
-		add_submenu_page(
+		$this->current_status_hook_suffix = add_submenu_page(
 			'studio317-report-drafts-google-analytics',
 			__( 'Current Status', 'studio317-report-drafts-google-analytics' ),
 			__( 'Current Status', 'studio317-report-drafts-google-analytics' ),
@@ -114,7 +142,7 @@ final class Analytics_Report_AI_Admin {
 			array( $this->status_page, 'render_page' )
 		);
 
-		add_submenu_page(
+		$this->settings_hook_suffix = add_submenu_page(
 			'studio317-report-drafts-google-analytics',
 			__( 'Settings', 'studio317-report-drafts-google-analytics' ),
 			__( 'Settings', 'studio317-report-drafts-google-analytics' ),
@@ -127,12 +155,23 @@ final class Analytics_Report_AI_Admin {
 	/**
 	 * Enqueue admin assets only on plugin screens.
 	 *
+	 * @param string $hook_suffix Current admin screen hook suffix.
 	 * @return void
 	 */
-	public function enqueue_assets() {
+	public function enqueue_assets( $hook_suffix = '' ) {
 		$screen = get_current_screen();
 
-		if ( ! $screen || false === strpos( $screen->id, 'studio317-report-drafts-google-analytics' ) ) {
+		$plugin_hook_suffixes = array_filter(
+			array(
+				$this->report_builder_hook_suffix,
+				$this->report_builder_submenu_hook_suffix,
+				$this->current_status_hook_suffix,
+				$this->settings_hook_suffix,
+			)
+		);
+		$is_plugin_screen     = $screen && false !== strpos( $screen->id, 'studio317-report-drafts-google-analytics' );
+
+		if ( ! $is_plugin_screen && ! in_array( $hook_suffix, $plugin_hook_suffixes, true ) ) {
 			return;
 		}
 
@@ -165,22 +204,35 @@ final class Analytics_Report_AI_Admin {
 			)
 		);
 
-		if ( false === strpos( $screen->id, 'studio317-report-drafts-google-analytics-settings' ) ) {
+		$help_dialog_hook_suffixes = array_filter(
+			array(
+				$this->report_builder_hook_suffix,
+				$this->report_builder_submenu_hook_suffix,
+				$this->settings_hook_suffix,
+			)
+		);
+
+		if ( ! in_array( $hook_suffix, $help_dialog_hook_suffixes, true ) ) {
 			return;
 		}
 
+		$help_dialog_css_path     = ANALYTICS_REPORT_AI_DIR . 'assets/css/help-dialog.css';
+		$help_dialog_css_version  = file_exists( $help_dialog_css_path ) ? (string) filemtime( $help_dialog_css_path ) : ANALYTICS_REPORT_AI_VERSION;
+		$help_dialog_script_path  = ANALYTICS_REPORT_AI_DIR . 'assets/js/help-dialog.js';
+		$help_dialog_script_version = file_exists( $help_dialog_script_path ) ? (string) filemtime( $help_dialog_script_path ) : ANALYTICS_REPORT_AI_VERSION;
+
 		wp_enqueue_style(
-			'studio317-report-drafts-google-analytics-settings-help',
-			ANALYTICS_REPORT_AI_URL . 'assets/css/settings-help.css',
+			'studio317-report-drafts-google-analytics-help-dialog',
+			ANALYTICS_REPORT_AI_URL . 'assets/css/help-dialog.css',
 			array( 'studio317-report-drafts-google-analytics-admin' ),
-			ANALYTICS_REPORT_AI_VERSION
+			$help_dialog_css_version
 		);
 
 		wp_enqueue_script(
-			'studio317-report-drafts-google-analytics-settings-help',
-			ANALYTICS_REPORT_AI_URL . 'assets/js/settings-help.js',
+			'studio317-report-drafts-google-analytics-help-dialog',
+			ANALYTICS_REPORT_AI_URL . 'assets/js/help-dialog.js',
 			array(),
-			ANALYTICS_REPORT_AI_VERSION,
+			$help_dialog_script_version,
 			true
 		);
 	}

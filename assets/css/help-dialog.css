@@ -1,5 +1,4 @@
 .studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-help-control {
-	position: relative;
 	display: inline-flex;
 	align-items: center;
 	margin-left: 6px;
@@ -9,29 +8,6 @@
 	font-size: 12px;
 	line-height: 1.4;
 	text-decoration: underline;
-}
-
-.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-help-tooltip {
-	position: absolute;
-	z-index: 10;
-	top: 100%;
-	left: 0;
-	display: none;
-	width: 240px;
-	margin-top: 6px;
-	padding: 8px 10px;
-	color: #1d2327;
-	background: #fff;
-	border: 1px solid #8c8f94;
-	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
-	font-size: 12px;
-	font-weight: 400;
-	line-height: 1.4;
-}
-
-.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-help-control:hover .studio317-report-drafts-google-analytics-help-tooltip,
-.studio317-report-drafts-google-analytics-admin .studio317-report-drafts-google-analytics-help-control:focus-within .studio317-report-drafts-google-analytics-help-tooltip {
-	display: block;
 }
 
 .studio317-report-drafts-google-analytics-help-dialog-backdrop {

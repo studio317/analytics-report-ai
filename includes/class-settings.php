@@ -208,34 +208,54 @@ final class Analytics_Report_AI_Settings {
 			<?php settings_errors(); ?>
 			<?php $this->render_google_oauth_status_notice(); ?>
 
-			<div class="studio317-report-drafts-google-analytics-card">
-				<h2><?php echo esc_html__( 'Setup checklist', 'studio317-report-drafts-google-analytics' ); ?></h2>
+			<p class="description">
+				<?php echo esc_html__( 'Configure report settings and Google connection controls. Detailed setup and data-use guidance is available in help dialogs.', 'studio317-report-drafts-google-analytics' ); ?>
+			</p>
 
-				<ol>
-					<li><?php echo esc_html__( 'Configure the GA4 property and optional host filter if needed.', 'studio317-report-drafts-google-analytics' ); ?></li>
-					<li><?php echo esc_html__( 'Enter the Google OAuth client manually, or configure it in wp-config.php or another server configuration file.', 'studio317-report-drafts-google-analytics' ); ?></li>
-					<li><?php echo esc_html__( 'Configure a compatible AI text-generation provider in WordPress Settings > Connectors.', 'studio317-report-drafts-google-analytics' ); ?></li>
-					<li><?php echo esc_html__( 'Click Connect Google Account.', 'studio317-report-drafts-google-analytics' ); ?></li>
-					<li><?php echo esc_html__( 'Open Report Builder and click Fetch GA4 Data.', 'studio317-report-drafts-google-analytics' ); ?></li>
-					<li><?php echo esc_html__( 'Review the Data Preview, generate the report draft in the current WordPress user language, then review, edit, and copy it.', 'studio317-report-drafts-google-analytics' ); ?></li>
-				</ol>
-			</div>
+			<p>
+				<?php
+				Analytics_Report_AI_Help_Dialog::render_button(
+					'studio317-report-drafts-google-analytics-setup-checklist-help',
+					__( 'Setup checklist', 'studio317-report-drafts-google-analytics' ),
+					__( 'Setup checklist', 'studio317-report-drafts-google-analytics' )
+				);
+				Analytics_Report_AI_Help_Dialog::render_button(
+					'studio317-report-drafts-google-analytics-external-service-usage-help',
+					__( 'External service usage', 'studio317-report-drafts-google-analytics' ),
+					__( 'External service usage', 'studio317-report-drafts-google-analytics' )
+				);
+				?>
+			</p>
 
-			<div class="studio317-report-drafts-google-analytics-card">
-				<h2><?php echo esc_html__( 'External service usage', 'studio317-report-drafts-google-analytics' ); ?></h2>
+			<?php
+			Analytics_Report_AI_Help_Dialog::render_dialog(
+				'studio317-report-drafts-google-analytics-setup-checklist-help',
+				__( 'Setup checklist', 'studio317-report-drafts-google-analytics' ),
+				array(
+					__( 'Configure the GA4 property and optional host filter if needed.', 'studio317-report-drafts-google-analytics' ),
+					__( 'Enter the Google OAuth client manually, or configure it in wp-config.php or another server configuration file.', 'studio317-report-drafts-google-analytics' ),
+					__( 'Configure a compatible AI text-generation provider in WordPress Settings > Connectors.', 'studio317-report-drafts-google-analytics' ),
+					__( 'Click Connect Google Account.', 'studio317-report-drafts-google-analytics' ),
+					__( 'Open Report Builder and click Fetch GA4 Data.', 'studio317-report-drafts-google-analytics' ),
+					__( 'Review the Data Preview, generate the report draft in the current WordPress user language, then review, edit, and copy it.', 'studio317-report-drafts-google-analytics' ),
+				),
+				'',
+				'ol'
+			);
 
-				<p>
-					<?php echo esc_html__( 'Studio317 Report Drafts for Google Analytics contacts Google only when you start Google authorization or fetch GA4 data. It sends reviewed report data through the WordPress AI Client only when you click Generate AI Report after reviewing the Data Preview.', 'studio317-report-drafts-google-analytics' ); ?>
-				</p>
-
-				<ul class="studio317-report-drafts-google-analytics-notice-list">
-					<li><?php echo esc_html__( 'Fetch GA4 Data sends the selected report conditions and required metrics or dimensions to the Google Analytics Data API.', 'studio317-report-drafts-google-analytics' ); ?></li>
-					<li><?php echo esc_html__( 'Generate AI Report sends the reviewed report data and selected report output language through the WordPress AI Client to the AI provider configured by the site administrator.', 'studio317-report-drafts-google-analytics' ); ?></li>
-					<li><?php echo esc_html__( 'AI provider credentials and provider selection are managed by WordPress Connectors, not by this plugin.', 'studio317-report-drafts-google-analytics' ); ?></li>
-					<li><?php echo esc_html__( 'Saved Google credential values are hidden. Empty password fields keep existing saved values, and delete checkboxes remove only the matching saved value.', 'studio317-report-drafts-google-analytics' ); ?></li>
-					<li><?php echo esc_html__( 'For support, share visible status messages or general error names only. Do not share credentials, tokens, option values, request bodies, raw responses, AI data JSON, generated report text, screenshots, or browser Network evidence.', 'studio317-report-drafts-google-analytics' ); ?></li>
-				</ul>
-			</div>
+			Analytics_Report_AI_Help_Dialog::render_dialog(
+				'studio317-report-drafts-google-analytics-external-service-usage-help',
+				__( 'External service usage', 'studio317-report-drafts-google-analytics' ),
+				array(
+					__( 'Studio317 Report Drafts for Google Analytics contacts Google only when you start Google authorization or fetch GA4 data. It sends reviewed report data through the WordPress AI Client only when you click Generate AI Report after reviewing the Data Preview.', 'studio317-report-drafts-google-analytics' ),
+					__( 'Fetch GA4 Data sends the selected report conditions and required metrics or dimensions to the Google Analytics Data API.', 'studio317-report-drafts-google-analytics' ),
+					__( 'Generate AI Report sends the reviewed report data and selected report output language through the WordPress AI Client to the AI provider configured by the site administrator.', 'studio317-report-drafts-google-analytics' ),
+					__( 'AI provider credentials and provider selection are managed by WordPress Connectors, not by this plugin.', 'studio317-report-drafts-google-analytics' ),
+					__( 'Saved Google credential values are hidden. Empty password fields keep existing saved values, and delete checkboxes remove only the matching saved value.', 'studio317-report-drafts-google-analytics' ),
+					__( 'For support, share visible status messages or general error names only. Do not share credentials, tokens, option values, request bodies, raw responses, AI data JSON, generated report text, screenshots, or browser Network evidence.', 'studio317-report-drafts-google-analytics' ),
+				)
+			);
+			?>
 
 			<div id="studio317-report-drafts-google-analytics-google-connection-settings" class="studio317-report-drafts-google-analytics-card">
 				<h2><?php echo esc_html__( 'Google connection', 'studio317-report-drafts-google-analytics' ); ?></h2>
@@ -243,6 +263,31 @@ final class Analytics_Report_AI_Settings {
 				<p>
 					<?php echo esc_html__( 'Connect Google before fetching GA4 data. Token values, authorization codes, provider responses, and option values are never displayed on this screen.', 'studio317-report-drafts-google-analytics' ); ?>
 				</p>
+
+				<p>
+					<?php
+					Analytics_Report_AI_Help_Dialog::render_button(
+						'studio317-report-drafts-google-analytics-google-oauth-setup-help',
+						__( 'Google OAuth setup', 'studio317-report-drafts-google-analytics' ),
+						__( 'Google OAuth setup', 'studio317-report-drafts-google-analytics' )
+					);
+					?>
+				</p>
+
+				<?php
+				Analytics_Report_AI_Help_Dialog::render_dialog(
+					'studio317-report-drafts-google-analytics-google-oauth-setup-help',
+					__( 'Google OAuth setup', 'studio317-report-drafts-google-analytics' ),
+					array(
+						__( 'Server configuration takes precedence over saved Settings values. When server configuration is active, it cannot be edited or deleted here.', 'studio317-report-drafts-google-analytics' ),
+						__( 'If OAuth client settings are incomplete, fix the client ID and client secret before starting Google authorization.', 'studio317-report-drafts-google-analytics' ),
+						__( 'The redirect URI shown on this screen must be registered in the Google OAuth client used by this site.', 'studio317-report-drafts-google-analytics' ),
+						__( 'Refresh is not performed automatically. If the Google connection needs recovery, reconnect the Google account.', 'studio317-report-drafts-google-analytics' ),
+						__( 'Disconnecting Google deletes only Google connection data stored by this plugin. It does not contact Google, revoke provider access, delete OAuth client settings, or change AI provider configuration.', 'studio317-report-drafts-google-analytics' ),
+						__( 'Manual Google access token entry is not available. Use Google OAuth for GA4 access.', 'studio317-report-drafts-google-analytics' ),
+					)
+				);
+				?>
 
 				<p>
 					<label for="studio317-report-drafts-google-analytics-google-oauth-redirect-uri">
@@ -256,15 +301,6 @@ final class Analytics_Report_AI_Settings {
 						readonly="readonly"
 					/>
 				</p>
-
-				<ul class="studio317-report-drafts-google-analytics-notice-list">
-					<li><?php echo esc_html__( 'Server configuration takes precedence over saved Settings values. When server configuration is active, it cannot be edited or deleted here.', 'studio317-report-drafts-google-analytics' ); ?></li>
-					<li><?php echo esc_html__( 'If OAuth client settings are incomplete, fix the client ID and client secret before starting Google authorization.', 'studio317-report-drafts-google-analytics' ); ?></li>
-					<li><?php echo esc_html__( 'The redirect URI above must be registered in the Google OAuth client used by this site.', 'studio317-report-drafts-google-analytics' ); ?></li>
-					<li><?php echo esc_html__( 'Refresh is not performed automatically. If the Google connection needs recovery, reconnect the Google account.', 'studio317-report-drafts-google-analytics' ); ?></li>
-					<li><?php echo esc_html__( 'Disconnecting Google deletes only Google connection data stored by this plugin. It does not contact Google, revoke provider access, delete OAuth client settings, or change AI provider configuration.', 'studio317-report-drafts-google-analytics' ); ?></li>
-					<li><?php echo esc_html__( 'Manual Google access token entry is not available. Use Google OAuth for GA4 access.', 'studio317-report-drafts-google-analytics' ); ?></li>
-				</ul>
 
 				<?php if ( $google_oauth_is_connected ) : ?>
 					<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
@@ -319,10 +355,9 @@ final class Analytics_Report_AI_Settings {
 									<?php echo esc_html__( 'Google OAuth Client ID', 'studio317-report-drafts-google-analytics' ); ?>
 								</label>
 								<?php
-								$this->render_help_button(
+								Analytics_Report_AI_Help_Dialog::render_button(
 									'studio317-report-drafts-google-analytics-google-oauth-client-id-help',
-									__( 'Google OAuth Client ID setup help', 'studio317-report-drafts-google-analytics' ),
-									__( 'How to find and configure the Google OAuth Client ID.', 'studio317-report-drafts-google-analytics' )
+									__( 'Google OAuth Client ID Help', 'studio317-report-drafts-google-analytics' )
 								);
 								?>
 							</th>
@@ -361,10 +396,9 @@ final class Analytics_Report_AI_Settings {
 									<?php echo esc_html__( 'Google OAuth Client Secret', 'studio317-report-drafts-google-analytics' ); ?>
 								</label>
 								<?php
-								$this->render_help_button(
+								Analytics_Report_AI_Help_Dialog::render_button(
 									'studio317-report-drafts-google-analytics-google-oauth-client-secret-help',
-									__( 'Google OAuth Client Secret setup help', 'studio317-report-drafts-google-analytics' ),
-									__( 'How to find and configure the Google OAuth Client Secret.', 'studio317-report-drafts-google-analytics' )
+									__( 'Google OAuth Client Secret Help', 'studio317-report-drafts-google-analytics' )
 								);
 								?>
 							</th>
@@ -463,76 +497,12 @@ final class Analytics_Report_AI_Settings {
 	}
 
 	/**
-	 * Render a small help button with tooltip text.
-	 *
-	 * @param string $dialog_id    Dialog element ID.
-	 * @param string $button_label Accessible button label.
-	 * @param string $tooltip      Short tooltip text.
-	 * @return void
-	 */
-	private function render_help_button( $dialog_id, $button_label, $tooltip ) {
-		$tooltip_id = $dialog_id . '-tooltip';
-		?>
-		<span class="studio317-report-drafts-google-analytics-help-control">
-			<button
-				type="button"
-				id="<?php echo esc_attr( $dialog_id . '-button' ); ?>"
-				class="button-link studio317-report-drafts-google-analytics-help-button"
-				aria-label="<?php echo esc_attr( $button_label ); ?>"
-				aria-controls="<?php echo esc_attr( $dialog_id ); ?>"
-				aria-expanded="false"
-				aria-describedby="<?php echo esc_attr( $tooltip_id ); ?>"
-				data-studio317-report-drafts-google-analytics-help-button
-				data-studio317-report-drafts-google-analytics-dialog-target="<?php echo esc_attr( $dialog_id ); ?>"
-			>
-				<?php echo esc_html__( 'Help', 'studio317-report-drafts-google-analytics' ); ?>
-			</button>
-			<span id="<?php echo esc_attr( $tooltip_id ); ?>" class="studio317-report-drafts-google-analytics-help-tooltip" role="tooltip">
-				<?php echo esc_html( $tooltip ); ?>
-			</span>
-		</span>
-		<?php
-	}
-
-	/**
-	 * Render a generic help dialog.
-	 *
-	 * @param string $dialog_id    Dialog element ID.
-	 * @param string $title        Dialog title.
-	 * @param array  $items        Help list items.
-	 * @param string $code_example Optional placeholder-only code example.
-	 * @return void
-	 */
-	private function render_help_dialog( $dialog_id, $title, $items, $code_example = '' ) {
-		$title_id = $dialog_id . '-title';
-		?>
-		<div class="studio317-report-drafts-google-analytics-help-dialog-backdrop" id="<?php echo esc_attr( $dialog_id ); ?>" role="dialog" aria-modal="true" aria-labelledby="<?php echo esc_attr( $title_id ); ?>" tabindex="-1" hidden data-studio317-report-drafts-google-analytics-help-dialog>
-			<div class="studio317-report-drafts-google-analytics-help-dialog">
-				<button type="button" class="button-link studio317-report-drafts-google-analytics-help-dialog-close" data-studio317-report-drafts-google-analytics-help-close>
-					<?php echo esc_html__( 'Close', 'studio317-report-drafts-google-analytics' ); ?>
-				</button>
-				<h3 id="<?php echo esc_attr( $title_id ); ?>"><?php echo esc_html( $title ); ?></h3>
-				<ul>
-					<?php foreach ( $items as $item ) : ?>
-						<li><?php echo esc_html( $item ); ?></li>
-					<?php endforeach; ?>
-				</ul>
-				<?php if ( '' !== $code_example ) : ?>
-					<p><strong><?php echo esc_html__( 'Server configuration example:', 'studio317-report-drafts-google-analytics' ); ?></strong></p>
-					<pre><code><?php echo esc_html( $code_example ); ?></code></pre>
-				<?php endif; ?>
-			</div>
-		</div>
-		<?php
-	}
-
-	/**
 	 * Render the Google OAuth Client ID help dialog.
 	 *
 	 * @return void
 	 */
 	private function render_google_oauth_client_id_help_dialog() {
-		$this->render_help_dialog(
+		Analytics_Report_AI_Help_Dialog::render_dialog(
 			'studio317-report-drafts-google-analytics-google-oauth-client-id-help',
 			__( 'Google OAuth Client ID setup', 'studio317-report-drafts-google-analytics' ),
 			array(
@@ -558,7 +528,7 @@ final class Analytics_Report_AI_Settings {
 	 * @return void
 	 */
 	private function render_google_oauth_client_secret_help_dialog() {
-		$this->render_help_dialog(
+		Analytics_Report_AI_Help_Dialog::render_dialog(
 			'studio317-report-drafts-google-analytics-google-oauth-client-secret-help',
 			__( 'Google OAuth Client Secret setup', 'studio317-report-drafts-google-analytics' ),
 			array(

@@ -58,6 +58,28 @@ final class Analytics_Report_AI_Report_Builder {
 
 				<h2><?php echo esc_html__( 'Report Conditions', 'studio317-report-drafts-google-analytics' ); ?></h2>
 
+				<p>
+					<?php
+					Analytics_Report_AI_Help_Dialog::render_button(
+						'studio317-report-drafts-google-analytics-ga4-data-api-help',
+						__( 'Data sent to Google Analytics Data API', 'studio317-report-drafts-google-analytics' ),
+						__( 'Data sent to Google Analytics Data API', 'studio317-report-drafts-google-analytics' )
+					);
+					?>
+				</p>
+
+				<?php
+				Analytics_Report_AI_Help_Dialog::render_dialog(
+					'studio317-report-drafts-google-analytics-ga4-data-api-help',
+					__( 'Data sent to Google Analytics Data API', 'studio317-report-drafts-google-analytics' ),
+					array(
+						__( 'When you click Fetch GA4 Data, the selected date range, comparison setting, data scope, host name/path filters, and required metrics/dimensions are sent to the Google Analytics Data API.', 'studio317-report-drafts-google-analytics' ),
+						__( 'AI provider credentials are not sent to Google by this plugin.', 'studio317-report-drafts-google-analytics' ),
+						__( 'WordPress user identifiers, cookies, and IP addresses are not included in this GA4 request body by design.', 'studio317-report-drafts-google-analytics' ),
+					)
+				);
+				?>
+
 				<table class="form-table" role="presentation">
 					<tbody>
 						<tr>
@@ -181,23 +203,6 @@ final class Analytics_Report_AI_Report_Builder {
 						</tr>
 					</tbody>
 				</table>
-
-				<div class="studio317-report-drafts-google-analytics-info-block">
-					<h3><?php echo esc_html__( 'Data sent to Google Analytics Data API', 'studio317-report-drafts-google-analytics' ); ?></h3>
-
-					<p>
-						<?php echo esc_html__( 'When you click Fetch GA4 Data, the selected date range, comparison setting, data scope, host name/path filters, and required metrics/dimensions are sent to the Google Analytics Data API.', 'studio317-report-drafts-google-analytics' ); ?>
-					</p>
-
-					<ul class="studio317-report-drafts-google-analytics-notice-list">
-						<li>
-							<?php echo esc_html__( 'AI provider credentials are not sent to Google by this plugin.', 'studio317-report-drafts-google-analytics' ); ?>
-						</li>
-						<li>
-							<?php echo esc_html__( 'WordPress user identifiers, cookies, and IP addresses are not included in this GA4 request body by design.', 'studio317-report-drafts-google-analytics' ); ?>
-						</li>
-					</ul>
-				</div>
 
 				<p>
 					<button type="submit" class="button button-primary">

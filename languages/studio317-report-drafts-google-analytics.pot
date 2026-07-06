@@ -9,15 +9,15 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-07-06T19:11:28+09:00\n"
+"POT-Creation-Date: 2026-07-06T20:14:49+09:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: studio317-report-drafts-google-analytics\n"
 
 #. Plugin Name of the plugin
 #: studio317-report-drafts-google-analytics.php
-#: includes/class-admin.php:90
-#: includes/class-admin.php:91
+#: includes/class-admin.php:118
+#: includes/class-admin.php:119
 msgid "Studio317 Report Drafts for Google Analytics"
 msgstr ""
 
@@ -36,57 +36,57 @@ msgstr ""
 msgid "https://business.s317.com/"
 msgstr ""
 
-#: includes/class-admin.php:101
-#: includes/class-admin.php:102
+#: includes/class-admin.php:129
+#: includes/class-admin.php:130
 #: includes/class-report-builder.php:47
 msgid "Report Builder"
 msgstr ""
 
-#: includes/class-admin.php:110
-#: includes/class-admin.php:111
+#: includes/class-admin.php:138
+#: includes/class-admin.php:139
 #: includes/class-status-page.php:50
 msgid "Current Status"
 msgstr ""
 
-#: includes/class-admin.php:119
-#: includes/class-admin.php:120
+#: includes/class-admin.php:147
+#: includes/class-admin.php:148
 msgid "Settings"
 msgstr ""
 
-#: includes/class-admin.php:159
+#: includes/class-admin.php:198
 msgid "Directory scope matches paths that start with the entered path, such as /blog/."
 msgstr ""
 
-#: includes/class-admin.php:160
+#: includes/class-admin.php:199
 msgid "Page scope matches the exact normalized path, such as /about."
 msgstr ""
 
-#: includes/class-admin.php:161
+#: includes/class-admin.php:200
 msgid "Copied."
 msgstr ""
 
-#: includes/class-admin.php:162
+#: includes/class-admin.php:201
 msgid "Copy failed. Please select and copy manually."
 msgstr ""
 
-#: includes/class-admin.php:163
+#: includes/class-admin.php:202
 msgid "Nothing to copy."
 msgstr ""
 
-#: includes/class-admin.php:200
-#: includes/class-admin.php:293
-#: includes/class-admin.php:338
+#: includes/class-admin.php:252
+#: includes/class-admin.php:345
+#: includes/class-admin.php:390
 msgid "You do not have permission to manage Studio317 Report Drafts for Google Analytics credentials."
 msgstr ""
 
-#: includes/class-admin.php:201
-#: includes/class-admin.php:294
-#: includes/class-admin.php:339
+#: includes/class-admin.php:253
+#: includes/class-admin.php:346
+#: includes/class-admin.php:391
 msgid "Permission denied"
 msgstr ""
 
 #: includes/class-ai-client.php:142
-#: includes/class-report-builder.php:1049
+#: includes/class-report-builder.php:1054
 msgid "AI text generation is unavailable. Configure a compatible text-generation provider in WordPress Settings > Connectors before generating a report draft."
 msgstr ""
 
@@ -158,6 +158,18 @@ msgstr ""
 msgid "%1$s HTTP status: %2$d"
 msgstr ""
 
+#: includes/class-help-dialog.php:28
+msgid "Help"
+msgstr ""
+
+#: includes/class-help-dialog.php:64
+msgid "Close"
+msgstr ""
+
+#: includes/class-help-dialog.php:81
+msgid "Server configuration example:"
+msgstr ""
+
 #: includes/class-report-builder.php:50
 msgid "AI summarizes data fetched from Google Analytics (GA4) to create a report draft."
 msgstr ""
@@ -167,428 +179,430 @@ msgid "Report Conditions"
 msgstr ""
 
 #: includes/class-report-builder.php:65
-#: includes/class-report-builder.php:848
+#: includes/class-report-builder.php:66
+#: includes/class-report-builder.php:74
+msgid "Data sent to Google Analytics Data API"
+msgstr ""
+
+#: includes/class-report-builder.php:76
+msgid "When you click Fetch GA4 Data, the selected date range, comparison setting, data scope, host name/path filters, and required metrics/dimensions are sent to the Google Analytics Data API."
+msgstr ""
+
+#: includes/class-report-builder.php:77
+msgid "AI provider credentials are not sent to Google by this plugin."
+msgstr ""
+
+#: includes/class-report-builder.php:78
+msgid "WordPress user identifiers, cookies, and IP addresses are not included in this GA4 request body by design."
+msgstr ""
+
+#: includes/class-report-builder.php:87
+#: includes/class-report-builder.php:853
 msgid "Date Range"
 msgstr ""
 
-#: includes/class-report-builder.php:69
+#: includes/class-report-builder.php:91
 msgid "Start Date"
 msgstr ""
 
-#: includes/class-report-builder.php:79
+#: includes/class-report-builder.php:101
 msgid "End Date"
 msgstr ""
 
-#: includes/class-report-builder.php:89
+#: includes/class-report-builder.php:111
 msgid "The default date range is the previous month based on the WordPress timezone."
 msgstr ""
 
 #. translators: %d: maximum number of report days.
-#: includes/class-report-builder.php:96
+#: includes/class-report-builder.php:118
 #, php-format
 msgid "The report period is limited to %d days to keep GA4 requests and report data manageable."
 msgstr ""
 
-#: includes/class-report-builder.php:106
-#: includes/class-report-builder.php:111
-#: includes/class-report-builder.php:856
-#: includes/class-report-builder.php:1404
+#: includes/class-report-builder.php:128
+#: includes/class-report-builder.php:133
+#: includes/class-report-builder.php:861
+#: includes/class-report-builder.php:1409
 msgid "Comparison"
 msgstr ""
 
-#: includes/class-report-builder.php:128
+#: includes/class-report-builder.php:150
 msgid "When comparison is enabled, the selected period is shifted to the previous month or previous year and fetched separately from GA4."
 msgstr ""
 
-#: includes/class-report-builder.php:135
-#: includes/class-report-builder.php:140
-#: includes/class-report-builder.php:872
+#: includes/class-report-builder.php:157
+#: includes/class-report-builder.php:162
+#: includes/class-report-builder.php:877
 msgid "Data Scope"
 msgstr ""
 
-#: includes/class-report-builder.php:159
+#: includes/class-report-builder.php:181
 msgid "Path"
 msgstr ""
 
-#: includes/class-report-builder.php:173
+#: includes/class-report-builder.php:195
 msgid "For directory scope, enter a path such as /blog/. For page scope, enter a path such as /about."
 msgstr ""
 
-#: includes/class-report-builder.php:178
+#: includes/class-report-builder.php:200
 msgid "Site scope covers all paths. Directory scope matches paths that start with the entered path. Page scope matches the exact normalized path. Full URLs are not allowed."
 msgstr ""
 
-#: includes/class-report-builder.php:186
-msgid "Data sent to Google Analytics Data API"
-msgstr ""
-
-#: includes/class-report-builder.php:189
-msgid "When you click Fetch GA4 Data, the selected date range, comparison setting, data scope, host name/path filters, and required metrics/dimensions are sent to the Google Analytics Data API."
-msgstr ""
-
-#: includes/class-report-builder.php:194
-msgid "AI provider credentials are not sent to Google by this plugin."
-msgstr ""
-
-#: includes/class-report-builder.php:197
-msgid "WordPress user identifiers, cookies, and IP addresses are not included in this GA4 request body by design."
-msgstr ""
-
-#: includes/class-report-builder.php:204
+#: includes/class-report-builder.php:209
 msgid "Fetch GA4 Data"
 msgstr ""
 
-#: includes/class-report-builder.php:209
+#: includes/class-report-builder.php:214
 msgid "Fetch GA4 Data validates the conditions, fetches GA4 preset reports, and creates a Data Preview."
 msgstr ""
 
-#: includes/class-report-builder.php:236
+#: includes/class-report-builder.php:241
 msgid "You do not have permission to perform this action."
 msgstr ""
 
-#: includes/class-report-builder.php:249
+#: includes/class-report-builder.php:254
 msgid "Security check failed. Please reload the page and try again."
 msgstr ""
 
-#: includes/class-report-builder.php:269
+#: includes/class-report-builder.php:274
 msgid "Invalid action."
 msgstr ""
 
-#: includes/class-report-builder.php:506
+#: includes/class-report-builder.php:511
 msgid "The GA4 data could not be converted into valid data for AI generation. Please check the settings and try again."
 msgstr ""
 
-#: includes/class-report-builder.php:554
+#: includes/class-report-builder.php:559
 msgid "Google connection needs to be renewed before GA4 data can be fetched. Open Settings, reconnect Google, and try again. Credential values are not displayed."
 msgstr ""
 
-#: includes/class-report-builder.php:558
+#: includes/class-report-builder.php:563
 msgid "Google connection is not ready for GA4 requests. Open Settings, reconnect Google, and try again. Credential values are not displayed."
 msgstr ""
 
-#: includes/class-report-builder.php:561
+#: includes/class-report-builder.php:566
 msgid "Google connection is not configured. Open Settings, configure Google OAuth, connect your Google account, and try again. Credential values are not displayed."
 msgstr ""
 
-#: includes/class-report-builder.php:581
+#: includes/class-report-builder.php:586
 msgid "The saved report data is missing, expired, or no longer valid. Please fetch GA4 data again."
 msgstr ""
 
-#: includes/class-report-builder.php:634
+#: includes/class-report-builder.php:639
 msgid "Start date is invalid."
 msgstr ""
 
-#: includes/class-report-builder.php:638
+#: includes/class-report-builder.php:643
 msgid "End date is invalid."
 msgstr ""
 
-#: includes/class-report-builder.php:646
+#: includes/class-report-builder.php:651
 msgid "End date must be the same as or later than start date."
 msgstr ""
 
 #. translators: %d: maximum report period days.
-#: includes/class-report-builder.php:660
+#: includes/class-report-builder.php:665
 #, php-format
 msgid "The report period cannot exceed %d days. Please choose a shorter date range."
 msgstr ""
 
-#: includes/class-report-builder.php:670
+#: includes/class-report-builder.php:675
 msgid "Comparison option is invalid."
 msgstr ""
 
-#: includes/class-report-builder.php:678
+#: includes/class-report-builder.php:683
 msgid "Data scope is invalid."
 msgstr ""
 
-#: includes/class-report-builder.php:721
+#: includes/class-report-builder.php:726
 msgid "Comparison period could not be calculated. Please choose a different date range or comparison option."
 msgstr ""
 
-#: includes/class-report-builder.php:766
+#: includes/class-report-builder.php:771
 msgid "GA4 data was fetched and the data for AI generation was prepared with warnings."
 msgstr ""
 
-#: includes/class-report-builder.php:778
+#: includes/class-report-builder.php:783
 msgid "GA4 preset reports were fetched and the data for AI generation was prepared successfully."
 msgstr ""
 
-#: includes/class-report-builder.php:788
+#: includes/class-report-builder.php:793
 msgid "AI report was generated."
 msgstr ""
 
-#: includes/class-report-builder.php:789
+#: includes/class-report-builder.php:794
 msgid "View the generated report draft."
 msgstr ""
 
-#: includes/class-report-builder.php:812
+#: includes/class-report-builder.php:817
 msgid "Please fix the following errors."
 msgstr ""
 
-#: includes/class-report-builder.php:843
+#: includes/class-report-builder.php:848
 msgid "Validated Conditions"
 msgstr ""
 
-#: includes/class-report-builder.php:860
-#: includes/class-report-builder.php:1195
+#: includes/class-report-builder.php:865
+#: includes/class-report-builder.php:1200
 msgid "Comparison Period"
 msgstr ""
 
-#: includes/class-report-builder.php:867
-#: includes/class-report-builder.php:881
+#: includes/class-report-builder.php:872
+#: includes/class-report-builder.php:886
 msgid "None"
 msgstr ""
 
-#: includes/class-report-builder.php:876
+#: includes/class-report-builder.php:881
 msgid "Normalized Path"
 msgstr ""
 
 #. translators: 1: report language name, 2: output locale.
-#: includes/class-report-builder.php:909
+#: includes/class-report-builder.php:914
 #: includes/class-status-page.php:357
 #, php-format
 msgid "Report language: %1$s (%2$s)"
 msgstr ""
 
-#: includes/class-report-builder.php:939
+#: includes/class-report-builder.php:944
 msgid "AI Data Preview"
 msgstr ""
 
 #. translators: %d: number of minutes the report data is saved temporarily.
-#: includes/class-report-builder.php:945
+#: includes/class-report-builder.php:950
 #, php-format
 msgid "The data to be sent through the WordPress AI Client has been saved temporarily for %d minutes."
 msgstr ""
 
-#: includes/class-report-builder.php:952
+#: includes/class-report-builder.php:957
 msgid "The reviewed report data is stored temporarily for this user and expires automatically."
 msgstr ""
 
-#: includes/class-report-builder.php:968
+#: includes/class-report-builder.php:973
 msgid "Structured pre-send review"
 msgstr ""
 
-#: includes/class-report-builder.php:971
+#: includes/class-report-builder.php:976
 msgid "Review this structured summary before sending data to AI."
 msgstr ""
 
-#: includes/class-report-builder.php:975
+#: includes/class-report-builder.php:980
 msgid "This preview focuses on report conditions, data availability, warnings, and generation readiness."
 msgstr ""
 
-#: includes/class-report-builder.php:979
+#: includes/class-report-builder.php:984
 msgid "Use the status and warning information below to decide whether to generate a report."
 msgstr ""
 
-#: includes/class-report-builder.php:983
+#: includes/class-report-builder.php:988
 msgid "The reviewed report data can include host name, page path, traffic channel/source, city/country regional labels, summary metrics, and comparison differences."
 msgstr ""
 
-#: includes/class-report-builder.php:987
+#: includes/class-report-builder.php:992
 msgid "Credentials are not included in the data sent through the WordPress AI Client. Google access tokens, AI provider credentials, GA4 Property ID, WordPress user identifiers, cookies, and IP addresses are not included by design."
 msgstr ""
 
-#: includes/class-report-builder.php:991
+#: includes/class-report-builder.php:996
 msgid "Page paths and traffic sources can still be sensitive business analytics information, so review the data before sending it."
 msgstr ""
 
-#: includes/class-report-builder.php:995
+#: includes/class-report-builder.php:1000
 msgid "For support, share visible status messages, warning messages, or general error names only. Do not share credentials, option values, request or response bodies, AI data JSON, generated report text, screenshots, or browser Network evidence."
 msgstr ""
 
-#: includes/class-report-builder.php:1000
-#: includes/class-report-builder.php:1189
+#: includes/class-report-builder.php:1005
+#: includes/class-report-builder.php:1194
 msgid "Daily Trend"
 msgstr ""
 
-#: includes/class-report-builder.php:1001
-#: includes/class-report-builder.php:1190
+#: includes/class-report-builder.php:1006
+#: includes/class-report-builder.php:1195
 msgid "Top Pages"
 msgstr ""
 
-#: includes/class-report-builder.php:1002
-#: includes/class-report-builder.php:1191
+#: includes/class-report-builder.php:1007
+#: includes/class-report-builder.php:1196
 msgid "Traffic Channels"
 msgstr ""
 
-#: includes/class-report-builder.php:1003
-#: includes/class-report-builder.php:1192
+#: includes/class-report-builder.php:1008
+#: includes/class-report-builder.php:1197
 msgid "Traffic Sources"
 msgstr ""
 
-#: includes/class-report-builder.php:1004
-#: includes/class-report-builder.php:1193
+#: includes/class-report-builder.php:1009
+#: includes/class-report-builder.php:1198
 msgid "Regional Trends"
 msgstr ""
 
-#: includes/class-report-builder.php:1007
+#: includes/class-report-builder.php:1012
 msgid "Data sent through the WordPress AI Client"
 msgstr ""
 
-#: includes/class-report-builder.php:1010
+#: includes/class-report-builder.php:1015
 msgid "When you generate an AI report, the reviewed report data and selected report language are sent through the WordPress AI Client to the AI provider configured by the site administrator."
 msgstr ""
 
-#: includes/class-report-builder.php:1014
+#: includes/class-report-builder.php:1019
 msgid "Generating a report may consume usage with the configured AI provider. Provider terms, privacy practices, billing, retention, and credential management depend on the provider configured through WordPress."
 msgstr ""
 
-#: includes/class-report-builder.php:1018
+#: includes/class-report-builder.php:1023
 msgid "The generated result is a draft. Review and edit it before publishing, sharing, or sending it."
 msgstr ""
 
-#: includes/class-report-builder.php:1032
+#: includes/class-report-builder.php:1037
 msgid "The current report text will be overwritten. Continue?"
 msgstr ""
 
-#: includes/class-report-builder.php:1037
+#: includes/class-report-builder.php:1042
 msgid "Regenerate AI Report"
 msgstr ""
 
-#: includes/class-report-builder.php:1038
+#: includes/class-report-builder.php:1043
 msgid "Generate AI Report"
 msgstr ""
 
-#: includes/class-report-builder.php:1047
+#: includes/class-report-builder.php:1052
 msgid "AI generation is not available because the current-period data is not reportable for the selected conditions."
 msgstr ""
 
-#: includes/class-report-builder.php:1051
+#: includes/class-report-builder.php:1056
 msgid "Use Generate AI Report only after reviewing the structured Data Preview and any visible warnings. The report draft is generated through the WordPress AI Client."
 msgstr ""
 
-#: includes/class-report-builder.php:1082
+#: includes/class-report-builder.php:1087
 msgid "Review these GA4 data warnings before generating a report."
 msgstr ""
 
-#: includes/class-report-builder.php:1088
+#: includes/class-report-builder.php:1093
 msgid "Generation is available, but warnings may limit what the generated draft should claim."
 msgstr ""
 
-#: includes/class-report-builder.php:1105
+#: includes/class-report-builder.php:1110
 msgid "AI generation is not available because the current-period data is not reportable for the selected conditions. Change the date range or scope and fetch GA4 data again."
 msgstr ""
 
-#: includes/class-report-builder.php:1108
+#: includes/class-report-builder.php:1113
 msgid "AI generation is not available because the saved report data is not reportable. Fetch GA4 data again before generating a report."
 msgstr ""
 
-#: includes/class-report-builder.php:1147
+#: includes/class-report-builder.php:1152
 msgid "The current-period summary contains explicit zero activity. This is treated as measured zero activity, not as a GA4 API error."
 msgstr ""
 
-#: includes/class-report-builder.php:1151
+#: includes/class-report-builder.php:1156
 msgid "Some current-period summary metrics were unavailable, so the report should treat the summary as partial."
 msgstr ""
 
-#: includes/class-report-builder.php:1155
+#: includes/class-report-builder.php:1160
 msgid "Current-period summary metrics were unavailable, but detail rows were present. Review the partial report data before generating."
 msgstr ""
 
-#: includes/class-report-builder.php:1159
+#: includes/class-report-builder.php:1164
 msgid "Comparison-period data is unavailable. Generated text should avoid comparison claims."
 msgstr ""
 
-#: includes/class-report-builder.php:1163
+#: includes/class-report-builder.php:1168
 msgid "The comparison period contains explicit zero activity, so comparison wording may be limited."
 msgstr ""
 
-#: includes/class-report-builder.php:1167
+#: includes/class-report-builder.php:1172
 msgid "Some comparison-period summary metrics were unavailable, so comparison wording may be limited."
 msgstr ""
 
 #. translators: %s: safe GA4 preset label.
-#: includes/class-report-builder.php:1173
+#: includes/class-report-builder.php:1178
 #, php-format
 msgid "%s rows are unavailable for the selected conditions."
 msgstr ""
 
-#: includes/class-report-builder.php:1178
+#: includes/class-report-builder.php:1183
 msgid "The report data includes a GA4 data availability warning."
 msgstr ""
 
-#: includes/class-report-builder.php:1194
-#: includes/class-report-builder.php:1397
+#: includes/class-report-builder.php:1199
+#: includes/class-report-builder.php:1402
 msgid "Summary Metrics"
 msgstr ""
 
-#: includes/class-report-builder.php:1198
+#: includes/class-report-builder.php:1203
 msgid "GA4 detail"
 msgstr ""
 
-#: includes/class-report-builder.php:1220
+#: includes/class-report-builder.php:1225
 msgid "Generated Report Draft"
 msgstr ""
 
-#: includes/class-report-builder.php:1223
+#: includes/class-report-builder.php:1228
 msgid "Review and edit the generated draft before using it."
 msgstr ""
 
-#: includes/class-report-builder.php:1227
+#: includes/class-report-builder.php:1232
 msgid "The plugin does not save generated report text."
 msgstr ""
 
-#: includes/class-report-builder.php:1231
+#: includes/class-report-builder.php:1236
 msgid "This AI-generated text is a draft. Review and edit it before publishing, sharing, or sending it."
 msgstr ""
 
-#: includes/class-report-builder.php:1235
+#: includes/class-report-builder.php:1240
 msgid "Copying the report text is a user-initiated action."
 msgstr ""
 
-#: includes/class-report-builder.php:1251
+#: includes/class-report-builder.php:1256
 msgid "Copy Report Text"
 msgstr ""
 
-#: includes/class-report-builder.php:1272
+#: includes/class-report-builder.php:1277
 msgid "Ready to fetch GA4 data"
 msgstr ""
 
-#: includes/class-report-builder.php:1276
+#: includes/class-report-builder.php:1281
 msgid "Reconnect Google before fetching GA4 data"
 msgstr ""
 
-#: includes/class-report-builder.php:1279
-#: includes/class-settings.php:628
+#: includes/class-report-builder.php:1284
+#: includes/class-settings.php:598
 #: includes/class-status-page.php:243
 msgid "Not connected"
 msgstr ""
 
-#: includes/class-report-builder.php:1347
+#: includes/class-report-builder.php:1352
 msgid "Reconnect Google in Settings before fetching GA4 data."
 msgstr ""
 
-#: includes/class-report-builder.php:1351
+#: includes/class-report-builder.php:1356
 #: includes/class-status-page.php:150
 msgid "Open Google connection settings"
 msgstr ""
 
-#: includes/class-report-builder.php:1380
+#: includes/class-report-builder.php:1385
 #: includes/class-status-page.php:335
 msgid "Ready to check before generation"
 msgstr ""
 
-#: includes/class-report-builder.php:1383
+#: includes/class-report-builder.php:1388
 #: includes/class-status-page.php:338
 msgid "AI text generation unavailable"
 msgstr ""
 
-#: includes/class-report-builder.php:1402
+#: includes/class-report-builder.php:1407
 msgid "Metric"
 msgstr ""
 
-#: includes/class-report-builder.php:1403
+#: includes/class-report-builder.php:1408
 msgid "Current"
 msgstr ""
 
-#: includes/class-report-builder.php:1405
+#: includes/class-report-builder.php:1410
 msgid "Diff"
 msgstr ""
 
-#: includes/class-report-builder.php:1406
+#: includes/class-report-builder.php:1411
 msgid "Change Rate"
 msgstr ""
 
-#: includes/class-report-builder.php:1407
+#: includes/class-report-builder.php:1412
 msgid "Unit"
 msgstr ""
 
@@ -613,416 +627,410 @@ msgid "Studio317 Report Drafts for Google Analytics Settings"
 msgstr ""
 
 #: includes/class-settings.php:212
-msgid "Setup checklist"
-msgstr ""
-
-#: includes/class-settings.php:215
-msgid "Configure the GA4 property and optional host filter if needed."
-msgstr ""
-
-#: includes/class-settings.php:216
-msgid "Enter the Google OAuth client manually, or configure it in wp-config.php or another server configuration file."
-msgstr ""
-
-#: includes/class-settings.php:217
-msgid "Configure a compatible AI text-generation provider in WordPress Settings > Connectors."
-msgstr ""
-
-#: includes/class-settings.php:218
-msgid "Click Connect Google Account."
+msgid "Configure report settings and Google connection controls. Detailed setup and data-use guidance is available in help dialogs."
 msgstr ""
 
 #: includes/class-settings.php:219
-msgid "Open Report Builder and click Fetch GA4 Data."
-msgstr ""
-
 #: includes/class-settings.php:220
-msgid "Review the Data Preview, generate the report draft in the current WordPress user language, then review, edit, and copy it."
+#: includes/class-settings.php:233
+msgid "Setup checklist"
 msgstr ""
 
+#: includes/class-settings.php:224
 #: includes/class-settings.php:225
+#: includes/class-settings.php:248
 msgid "External service usage"
 msgstr ""
 
-#: includes/class-settings.php:228
-msgid "Studio317 Report Drafts for Google Analytics contacts Google only when you start Google authorization or fetch GA4 data. It sends reviewed report data through the WordPress AI Client only when you click Generate AI Report after reviewing the Data Preview."
-msgstr ""
-
-#: includes/class-settings.php:232
-msgid "Fetch GA4 Data sends the selected report conditions and required metrics or dimensions to the Google Analytics Data API."
-msgstr ""
-
-#: includes/class-settings.php:233
-msgid "Generate AI Report sends the reviewed report data and selected report output language through the WordPress AI Client to the AI provider configured by the site administrator."
-msgstr ""
-
-#: includes/class-settings.php:234
-msgid "AI provider credentials and provider selection are managed by WordPress Connectors, not by this plugin."
-msgstr ""
-
 #: includes/class-settings.php:235
-msgid "Saved Google credential values are hidden. Empty password fields keep existing saved values, and delete checkboxes remove only the matching saved value."
+msgid "Configure the GA4 property and optional host filter if needed."
 msgstr ""
 
 #: includes/class-settings.php:236
+msgid "Enter the Google OAuth client manually, or configure it in wp-config.php or another server configuration file."
+msgstr ""
+
+#: includes/class-settings.php:237
+msgid "Configure a compatible AI text-generation provider in WordPress Settings > Connectors."
+msgstr ""
+
+#: includes/class-settings.php:238
+msgid "Click Connect Google Account."
+msgstr ""
+
+#: includes/class-settings.php:239
+msgid "Open Report Builder and click Fetch GA4 Data."
+msgstr ""
+
+#: includes/class-settings.php:240
+msgid "Review the Data Preview, generate the report draft in the current WordPress user language, then review, edit, and copy it."
+msgstr ""
+
+#: includes/class-settings.php:250
+msgid "Studio317 Report Drafts for Google Analytics contacts Google only when you start Google authorization or fetch GA4 data. It sends reviewed report data through the WordPress AI Client only when you click Generate AI Report after reviewing the Data Preview."
+msgstr ""
+
+#: includes/class-settings.php:251
+msgid "Fetch GA4 Data sends the selected report conditions and required metrics or dimensions to the Google Analytics Data API."
+msgstr ""
+
+#: includes/class-settings.php:252
+msgid "Generate AI Report sends the reviewed report data and selected report output language through the WordPress AI Client to the AI provider configured by the site administrator."
+msgstr ""
+
+#: includes/class-settings.php:253
+msgid "AI provider credentials and provider selection are managed by WordPress Connectors, not by this plugin."
+msgstr ""
+
+#: includes/class-settings.php:254
+msgid "Saved Google credential values are hidden. Empty password fields keep existing saved values, and delete checkboxes remove only the matching saved value."
+msgstr ""
+
+#: includes/class-settings.php:255
 msgid "For support, share visible status messages or general error names only. Do not share credentials, tokens, option values, request bodies, raw responses, AI data JSON, generated report text, screenshots, or browser Network evidence."
 msgstr ""
 
-#: includes/class-settings.php:241
+#: includes/class-settings.php:261
 msgid "Google connection"
 msgstr ""
 
-#: includes/class-settings.php:244
+#: includes/class-settings.php:264
 msgid "Connect Google before fetching GA4 data. Token values, authorization codes, provider responses, and option values are never displayed on this screen."
 msgstr ""
 
-#: includes/class-settings.php:249
-msgid "Redirect URI for Google OAuth setup:"
+#: includes/class-settings.php:271
+#: includes/class-settings.php:272
+#: includes/class-settings.php:280
+msgid "Google OAuth setup"
 msgstr ""
 
-#: includes/class-settings.php:261
+#: includes/class-settings.php:282
 msgid "Server configuration takes precedence over saved Settings values. When server configuration is active, it cannot be edited or deleted here."
 msgstr ""
 
-#: includes/class-settings.php:262
+#: includes/class-settings.php:283
 msgid "If OAuth client settings are incomplete, fix the client ID and client secret before starting Google authorization."
 msgstr ""
 
-#: includes/class-settings.php:263
-msgid "The redirect URI above must be registered in the Google OAuth client used by this site."
+#: includes/class-settings.php:284
+msgid "The redirect URI shown on this screen must be registered in the Google OAuth client used by this site."
 msgstr ""
 
-#: includes/class-settings.php:264
+#: includes/class-settings.php:285
 msgid "Refresh is not performed automatically. If the Google connection needs recovery, reconnect the Google account."
 msgstr ""
 
-#: includes/class-settings.php:265
+#: includes/class-settings.php:286
 msgid "Disconnecting Google deletes only Google connection data stored by this plugin. It does not contact Google, revoke provider access, delete OAuth client settings, or change AI provider configuration."
 msgstr ""
 
-#: includes/class-settings.php:266
+#: includes/class-settings.php:287
 msgid "Manual Google access token entry is not available. Use Google OAuth for GA4 access."
 msgstr ""
 
-#: includes/class-settings.php:273
+#: includes/class-settings.php:294
+msgid "Redirect URI for Google OAuth setup:"
+msgstr ""
+
+#: includes/class-settings.php:309
 msgid "Disconnect Google Account"
 msgstr ""
 
-#: includes/class-settings.php:277
+#: includes/class-settings.php:313
 msgid "This deletes only Google connection data saved by this plugin. It does not delete Google provider access, Google OAuth client settings, or AI provider configuration."
 msgstr ""
 
-#: includes/class-settings.php:283
+#: includes/class-settings.php:319
 msgid "Reconnect Google Account"
 msgstr ""
 
-#: includes/class-settings.php:283
+#: includes/class-settings.php:319
 msgid "Connect Google Account"
 msgstr ""
 
-#: includes/class-settings.php:291
+#: includes/class-settings.php:327
 msgid "Report and service settings"
 msgstr ""
 
-#: includes/class-settings.php:298
+#: includes/class-settings.php:334
 msgid "GA4 Property ID"
 msgstr ""
 
-#: includes/class-settings.php:311
+#: includes/class-settings.php:347
 msgid "Enter the numeric GA4 property ID. Measurement IDs such as G-XXXXXXXXXX are not supported."
 msgstr ""
 
-#: includes/class-settings.php:319
+#: includes/class-settings.php:355
 msgid "Google OAuth Client ID"
 msgstr ""
 
-#: includes/class-settings.php:324
-msgid "Google OAuth Client ID setup help"
+#: includes/class-settings.php:360
+msgid "Google OAuth Client ID Help"
 msgstr ""
 
-#: includes/class-settings.php:325
-msgid "How to find and configure the Google OAuth Client ID."
-msgstr ""
-
-#: includes/class-settings.php:339
-#: includes/class-settings.php:381
+#: includes/class-settings.php:374
+#: includes/class-settings.php:415
 msgid "Saved value is hidden. Leave blank to keep it."
 msgstr ""
 
-#: includes/class-settings.php:339
+#: includes/class-settings.php:374
 msgid "Enter a client ID, or leave blank if using server configuration."
 msgstr ""
 
-#: includes/class-settings.php:346
-#: includes/class-settings.php:388
+#: includes/class-settings.php:381
+#: includes/class-settings.php:422
 msgid "This value is managed by server configuration and cannot be edited here."
 msgstr ""
 
-#: includes/class-settings.php:348
+#: includes/class-settings.php:383
 msgid "A saved client ID exists and is hidden. Leave this field empty to keep it, or enter a new value to replace it."
 msgstr ""
 
-#: includes/class-settings.php:350
+#: includes/class-settings.php:385
 msgid "Enter the client ID from a Google OAuth web application client."
 msgstr ""
 
-#: includes/class-settings.php:361
+#: includes/class-settings.php:396
 msgid "Google OAuth Client Secret"
 msgstr ""
 
-#: includes/class-settings.php:366
-msgid "Google OAuth Client Secret setup help"
+#: includes/class-settings.php:401
+msgid "Google OAuth Client Secret Help"
 msgstr ""
 
-#: includes/class-settings.php:367
-msgid "How to find and configure the Google OAuth Client Secret."
-msgstr ""
-
-#: includes/class-settings.php:381
+#: includes/class-settings.php:415
 msgid "Enter a client secret, or leave blank if using server configuration."
 msgstr ""
 
-#: includes/class-settings.php:390
+#: includes/class-settings.php:424
 msgid "A saved client secret exists and is hidden. Leave this field empty to keep it, or enter a new value to replace it."
 msgstr ""
 
-#: includes/class-settings.php:392
+#: includes/class-settings.php:426
 msgid "Enter the client secret from the same Google OAuth web application client."
 msgstr ""
 
-#: includes/class-settings.php:399
+#: includes/class-settings.php:433
 msgid "For support, do not share OAuth client identifiers or secrets. Share only whether the setup is configured, not configured, or needs review."
 msgstr ""
 
-#: includes/class-settings.php:411
+#: includes/class-settings.php:445
 msgid "Delete the saved Google OAuth client settings. Server configuration, Google tokens, and provider access are not changed."
 msgstr ""
 
-#: includes/class-settings.php:420
+#: includes/class-settings.php:454
 msgid "Host Name Filter"
 msgstr ""
 
-#: includes/class-settings.php:431
+#: includes/class-settings.php:465
 msgid "Filter GA4 data by host name."
 msgstr ""
 
-#: includes/class-settings.php:439
+#: includes/class-settings.php:473
 msgid "Host Name"
 msgstr ""
 
-#: includes/class-settings.php:451
+#: includes/class-settings.php:485
 msgid "Default value is based on home_url(). Example: example.com"
 msgstr ""
 
-#: includes/class-settings.php:459
+#: includes/class-settings.php:493
 msgid "Save Settings"
 msgstr ""
 
-#: includes/class-settings.php:488
-msgid "Help"
-msgstr ""
-
-#: includes/class-settings.php:512
-msgid "Close"
-msgstr ""
-
-#: includes/class-settings.php:521
-msgid "Server configuration example:"
-msgstr ""
-
-#: includes/class-settings.php:537
+#: includes/class-settings.php:507
 msgid "Google OAuth Client ID setup"
 msgstr ""
 
-#: includes/class-settings.php:539
+#: includes/class-settings.php:509
 msgid "Enter the Client ID from a Google Cloud OAuth client configured as a Web application."
 msgstr ""
 
-#: includes/class-settings.php:540
+#: includes/class-settings.php:510
 msgid "Register the Redirect URI shown on this Settings screen in the same Google OAuth client."
 msgstr ""
 
 #. translators: %s: Redirect URI field label.
-#: includes/class-settings.php:543
+#: includes/class-settings.php:513
 #, php-format
 msgid "Use the value displayed in the %s field; do not guess or share the value in support requests."
 msgstr ""
 
-#: includes/class-settings.php:544
+#: includes/class-settings.php:514
 msgid "Redirect URI for Google OAuth setup"
 msgstr ""
 
-#: includes/class-settings.php:546
+#: includes/class-settings.php:516
 msgid "Use a Client ID and Client Secret from the same OAuth client."
 msgstr ""
 
-#: includes/class-settings.php:547
-#: includes/class-settings.php:567
+#: includes/class-settings.php:517
+#: includes/class-settings.php:537
 msgid "When entering it manually, paste the value into this field and click Save Settings."
 msgstr ""
 
-#: includes/class-settings.php:548
-#: includes/class-settings.php:568
+#: includes/class-settings.php:518
+#: includes/class-settings.php:538
 msgid "When wp-config.php or another server configuration is active, that value takes precedence and cannot be viewed, changed, or deleted on this Settings screen."
 msgstr ""
 
-#: includes/class-settings.php:549
-#: includes/class-settings.php:569
+#: includes/class-settings.php:519
+#: includes/class-settings.php:539
 msgid "If you cannot edit wp-config.php, you can use the normal input field on this screen."
 msgstr ""
 
-#: includes/class-settings.php:563
+#: includes/class-settings.php:533
 msgid "Google OAuth Client Secret setup"
 msgstr ""
 
-#: includes/class-settings.php:565
+#: includes/class-settings.php:535
 msgid "Enter the Client Secret from the same Google OAuth client as the Client ID."
 msgstr ""
 
-#: includes/class-settings.php:566
+#: includes/class-settings.php:536
 msgid "The Client Secret is sensitive. Do not paste it into email, chat, screenshots, public repositories, or support requests."
 msgstr ""
 
-#: includes/class-settings.php:584
+#: includes/class-settings.php:554
 #: includes/class-status-page.php:183
 msgid "Managed by server configuration"
 msgstr ""
 
-#: includes/class-settings.php:586
+#: includes/class-settings.php:556
 #: includes/class-status-page.php:185
 msgid "Saved in Settings"
 msgstr ""
 
-#: includes/class-settings.php:589
+#: includes/class-settings.php:559
 #: includes/class-status-page.php:188
 msgid "Needs review"
 msgstr ""
 
-#: includes/class-settings.php:592
+#: includes/class-settings.php:562
 #: includes/class-status-page.php:191
 msgid "Not configured"
 msgstr ""
 
-#: includes/class-settings.php:605
+#: includes/class-settings.php:575
 #: includes/class-status-page.php:204
 msgid "Saved and hidden"
 msgstr ""
 
-#: includes/class-settings.php:607
+#: includes/class-settings.php:577
 #: includes/class-status-page.php:206
 msgid "Partially saved; review both fields"
 msgstr ""
 
-#: includes/class-settings.php:610
+#: includes/class-settings.php:580
 #: includes/class-status-page.php:209
 msgid "Not saved"
 msgstr ""
 
-#: includes/class-settings.php:623
+#: includes/class-settings.php:593
 #: includes/class-status-page.php:236
 msgid "Connected"
 msgstr ""
 
-#: includes/class-settings.php:625
+#: includes/class-settings.php:595
 #: includes/class-status-page.php:240
 msgid "Reconnect required"
 msgstr ""
 
-#: includes/class-settings.php:641
+#: includes/class-settings.php:611
 #: includes/class-status-page.php:256
 msgid "Ready for GA4 requests"
 msgstr ""
 
-#: includes/class-settings.php:646
+#: includes/class-settings.php:616
 #: includes/class-status-page.php:261
 msgid "Reconnect before fetching GA4 data"
 msgstr ""
 
-#: includes/class-settings.php:664
+#: includes/class-settings.php:634
 msgid "Google connection was not started. No Google request was made and no token was saved."
 msgstr ""
 
-#: includes/class-settings.php:665
+#: includes/class-settings.php:635
 msgid "Google authorization was prepared. You may be redirected to Google to continue. Token values are not displayed."
 msgstr ""
 
-#: includes/class-settings.php:666
+#: includes/class-settings.php:636
 msgid "Google authorization cannot start because OAuth client settings are not configured. Google was not contacted and no token was saved."
 msgstr ""
 
-#: includes/class-settings.php:667
+#: includes/class-settings.php:637
 msgid "Google authorization cannot start because OAuth client settings are missing, incomplete, or need review. Google was not contacted and no token was saved."
 msgstr ""
 
-#: includes/class-settings.php:668
+#: includes/class-settings.php:638
 msgid "Google authorization could not be prepared. Google was not contacted and no token was saved."
 msgstr ""
 
-#: includes/class-settings.php:669
+#: includes/class-settings.php:639
 msgid "Google returned to the site, but the connection was not completed. No token was saved."
 msgstr ""
 
-#: includes/class-settings.php:670
+#: includes/class-settings.php:640
 msgid "Google connection could not be completed because the return request was missing required state information. No token exchange was attempted."
 msgstr ""
 
-#: includes/class-settings.php:671
+#: includes/class-settings.php:641
 msgid "Google connection could not be completed because the local authorization state expired. Start Google authorization again."
 msgstr ""
 
-#: includes/class-settings.php:672
+#: includes/class-settings.php:642
 msgid "Google connection could not be completed because the return request did not match the local authorization state. No token exchange was attempted."
 msgstr ""
 
-#: includes/class-settings.php:673
+#: includes/class-settings.php:643
 msgid "Google returned an authorization error. Raw provider details are not displayed or saved."
 msgstr ""
 
-#: includes/class-settings.php:674
+#: includes/class-settings.php:644
 msgid "Google returned authorization information, but it was not displayed or saved directly."
 msgstr ""
 
-#: includes/class-settings.php:675
+#: includes/class-settings.php:645
 msgid "Google connection could not be completed because the return request did not include the required authorization result. No token exchange was attempted."
 msgstr ""
 
-#: includes/class-settings.php:676
+#: includes/class-settings.php:646
 msgid "Google OAuth token exchange completed and the OAuth connection state was updated. Token values are not displayed."
 msgstr ""
 
-#: includes/class-settings.php:677
+#: includes/class-settings.php:647
 msgid "Google connection was not completed because the authorization result was rejected. No token value is displayed."
 msgstr ""
 
-#: includes/class-settings.php:678
+#: includes/class-settings.php:648
 msgid "Google connection was not completed because Google returned an error. Raw provider details are not displayed."
 msgstr ""
 
-#: includes/class-settings.php:679
+#: includes/class-settings.php:649
 msgid "Google connection was not completed because the token request failed. Request and response details are not displayed."
 msgstr ""
 
-#: includes/class-settings.php:680
+#: includes/class-settings.php:650
 msgid "Google connection was not completed because the token response could not be read safely. Raw response details are not displayed."
 msgstr ""
 
-#: includes/class-settings.php:681
+#: includes/class-settings.php:651
 msgid "Google connection was not completed because the response did not include the required token data. Raw response details are not displayed."
 msgstr ""
 
-#: includes/class-settings.php:682
+#: includes/class-settings.php:652
 msgid "Google OAuth token exchange was not executed because the callback preconditions were not complete."
 msgstr ""
 
-#: includes/class-settings.php:683
+#: includes/class-settings.php:653
 msgid "Google OAuth token exchange completed, but token storage did not complete. No token value is displayed."
 msgstr ""
 
-#: includes/class-settings.php:684
+#: includes/class-settings.php:654
 msgid "Google connection data saved by this plugin was deleted. Google was not contacted, provider-side access was not revoked, and OAuth client settings and AI provider configuration were not changed."
 msgstr ""
 
-#: includes/class-settings.php:685
+#: includes/class-settings.php:655
 msgid "Google connection data was not deleted. Token values and option values are not displayed, and provider-side revoke was not requested."
 msgstr ""
 
