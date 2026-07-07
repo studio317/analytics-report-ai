@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Studio317 Report Drafts for Google Analytics
  * Description: Creates AI-assisted report drafts from GA4 data in the WordPress user language with admin review, editing, and copy tools.
- * Version: 0.1.0
+ * Version: 0.2.0
  * Requires at least: 7.0
  * Requires PHP: 7.4
  * Author: Kimiya Watabe / Studio317
@@ -19,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'ANALYTICS_REPORT_AI_VERSION', '0.1.0' );
+define( 'ANALYTICS_REPORT_AI_VERSION', '0.2.0' );
 define( 'ANALYTICS_REPORT_AI_FILE', __FILE__ );
 define( 'ANALYTICS_REPORT_AI_DIR', plugin_dir_path( __FILE__ ) );
 define( 'ANALYTICS_REPORT_AI_URL', plugin_dir_url( __FILE__ ) );

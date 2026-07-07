@@ -4,7 +4,7 @@ Tags: analytics, ai, ga4, reports
 Requires at least: 7.0
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 0.1.0
+Stable tag: 0.2.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -179,6 +179,12 @@ No. Saved Google OAuth client secrets and Google OAuth tokens are hidden in the 
 Do not send credentials, API keys, access tokens, Authorization headers, plugin option values, request bodies, raw API responses, AI data JSON, generated report text, screenshots, browser Network evidence, GA4 property identifiers, host names, page paths, traffic source values, city values, or analytics metric values. Describe the screen, action, visible status message, warning message, or general error name instead.
 
 == Changelog ==
+
+= 0.2.0 =
+* Simplified Report Builder so administrators can create an AI-assisted report draft from selected report conditions in one action.
+* Added a Current Status screen for read-only setup and Google account connection status.
+* Improved setup guidance, settings organization, and Japanese administrator-facing wording.
+* Updated public documentation to clarify the integrated report creation workflow and external-service data handling.
 
 = 0.1.0 =
 * Added GA4 data retrieval, structured Data Preview, AI-assisted report draft generation through the WordPress AI Client, and admin review/edit/copy workflow.
