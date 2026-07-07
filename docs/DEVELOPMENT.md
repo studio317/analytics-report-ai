@@ -16,7 +16,7 @@ If WordPress i18n tooling is available, regenerate translation files from the cu
 
 - Keep credential values out of logs, screenshots, docs, and command output.
 - Do not record option values, OAuth token values, authorization codes, raw provider responses, AI request bodies, AI data JSON, or generated report text.
-- Keep Fetch GA4 Data and Generate AI Report as separate administrator actions.
+- Keep Create AI Report as the administrator-initiated report creation action.
 - Keep generated report text as a user-reviewed draft.
 - Keep report output language resolved from the Report Builder user's WordPress locale, with site locale and English fallbacks.
 - Preserve the hidden-value posture for saved credentials.

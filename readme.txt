@@ -8,11 +8,11 @@ Stable tag: 0.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Creates AI-assisted report drafts from GA4 data in the WordPress user language with structured review, editing, and copy tools.
+Uses selected Google Analytics (GA4) data to prepare AI-assisted report drafts that administrators can review, edit, and copy in WordPress.
 
 == Description ==
 
-Studio317 Report Drafts for Google Analytics helps WordPress administrators fetch selected GA4 report data, review a structured pre-send preview, generate a report draft in the current WordPress user language through the WordPress AI Client, edit the draft, and copy the final text. AI provider setup and credentials are managed in WordPress Settings > Connectors, not by this plugin.
+This plugin uses selected Google Analytics (GA4) data to prepare an AI-assisted report draft. You can review, edit, and copy the draft in WordPress before using it. AI provider setup and credentials are managed in WordPress Settings > Connectors, where the site administrator configures the AI text-generation provider and its credentials.
 
 This plugin is developed by Kimiya Watabe / Studio317. It is not affiliated with, endorsed by, or sponsored by Google.
 
@@ -20,16 +20,21 @@ This plugin is not a replacement for the Google Analytics dashboard. It provides
 
 = Workflow =
 
+Initial setup:
+
 1. Configure the GA4 property and optional host filter.
 2. Configure Google OAuth client settings or use server configuration.
 3. Configure a compatible AI text-generation provider in WordPress Settings > Connectors.
-4. Connect a Google account that can read the selected GA4 property.
-5. Open Report Builder and click Fetch GA4 Data.
-6. Review the Data Preview.
-7. Click Generate AI Report to send the reviewed report data through the WordPress AI Client.
-8. Review, edit, and copy the generated draft.
+4. Click Connect Google Account to connect a Google account that can read the selected GA4 property. Google may ask you to grant read-only access to that property.
 
-Fetch GA4 Data and Generate AI Report are separate actions. Fetching GA4 data does not contact an AI provider. Generating an AI report does not run until the administrator reviews the Data Preview and clicks the generate button.
+Regular use:
+
+1. In Report Builder, choose the report conditions, such as date range, comparison, and scope.
+2. Click Create AI Report.
+3. If the conditions are valid and Google Analytics and the configured AI provider are ready, the plugin fetches the required GA4 report data and requests a report draft through the WordPress AI Client.
+4. Review, edit, and copy the generated draft.
+
+If the plugin cannot continue because of report conditions, Google connection, GA4 data retrieval, or AI provider setup, it shows a message explaining the problem and stops. The selected report conditions remain available so you can correct them and try again.
 
 Report output language follows the WordPress language setting for the administrator running Report Builder. If the user locale is unavailable, the plugin falls back to the site locale and then to English. The WordPress timezone is used for report periods and date handling, not for choosing the report language.
 
@@ -39,11 +44,11 @@ The initial supported scope is single-site WordPress. Multisite network activati
 
 == External Services ==
 
-Studio317 Report Drafts for Google Analytics contacts third-party services only when an administrator explicitly starts Google authorization, clicks Fetch GA4 Data, or clicks Generate AI Report. Viewing Settings or Report Builder alone does not contact Google or an AI provider.
+Studio317 Report Drafts for Google Analytics contacts third-party services only when an administrator explicitly starts Google authorization or clicks Create AI Report. Viewing Settings or Report Builder alone does not contact Google or an AI provider.
 
 = Google OAuth authorization =
 
-When an administrator clicks Connect Google Account, the browser can be redirected to Google for authorization. After the browser returns, the plugin validates the local callback state and can exchange the authorization result for Google OAuth tokens.
+When an administrator clicks Connect Google Account, the browser can be redirected to Google. Google may ask the administrator to grant this plugin read-only access to the selected Google Analytics property. After the browser returns, the plugin validates the local callback state and can exchange the authorization result for Google OAuth tokens.
 
 Service endpoints used by this flow:
 
@@ -59,7 +64,7 @@ Google terms and privacy information:
 
 = Google Analytics Data API =
 
-When an administrator clicks Fetch GA4 Data, the plugin sends requests to the Google Analytics Data API to fetch the selected report data.
+When an administrator clicks Create AI Report, the plugin first validates the selected report conditions. If Google connection settings are available, it sends requests to the Google Analytics Data API to fetch the required report data.
 
 Service URL: https://analyticsdata.googleapis.com/
 
@@ -86,14 +91,14 @@ The Google Analytics Data API request body is designed not to include AI provide
 
 = AI generation provider =
 
-When an administrator clicks Generate AI Report, the plugin sends the reviewed report data through the WordPress AI Client to the AI provider configured by the site administrator in WordPress Settings > Connectors.
+When the GA4 data fetched during Create AI Report is reportable, the plugin requests a draft through the WordPress AI Client and the AI provider configured by the site administrator in WordPress Settings > Connectors.
 
 This plugin does not define a fixed AI provider endpoint. Provider terms, privacy practices, billing, retention, and credential management depend on the AI provider configured by the site administrator through WordPress.
 
 Data sent through the WordPress AI Client may include:
 
 * System instructions, including the selected report output language.
-* GA4-derived report data reviewed through the Data Preview.
+* GA4-derived report data prepared from the selected report conditions.
 * Report output language and locale information resolved from WordPress locale settings.
 
 Report data sent through the WordPress AI Client may include:
@@ -122,7 +127,7 @@ Google OAuth token data is stored in a dedicated plugin-owned option. The option
 
 Server configuration can also provide Google OAuth client settings. Server-managed values take precedence and cannot be edited or deleted from the plugin Settings screen.
 
-The reviewed report data is stored temporarily in a user-scoped WordPress transient and expires automatically. Data validation runs before temporary storage and again before AI generation; missing, expired, old, or invalid report data is not sent through the WordPress AI Client.
+Temporary report data used during generation is stored briefly for the current administrator and expires automatically. Data validation runs before temporary storage and again before AI generation; missing, expired, old, or invalid report data is not sent through the WordPress AI Client.
 
 Local Google disconnect deletes only local OAuth token data stored by this plugin. It does not contact Google, revoke provider access, delete saved OAuth client settings, or change AI provider configuration.
 
@@ -139,8 +144,9 @@ Database administrators, backups, server administrators, or code that can read W
 5. Enter the numeric GA4 property ID and optional host filter.
 6. Configure Google OAuth client settings or provide them by server configuration.
 7. Configure a compatible text-generation provider in WordPress Settings > Connectors.
-8. Connect a Google account with access to the GA4 property.
-9. Open Report Builder to fetch GA4 data, review the Data Preview, and generate a report draft.
+8. Click Connect Google Account to connect a Google account with access to the GA4 property.
+9. Open Report Builder, choose the report conditions, and click Create AI Report.
+10. Review, edit, and copy the generated report draft.
 
 == Frequently Asked Questions ==
 
@@ -150,11 +156,11 @@ No. It uses selected GA4 data to help create a report draft in the current WordP
 
 = When does the plugin contact Google? =
 
-Google can be contacted when an administrator starts Google authorization or clicks Fetch GA4 Data. Viewing Settings or Report Builder alone does not fetch GA4 data.
+Google can be contacted when an administrator starts Google authorization or clicks Create AI Report. Viewing Settings or Report Builder alone does not fetch GA4 data.
 
 = When does the plugin contact an AI provider? =
 
-The configured AI provider is contacted through the WordPress AI Client only when an administrator clicks Generate AI Report after reviewing the Data Preview.
+The configured AI provider is contacted through the WordPress AI Client only during Create AI Report, after the selected conditions are valid and the required GA4 report data is available for generation.
 
 = Can I edit the generated report? =
 
