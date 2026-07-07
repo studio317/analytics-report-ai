@@ -29,8 +29,8 @@ msgid ""
 "Creates AI-assisted report drafts from GA4 data in the WordPress user "
 "language with admin review, editing, and copy tools."
 msgstr ""
-"GA4データから、WordPressユーザー言語に合わせたAI支援のレポート下書きを作成"
-"し、管理画面で確認・編集・コピーできます。"
+"Google アナリティクス（GA4）のデータをもとに、AIが報告書の下書きを作成するプ"
+"ラグインです。作成した下書きは、管理画面で確認・編集・コピーできます。"
 
 #. Author of the plugin
 #: studio317-report-drafts-google-analytics.php
@@ -98,16 +98,16 @@ msgid ""
 "AI text generation is unavailable. Configure a compatible text-generation "
 "provider in WordPress Settings > Connectors before generating a report draft."
 msgstr ""
-"AIテキスト生成を利用できません。レポート下書きを生成する前に、WordPress設定 "
-"> Connectors で互換性のあるテキスト生成プロバイダーを設定してください。"
+"AIテキスト生成を利用できません。報告書の下書きを作成する前に、WordPress の設"
+"定 > コネクタで、互換性のあるテキスト生成プロバイダーを設定してください。"
 
 #: includes/class-ai-client.php:148
 msgid ""
 "AI generation did not return usable report text. Review the AI provider "
 "configuration and try again."
 msgstr ""
-"AI生成から利用可能なレポート本文が返されませんでした。AIプロバイダー設定を確"
-"認して再試行してください。"
+"AIから利用できる報告書の下書きが返されませんでした。AIプロバイダー設定を確認"
+"して再試行してください。"
 
 #: includes/class-ai-client.php:155
 msgid ""
@@ -117,7 +117,7 @@ msgid ""
 msgstr ""
 "AI生成に失敗しました。WordPress のAIプロバイダー設定を確認して再試行してくだ"
 "さい。サポート依頼では、認証情報、リクエストデータ、プロバイダーのレスポン"
-"ス、生成されたレポート本文を共有しないでください。"
+"ス、作成された報告書の下書き本文を共有しないでください。"
 
 #: includes/class-ga4-client.php:258
 msgid "GA4 Property ID is not configured."
@@ -128,8 +128,8 @@ msgid ""
 "No Google connection is available for GA4 Fetch. Connect Google in Settings "
 "and try again."
 msgstr ""
-"GA4データ取得に使用できるGoogle接続がありません。設定でGoogleに接続してから再"
-"試行してください。"
+"GA4データの取得に利用できるGoogle アカウントが接続されていません。設定で"
+"Google アカウントに接続してから再試行してください。"
 
 #: includes/class-ga4-client.php:277
 msgid "GA4 report period is invalid."
@@ -140,24 +140,24 @@ msgid ""
 "Could not connect to Google Analytics Data API. Check the server network "
 "connection and try again."
 msgstr ""
-"Google Analytics Data API に接続できませんでした。サーバーのネットワーク接続"
-"を確認して再試行してください。"
+"Google アナリティクス Data API に接続できませんでした。サーバーのネットワーク"
+"接続を確認して再試行してください。"
 
 #: includes/class-ga4-client.php:346
 msgid ""
 "Google Analytics Data API returned an unreadable response. Please try again "
 "later."
 msgstr ""
-"Google Analytics Data API から読み取れないレスポンスが返されました。時間をお"
-"いて再試行してください。"
+"Google アナリティクス Data API から読み取れないレスポンスが返されました。時間"
+"をおいて再試行してください。"
 
 #: includes/class-ga4-client.php:677 includes/class-ga4-client.php:701
 msgid ""
 "Google Analytics Data API rejected the report request. Check the GA4 "
 "property ID, date range, and report filters."
 msgstr ""
-"Google Analytics Data API がレポートリクエストを拒否しました。GA4プロパティ"
-"ID、期間、レポートフィルターを確認してください。"
+"Google アナリティクス Data API がレポートリクエストを拒否しました。GA4プロパ"
+"ティID、期間、レポートフィルターを確認してください。"
 
 #: includes/class-ga4-client.php:681 includes/class-ga4-client.php:705
 msgid ""
@@ -172,8 +172,8 @@ msgid ""
 "Google Analytics Data API permission was denied. Check that the token has "
 "access to the selected GA4 property."
 msgstr ""
-"Google Analytics Data API の権限が拒否されました。選択したGA4プロパティにトー"
-"クンがアクセスできるか確認してください。"
+"Google アナリティクス Data API の権限が拒否されました。選択したGA4プロパティ"
+"にトークンがアクセスできるか確認してください。"
 
 #: includes/class-ga4-client.php:689 includes/class-ga4-client.php:713
 msgid ""
@@ -188,23 +188,23 @@ msgid ""
 "Google Analytics Data API rate limit may have been exceeded. Please wait and "
 "try again later."
 msgstr ""
-"Google Analytics Data API のレート制限に達した可能性があります。しばらく待っ"
-"てから再試行してください。"
+"Google アナリティクス Data API のレート制限に達した可能性があります。しばらく"
+"待ってから再試行してください。"
 
 #: includes/class-ga4-client.php:697 includes/class-ga4-client.php:721
 msgid ""
 "Google Analytics Data API is temporarily unavailable. Please try again later."
 msgstr ""
-"Google Analytics Data API は一時的に利用できません。時間をおいて再試行してく"
-"ださい。"
+"Google アナリティクス Data API は一時的に利用できません。時間をおいて再試行し"
+"てください。"
 
 #: includes/class-ga4-client.php:724
 msgid ""
 "Google Analytics Data API returned an unexpected error. Check the settings "
 "and try again."
 msgstr ""
-"Google Analytics Data API から予期しないエラーが返されました。設定を確認して"
-"再試行してください。"
+"Google アナリティクス Data API から予期しないエラーが返されました。設定を確認"
+"して再試行してください。"
 
 #. translators: 1: safe user-facing error message, 2: HTTP status code.
 #: includes/class-ga4-client.php:759
@@ -229,7 +229,8 @@ msgid ""
 "AI summarizes data fetched from Google Analytics (GA4) to create a report "
 "draft."
 msgstr ""
-"Google Analytics (GA4) から取得したデータを AI が要約してレポートを作成。"
+"Google アナリティクス（GA4）から取得したデータをもとに、AIが報告書の下書きを"
+"作成します。"
 
 #: includes/class-report-builder.php:59
 msgid "Report Conditions"
@@ -238,7 +239,7 @@ msgstr "レポート条件"
 #: includes/class-report-builder.php:65 includes/class-report-builder.php:66
 #: includes/class-report-builder.php:74
 msgid "Data sent to Google Analytics Data API"
-msgstr "Google Analytics Data API に送信されるデータ"
+msgstr "Google アナリティクス Data API に送信されるデータ"
 
 #: includes/class-report-builder.php:76
 msgid ""
@@ -247,8 +248,8 @@ msgid ""
 "are sent to the Google Analytics Data API."
 msgstr ""
 "「AIレポートを作成」をクリックすると、選択した期間、比較設定、データ範囲、ホ"
-"スト名・パスのフィルター、必要な指標とディメンションが Google Analytics Data "
-"API に送信されます。"
+"スト名・パスのフィルター、必要な指標とディメンションが Google アナリティクス "
+"Data API に送信されます。"
 
 #: includes/class-report-builder.php:77
 msgid ""
@@ -262,7 +263,7 @@ msgstr ""
 
 #: includes/class-report-builder.php:78
 msgid "AI provider credentials are not sent to Google by this plugin."
-msgstr "このプラグインは AI プロバイダー認証情報を Google に送信しません。"
+msgstr "このプラグインは AI プロバイダー認証情報を Googleに送信しません。"
 
 #: includes/class-report-builder.php:79
 msgid ""
@@ -347,7 +348,7 @@ msgid ""
 "generates a draft through the WordPress AI Client."
 msgstr ""
 "「AIレポートを作成」では、条件を確認し、GA4のプリセットレポートを取得して、"
-"WordPress AI Client を通じて下書きを生成します。"
+"WordPress AI Client を通じて報告書の下書きを作成します。"
 
 #: includes/class-report-builder.php:240
 msgid "You do not have permission to perform this action."
@@ -377,16 +378,18 @@ msgid ""
 "Settings, reconnect Google, and try again. Credential values are not "
 "displayed."
 msgstr ""
-"GA4データを取得する前にGoogle接続の更新が必要です。設定を開いてGoogleに再接続"
-"し、再試行してください。認証情報の値は表示されません。"
+"GA4データを取得する前にGoogle アカウントとの接続を更新する必要があります。設"
+"定を開いてGoogle アカウントに再接続し、再試行してください。認証情報の値は表示"
+"されません。"
 
 #: includes/class-report-builder.php:603
 msgid ""
 "Google connection is not ready for GA4 requests. Open Settings, reconnect "
 "Google, and try again. Credential values are not displayed."
 msgstr ""
-"Google接続はGA4リクエストに使用できる状態ではありません。設定を開いてGoogleに"
-"再接続し、再試行してください。認証情報の値は表示されません。"
+"Google アカウント接続はGA4リクエストに使用できる状態ではありません。設定を開"
+"いてGoogle アカウントに再接続し、再試行してください。認証情報の値は表示されま"
+"せん。"
 
 #: includes/class-report-builder.php:606
 msgid ""
@@ -394,8 +397,9 @@ msgid ""
 "connect your Google account, and try again. Credential values are not "
 "displayed."
 msgstr ""
-"Google接続が設定されていません。設定を開いてGoogle OAuthを設定し、Googleアカ"
-"ウントに接続してから再試行してください。認証情報の値は表示されません。"
+"Google アカウント接続が設定されていません。設定を開いてGoogle OAuthを設定し、"
+"Google アカウントに接続してから再試行してください。認証情報の値は表示されませ"
+"ん。"
 
 #: includes/class-report-builder.php:627
 msgid ""
@@ -443,11 +447,11 @@ msgstr ""
 
 #: includes/class-report-builder.php:847
 msgid "AI report was generated."
-msgstr "AIレポートを生成しました。"
+msgstr "AIレポートを作成しました。"
 
 #: includes/class-report-builder.php:848
 msgid "View the generated report draft."
-msgstr "生成レポート下書きを見る。"
+msgstr "作成した報告書の下書きを見る"
 
 #: includes/class-report-builder.php:853
 msgid "The report was generated with GA4 data warnings."
@@ -464,7 +468,7 @@ msgid ""
 "create a report again."
 msgstr ""
 "選択条件の現在期間データがレポート可能ではないため、AI生成は利用できません。"
-"期間または範囲を変更して、レポートをもう一度作成してください。"
+"期間または範囲を変更して、報告書の下書きをもう一度作成してください。"
 
 #: includes/class-report-builder.php:906
 msgid ""
@@ -472,7 +476,7 @@ msgid ""
 "Change the report conditions and create a report again."
 msgstr ""
 "レポートデータがレポート可能ではないため、AI生成は利用できません。レポート条"
-"件を変更して、もう一度作成してください。"
+"件を変更して、報告書の下書きをもう一度作成してください。"
 
 #: includes/class-report-builder.php:945
 msgid ""
@@ -566,15 +570,15 @@ msgstr "GA4詳細"
 
 #: includes/class-report-builder.php:1018
 msgid "Generated Report Draft"
-msgstr "生成レポート下書き"
+msgstr "生成された報告書の下書き"
 
 #: includes/class-report-builder.php:1021
 msgid "Review and edit the generated draft before using it."
-msgstr "使用する前に、生成された下書きを確認・編集してください。"
+msgstr "使用する前に、作成された報告書の下書きを確認・編集してください。"
 
 #: includes/class-report-builder.php:1025
 msgid "The plugin does not save generated report text."
-msgstr "プラグインは生成レポート本文を保存しません。"
+msgstr "プラグインは作成された報告書の下書き本文を保存しません。"
 
 #: includes/class-report-builder.php:1029
 msgid ""
@@ -586,11 +590,11 @@ msgstr ""
 
 #: includes/class-report-builder.php:1033
 msgid "Copying the report text is a user-initiated action."
-msgstr "レポート本文のコピーはユーザーが開始する操作です。"
+msgstr "報告書の下書き本文のコピーはユーザーが開始する操作です。"
 
 #: includes/class-report-builder.php:1049
 msgid "Copy Report Text"
-msgstr "レポート本文をコピー"
+msgstr "報告書の下書き本文をコピー"
 
 #: includes/class-report-builder.php:1070
 msgid "Ready to fetch GA4 data"
@@ -598,7 +602,7 @@ msgstr "GA4データを取得できます"
 
 #: includes/class-report-builder.php:1074
 msgid "Reconnect Google before fetching GA4 data"
-msgstr "GA4データ取得前にGoogleへ再接続してください"
+msgstr "GA4データ取得前にGoogle アカウントに再接続してください"
 
 #: includes/class-report-builder.php:1077 includes/class-settings.php:691
 #: includes/class-status-page.php:243
@@ -607,11 +611,11 @@ msgstr "未接続"
 
 #: includes/class-report-builder.php:1145
 msgid "Reconnect Google in Settings before fetching GA4 data."
-msgstr "GA4データ取得前にGoogleへ再接続してください。"
+msgstr "GA4データ取得前にGoogle アカウントに再接続してください。"
 
 #: includes/class-report-builder.php:1149 includes/class-status-page.php:150
 msgid "Open Google connection settings"
-msgstr "Google接続設定を開く"
+msgstr "Google アカウント接続の設定を開く"
 
 #: includes/class-report-builder.php:1178 includes/class-status-page.php:335
 msgid "Ready to check before generation"
@@ -642,8 +646,8 @@ msgid ""
 "Saved Google OAuth client settings were deleted. Server configuration, "
 "Google connection tokens, and provider access were not changed."
 msgstr ""
-"保存済みのGoogle OAuthクライアント設定を削除しました。サーバー設定、Google接"
-"続トークン、プロバイダー側アクセスは変更していません。"
+"保存済みのGoogle OAuthクライアント設定を削除しました。サーバー設定、Google ア"
+"カウント接続トークン、プロバイダー側アクセスは変更していません。"
 
 #: includes/class-settings.php:206
 msgid "Studio317 Report Drafts for Google Analytics Settings"
@@ -654,8 +658,8 @@ msgid ""
 "Configure report settings and Google connection controls. Detailed setup and "
 "data-use guidance is available in help dialogs."
 msgstr ""
-"レポート設定とGoogle接続コントロールを設定します。詳しいセットアップ手順と"
-"データ利用の説明はヘルプダイアログで確認できます。"
+"レポート設定とGoogle アカウント接続の操作を設定します。詳しいセットアップ手順"
+"とデータ利用の説明はヘルプダイアログで確認できます。"
 
 #: includes/class-settings.php:219 includes/class-settings.php:220
 #: includes/class-settings.php:233
@@ -684,12 +688,12 @@ msgid ""
 "Configure a compatible AI text-generation provider in WordPress Settings > "
 "Connectors."
 msgstr ""
-"WordPress 設定 > Connectors で、互換性のあるAIテキスト生成プロバイダーを設定"
-"してください。"
+"WordPress の設定 > コネクタで、互換性のあるAIテキスト生成プロバイダーを設定し"
+"てください。"
 
 #: includes/class-settings.php:238
 msgid "Click Connect Google Account."
-msgstr "「Googleアカウントに接続」ボタンを押します。"
+msgstr "「Google アカウントに接続」ボタンを押します。"
 
 #: includes/class-settings.php:239
 msgid ""
@@ -702,7 +706,7 @@ msgid ""
 "Review the generated report draft in the current WordPress user language, "
 "then edit and copy it as needed."
 msgstr ""
-"現在のWordPressユーザー言語で生成されたレポート下書きを確認し、必要に応じて編"
+"現在のWordPressユーザー言語で作成された報告書の下書きを確認し、必要に応じて編"
 "集・コピーします。"
 
 #: includes/class-settings.php:250
@@ -711,10 +715,10 @@ msgid ""
 "Google authorization or click Create AI Report. It sends report data through "
 "the WordPress AI Client only as part of the Create AI Report action."
 msgstr ""
-"Studio317 Report Drafts for Google Analytics は、Google認可を開始するか「AIレ"
-"ポートを作成」をクリックしたときにGoogleへ接続します。レポートデータは「AIレ"
-"ポートを作成」操作の一部としてのみ、WordPress AI Client を通じて送信されま"
-"す。"
+"Studio317 Report Drafts for Google Analytics は、Google アカウントへの接続を開"
+"始するか「AIレポートを作成」をクリックしたときにGoogleに接続します。レポート"
+"データは「AIレポートを作成」操作の一部としてのみ、WordPress AI Client を通じ"
+"て送信されます。"
 
 #: includes/class-settings.php:251
 msgid ""
@@ -722,7 +726,7 @@ msgid ""
 "or dimensions to the Google Analytics Data API."
 msgstr ""
 "「AIレポートを作成」では、選択したレポート条件と必要な指標またはディメンショ"
-"ンを Google Analytics Data API に送信します。"
+"ンを Google アナリティクス Data API に送信します。"
 
 #: includes/class-settings.php:252
 msgid ""
@@ -739,8 +743,8 @@ msgid ""
 "AI provider credentials and provider selection are managed by WordPress "
 "Connectors, not by this plugin."
 msgstr ""
-"AIプロバイダー認証情報とプロバイダー選択は、このプラグインではなく WordPress "
-"Connectors で管理されます。"
+"AIプロバイダーの認証情報とプロバイダーの選択は、このプラグインではなく、"
+"WordPress のコネクタで管理されます。"
 
 #: includes/class-settings.php:254
 msgid ""
@@ -760,8 +764,8 @@ msgid ""
 msgstr ""
 "サポートには、表示されている状態メッセージまたは一般的なエラー名のみを共有し"
 "てください。認証情報、トークン、オプション値、リクエスト本文、rawレスポンス、"
-"AI送信データのJSON、生成レポート本文、スクリーンショット、ブラウザのNetwork証"
-"跡は共有しないでください。"
+"AI送信データのJSON、作成された報告書の下書き本文、スクリーンショット、ブラウ"
+"ザのNetwork証跡は共有しないでください。"
 
 #: includes/class-settings.php:264
 msgid "GA4 report settings"
@@ -910,14 +914,14 @@ msgstr "設定を保存"
 
 #: includes/class-settings.php:484
 msgid "Google connection"
-msgstr "Google接続"
+msgstr "Google アカウント接続"
 
 #: includes/class-settings.php:487
 msgid ""
 "Connect Google before fetching GA4 data. Token values, authorization codes, "
 "provider responses, and option values are never displayed on this screen."
 msgstr ""
-"GA4データを取得する前にGoogleへ接続してください。この画面には、トークン値、認"
+"GA4データを取得する前にGoogle アカウントに接続してください。この画面には、トークン値、認"
 "可コード、プロバイダーレスポンス、オプション値は表示されません。"
 
 #: includes/class-settings.php:494 includes/class-settings.php:495
@@ -938,8 +942,8 @@ msgid ""
 "If OAuth client settings are incomplete, fix the client ID and client secret "
 "before starting Google authorization."
 msgstr ""
-"OAuthクライアント設定が不完全な場合は、Google認可を開始する前にクライアントID"
-"とクライアントシークレットを修正してください。"
+"OAuthクライアント設定が不完全な場合は、Google アカウントへの接続を開始する前"
+"にクライアントIDとクライアントシークレットを修正してください。"
 
 #: includes/class-settings.php:507
 msgid ""
@@ -954,8 +958,8 @@ msgid ""
 "Refresh is not performed automatically. If the Google connection needs "
 "recovery, reconnect the Google account."
 msgstr ""
-"更新は自動実行されません。Google接続の復旧が必要な場合は、Googleアカウントに"
-"再接続してください。"
+"更新は自動実行されません。Google アカウントとの接続を復旧する必要がある場合"
+"は、Google アカウントに再接続してください。"
 
 #: includes/class-settings.php:509
 msgid ""
@@ -963,9 +967,9 @@ msgid ""
 "plugin. It does not contact Google, revoke provider access, delete OAuth "
 "client settings, or change AI provider configuration."
 msgstr ""
-"Googleを切断すると、このプラグインに保存されたGoogle接続情報だけを削除しま"
-"す。Googleへの通信、Google側のアクセス許可の取り消し、OAuthクライアント設定の"
-"削除、AIプロバイダー設定の変更は行いません。"
+"Google アカウントを切断すると、このプラグインに保存されたGoogle アカウント接"
+"続の情報だけを削除します。Googleへの通信、Google側のアクセス許可の取り消し、"
+"OAuthクライアント設定の削除、AIプロバイダー設定の変更は行いません。"
 
 #: includes/class-settings.php:510
 msgid ""
@@ -989,7 +993,7 @@ msgstr ""
 
 #: includes/class-settings.php:536
 msgid "Disconnect Google Account"
-msgstr "Googleアカウントを切断"
+msgstr "Google アカウントを切断"
 
 #: includes/class-settings.php:540
 msgid ""
@@ -997,17 +1001,17 @@ msgid ""
 "delete Google provider access, Google OAuth client settings, or AI provider "
 "configuration."
 msgstr ""
-"この操作は、このプラグインに保存されたGoogle接続情報だけを削除します。Google"
-"側のアクセス許可、Google OAuthクライアント設定、AIプロバイダー設定は削除しま"
-"せん。"
+"この操作は、このプラグインに保存されたGoogle アカウント接続の情報だけを削除し"
+"ます。Google側のアクセス許可、Google OAuthクライアント設定、AIプロバイダー設"
+"定は削除しません。"
 
 #: includes/class-settings.php:546
 msgid "Reconnect Google Account"
-msgstr "Googleアカウントに再接続"
+msgstr "Google アカウントに再接続"
 
 #: includes/class-settings.php:546
 msgid "Connect Google Account"
-msgstr "Googleアカウントに接続"
+msgstr "Google アカウントに接続"
 
 #: includes/class-settings.php:600
 msgid "Google OAuth Client ID setup"
@@ -1133,15 +1137,15 @@ msgid ""
 "Google connection was not started. No Google request was made and no token "
 "was saved."
 msgstr ""
-"Google接続は開始されませんでした。Googleへのリクエストは行われず、トークンは"
-"保存されていません。"
+"Google アカウントへの接続は開始されませんでした。Googleへのリクエストは行われ"
+"ず、トークンは保存されていません。"
 
 #: includes/class-settings.php:728
 msgid ""
 "Google authorization was prepared. You may be redirected to Google to "
 "continue. Token values are not displayed."
 msgstr ""
-"Google認可の準備が完了しました。続行するためにGoogleへリダイレクトされる場合"
+"Google アカウントへの接続準備ができました。続行するためにGoogleへ移動する場合"
 "があります。トークン値は表示されません。"
 
 #: includes/class-settings.php:729
@@ -1149,24 +1153,25 @@ msgid ""
 "Google authorization cannot start because OAuth client settings are not "
 "configured. Google was not contacted and no token was saved."
 msgstr ""
-"OAuthクライアント設定が未設定のため、Google認可を開始できません。Googleには接"
-"続しておらず、トークンは保存されていません。"
+"OAuthクライアント設定が未設定のため、Google アカウントへの接続を開始できませ"
+"ん。Googleへの接続は行われず、トークンは保存されていません。"
 
 #: includes/class-settings.php:730
 msgid ""
 "Google authorization cannot start because OAuth client settings are missing, "
 "incomplete, or need review. Google was not contacted and no token was saved."
 msgstr ""
-"OAuthクライアント設定が不足、不完全、または確認が必要なため、Google認可を開始"
-"できません。Googleには接続しておらず、トークンは保存されていません。"
+"OAuthクライアント設定が不足、不完全、または確認が必要なため、Google アカウン"
+"トへの接続を開始できません。Googleへの接続は行われず、トークンは保存されてい"
+"ません。"
 
 #: includes/class-settings.php:731
 msgid ""
 "Google authorization could not be prepared. Google was not contacted and no "
 "token was saved."
 msgstr ""
-"Google認可を準備できませんでした。Googleには接続しておらず、トークンは保存さ"
-"れていません。"
+"Google アカウントへの接続を準備できませんでした。Googleへの接続は行われず、"
+"トークンは保存されていません。"
 
 #: includes/class-settings.php:732
 msgid ""
@@ -1181,31 +1186,31 @@ msgid ""
 "Google connection could not be completed because the return request was "
 "missing required state information. No token exchange was attempted."
 msgstr ""
-"戻りリクエストに必要なstate情報がないため、Google接続を完了できませんでした。"
-"トークン交換は試行されていません。"
+"戻りリクエストに必要な接続確認情報がないため、Google アカウントとの接続を完了"
+"できませんでした。トークン交換は試行されていません。"
 
 #: includes/class-settings.php:734
 msgid ""
 "Google connection could not be completed because the local authorization "
 "state expired. Start Google authorization again."
 msgstr ""
-"ローカル認可stateが期限切れのため、Google接続を完了できませんでした。Google認"
-"可を再度開始してください。"
+"ローカルの接続確認情報が期限切れのため、Google アカウントとの接続を完了できま"
+"せんでした。Google アカウントへの接続をもう一度開始してください。"
 
 #: includes/class-settings.php:735
 msgid ""
 "Google connection could not be completed because the return request did not "
 "match the local authorization state. No token exchange was attempted."
 msgstr ""
-"戻りリクエストがローカル認可stateと一致しないため、Google接続を完了できません"
-"でした。トークン交換は試行されていません。"
+"戻りリクエストがローカルの接続確認情報と一致しないため、Google アカウントとの"
+"接続を完了できませんでした。トークン交換は試行されていません。"
 
 #: includes/class-settings.php:736
 msgid ""
 "Google returned an authorization error. Raw provider details are not "
 "displayed or saved."
 msgstr ""
-"Googleから認可エラーが返されました。プロバイダーの詳細情報は表示または保存さ"
+"Googleから接続エラーが返されました。プロバイダーの詳細情報は表示または保存さ"
 "れません。"
 
 #: includes/class-settings.php:737
@@ -1213,15 +1218,15 @@ msgid ""
 "Google returned authorization information, but it was not displayed or saved "
 "directly."
 msgstr ""
-"Googleから認可情報が返されましたが、直接表示または保存はされませんでした。"
+"Googleから接続情報が返されましたが、直接表示または保存はされませんでした。"
 
 #: includes/class-settings.php:738
 msgid ""
 "Google connection could not be completed because the return request did not "
 "include the required authorization result. No token exchange was attempted."
 msgstr ""
-"戻りリクエストに必要な認可結果が含まれていないため、Google接続を完了できませ"
-"んでした。トークン交換は試行されていません。"
+"戻りリクエストに必要な接続結果が含まれていないため、Google アカウントとの接続"
+"を完了できませんでした。トークン交換は試行されていません。"
 
 #: includes/class-settings.php:739
 msgid ""
@@ -1236,40 +1241,40 @@ msgid ""
 "Google connection was not completed because the authorization result was "
 "rejected. No token value is displayed."
 msgstr ""
-"認可結果が拒否されたため、Google接続は完了しませんでした。トークン値は表示さ"
-"れません。"
+"接続結果が拒否されたため、Google アカウントとの接続は完了しませんでした。トー"
+"クン値は表示されません。"
 
 #: includes/class-settings.php:741
 msgid ""
 "Google connection was not completed because Google returned an error. Raw "
 "provider details are not displayed."
 msgstr ""
-"Googleからエラーが返されたため、Google接続は完了しませんでした。プロバイダー"
-"の詳細情報は表示されません。"
+"Googleからエラーが返されたため、Google アカウントとの接続は完了しませんでし"
+"た。プロバイダーの詳細情報は表示されません。"
 
 #: includes/class-settings.php:742
 msgid ""
 "Google connection was not completed because the token request failed. "
 "Request and response details are not displayed."
 msgstr ""
-"トークンリクエストに失敗したため、Google接続は完了しませんでした。リクエスト"
-"とレスポンスの詳細は表示されません。"
+"トークンリクエストに失敗したため、Google アカウントとの接続は完了しませんでし"
+"た。リクエストとレスポンスの詳細は表示されません。"
 
 #: includes/class-settings.php:743
 msgid ""
 "Google connection was not completed because the token response could not be "
 "read safely. Raw response details are not displayed."
 msgstr ""
-"トークンレスポンスを安全に読み取れなかったため、Google接続は完了しませんでし"
-"た。rawレスポンスの詳細は表示されません。"
+"トークンレスポンスを安全に読み取れなかったため、Google アカウントとの接続は完"
+"了しませんでした。rawレスポンスの詳細は表示されません。"
 
 #: includes/class-settings.php:744
 msgid ""
 "Google connection was not completed because the response did not include the "
 "required token data. Raw response details are not displayed."
 msgstr ""
-"レスポンスに必要なトークンデータが含まれていなかったため、Google接続は完了し"
-"ませんでした。rawレスポンスの詳細は表示されません。"
+"レスポンスに必要なトークンデータが含まれていなかったため、Google アカウントと"
+"の接続は完了しませんでした。rawレスポンスの詳細は表示されません。"
 
 #: includes/class-settings.php:745
 msgid ""
@@ -1293,17 +1298,17 @@ msgid ""
 "contacted, provider-side access was not revoked, and OAuth client settings "
 "and AI provider configuration were not changed."
 msgstr ""
-"このプラグインに保存されたGoogle接続情報を削除しました。Googleには接続してお"
-"らず、Google側のアクセス許可、OAuthクライアント設定、AIプロバイダー設定は変更"
-"していません。"
+"このプラグインに保存されたGoogle アカウント接続の情報を削除しました。Googleに"
+"は接続しておらず、Google側のアクセス許可、OAuthクライアント設定、AIプロバイ"
+"ダー設定は変更していません。"
 
 #: includes/class-settings.php:748
 msgid ""
 "Google connection data was not deleted. Token values and option values are "
 "not displayed, and provider-side revoke was not requested."
 msgstr ""
-"Google接続情報を削除できませんでした。トークン値とオプション値は表示されず、"
-"Google側のアクセス許可の取り消しも要求していません。"
+"Google アカウント接続の情報を削除できませんでした。トークン値とオプション値は"
+"表示されず、Google側のアクセス許可の取り消しも要求していません。"
 
 #: includes/class-status-page.php:53
 msgid ""
@@ -1311,8 +1316,9 @@ msgid ""
 "only and does not display credential, token, option, analytics, or generated "
 "report values."
 msgstr ""
-"現在の設定とGoogle接続の状態を確認できます。このページは読み取り専用で、認証"
-"情報、トークン、オプション、アクセス解析、生成レポートの値は表示しません。"
+"現在の設定とGoogle アカウント接続の状態を確認できます。このページは読み取り専"
+"用で、認証情報、トークン、オプション、アクセス解析、作成された報告書の下書き"
+"の値は表示しません。"
 
 #: includes/class-status-page.php:57
 msgid "Current Settings"
@@ -1324,7 +1330,7 @@ msgstr "OAuthクライアント設定"
 
 #: includes/class-status-page.php:66
 msgid "Saved Settings client"
-msgstr "保存済みSettingsクライアント"
+msgstr "保存済み設定クライアント"
 
 #: includes/class-status-page.php:70
 msgid "Value display"
@@ -1339,8 +1345,8 @@ msgid ""
 "AI provider credentials and model details are managed by WordPress Settings "
 "> Connectors and are not displayed by this plugin."
 msgstr ""
-"AIプロバイダー認証情報とモデルの詳細は WordPress Settings > Connectors で管理"
-"され、このプラグインでは表示されません。"
+"AIプロバイダーの認証情報とモデルの詳細は、WordPress の設定 > コネクタで管理さ"
+"れ、このプラグインには表示されません。"
 
 #: includes/class-status-page.php:89
 msgid "Report language"
@@ -1352,11 +1358,11 @@ msgstr "設定を開く"
 
 #: includes/class-status-page.php:105
 msgid "Google Connection"
-msgstr "Google接続"
+msgstr "Google アカウント接続"
 
 #: includes/class-status-page.php:110
 msgid "Google account connection"
-msgstr "Googleアカウント接続"
+msgstr "Google アカウント接続"
 
 #: includes/class-status-page.php:114
 msgid "Token status"
@@ -1384,8 +1390,9 @@ msgid ""
 "If Google access needs recovery, use the Google connection controls in "
 "Settings."
 msgstr ""
-"更新リクエストとプロバイダー側の取り消しは自動実行されません。Googleアクセス"
-"の復旧が必要な場合は、設定のGoogle接続コントロールを使用してください。"
+"更新リクエストとプロバイダー側の取り消しは自動実行されません。Google アカウン"
+"トとの接続を復旧する必要がある場合は、設定のGoogle アカウント接続の操作を使用"
+"してください。"
 
 #: includes/class-status-page.php:221 includes/class-status-page.php:224
 msgid "Hidden"
@@ -1405,15 +1412,15 @@ msgstr "未試行"
 
 #: includes/class-status-page.php:290
 msgid "Deferred; reconnect Google if recovery is needed"
-msgstr "保留中。復旧が必要な場合はGoogleに再接続してください"
+msgstr "保留中。復旧が必要な場合はGoogle アカウントに再接続してください"
 
 #: includes/class-status-page.php:293
 msgid "Unavailable; reconnect Google if needed"
-msgstr "利用不可。必要に応じてGoogleに再接続してください"
+msgstr "利用不可。必要に応じてGoogle アカウントに再接続してください"
 
 #: includes/class-status-page.php:306
 msgid "Local Google connection data deleted"
-msgstr "ローカルのGoogle接続データを削除済み"
+msgstr "ローカルのGoogle アカウント接続情報を削除しました"
 
 #: includes/class-status-page.php:309
 msgid "Not requested"
