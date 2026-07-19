@@ -159,7 +159,7 @@ find "$STAGE_DIR" -type d -empty -delete
 [[ -f "$STAGE_DIR/languages/$PLUGIN_SLUG-ja.po" ]] || fail "Stage is missing Japanese PO translation."
 [[ -f "$STAGE_DIR/languages/$PLUGIN_SLUG-ja.mo" ]] || fail "Stage is missing Japanese MO translation."
 
-if [[ -d "$STAGE_DIR/.git" || -e "$STAGE_DIR/.distignore" || -d "$STAGE_DIR/docs" || -d "$STAGE_DIR/build" || -d "$STAGE_DIR/tools" ]]; then
+if [[ -d "$STAGE_DIR/.git" || -e "$STAGE_DIR/.distignore" || -e "$STAGE_DIR/AGENTS.md" || -d "$STAGE_DIR/docs" || -d "$STAGE_DIR/build" || -d "$STAGE_DIR/tools" ]]; then
 	fail "Stage contains an excluded development path."
 fi
 
@@ -213,6 +213,7 @@ require_zip_entry "$PLUGIN_SLUG/languages/$PLUGIN_SLUG-ja.mo"
 
 reject_zip_prefix "$PLUGIN_SLUG/.git/"
 reject_zip_entry "$PLUGIN_SLUG/.distignore"
+reject_zip_entry "$PLUGIN_SLUG/AGENTS.md"
 reject_zip_prefix "$PLUGIN_SLUG/docs/"
 reject_zip_prefix "$PLUGIN_SLUG/build/"
 reject_zip_prefix "$PLUGIN_SLUG/tools/"

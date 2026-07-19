@@ -15,6 +15,7 @@
 .git/
 .github/
 .gitignore
+AGENTS.md
 
 # The ignore file itself is source/release tooling, not runtime.
 .distignore
