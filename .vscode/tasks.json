@@ -1,0 +1,81 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Project: Composer Validate",
+            "type": "shell",
+            "command": "composer validate --strict",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared",
+                "clear": true
+            }
+        },
+        {
+            "label": "Project: PHP Syntax",
+            "type": "shell",
+            "command": "php -l studio317-report-drafts-google-analytics.php && find includes -name '*.php' -print0 | xargs -0 -n1 php -l",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared",
+                "clear": true
+            }
+        },
+        {
+            "label": "Project: PHPCS Errors Only",
+            "type": "shell",
+            "command": "vendor/bin/phpcs --standard=phpcs.xml.dist --report=summary --warning-severity=0",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared",
+                "clear": true
+            }
+        },
+        {
+            "label": "Project: PHPCS Full Summary",
+            "type": "shell",
+            "command": "vendor/bin/phpcs --standard=phpcs.xml.dist --report=summary",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared",
+                "clear": true
+            }
+        },
+        {
+            "label": "Project: Git Diff Check",
+            "type": "shell",
+            "command": "git diff --check",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared",
+                "clear": true
+            }
+        },
+        {
+            "label": "Project: Validate",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "Project: Composer Validate",
+                "Project: PHP Syntax",
+                "Project: PHPCS Errors Only",
+                "Project: Git Diff Check"
+            ],
+            "problemMatcher": []
+        }
+    ]
+}
