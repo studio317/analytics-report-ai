@@ -1180,5 +1180,4 @@ final class Analytics_Report_AI_Report_Builder {
 
 		return __( 'AI text generation unavailable', 'studio317-report-drafts-google-analytics' );
 	}
-
 }

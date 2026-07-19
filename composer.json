@@ -2,7 +2,7 @@
 	"name": "studio317/studio317-report-drafts-google-analytics",
 	"description": "Development tooling for the Studio317 Report Drafts for Google Analytics WordPress plugin.",
 	"type": "wordpress-plugin",
-	"private": true,
+	"license": "GPL-2.0-or-later",
 	"config": {
 		"allow-plugins": {
 			"dealerdirect/phpcodesniffer-composer-installer": true

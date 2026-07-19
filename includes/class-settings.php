@@ -161,7 +161,6 @@ final class Analytics_Report_AI_Settings {
 
 		unset( $settings['openai_api_key'] );
 
-
 		/*
 		 * Retired manual Google Access Token fallback.
 		 *
