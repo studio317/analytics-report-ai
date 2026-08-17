@@ -1096,6 +1096,47 @@ final class Analytics_Report_AI_Admin {
 			return 'managed_oauth_exchange_invalid_response';
 		}
 
+		$refresh_key =
+			analytics_report_ai_derive_managed_oauth_refresh_key(
+				$site_instance_id
+			);
+
+		if (
+			! is_string( $refresh_key ) ||
+			43 !== strlen( $refresh_key )
+		) {
+			unset( $transaction_key_raw, $refresh_key );
+
+			return 'managed_oauth_exchange_invalid_response';
+		}
+
+		$refresh_key_box =
+			analytics_report_ai_encrypt_oauth_refresh_key_box(
+				$transaction_id,
+				$site_instance_id,
+				$refresh_key,
+				$transaction_key
+			);
+
+		unset( $refresh_key );
+
+		if (
+			! is_string( $refresh_key_box ) ||
+			'' === $refresh_key_box ||
+			strlen( $refresh_key_box ) > 4096 ||
+			1 !== preg_match(
+				'/^rk1\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/',
+				$refresh_key_box
+			)
+		) {
+			unset(
+				$transaction_key_raw,
+				$refresh_key_box
+			);
+
+			return 'managed_oauth_exchange_invalid_response';
+		}
+
 		$issued_at = time();
 
 		$canonical_request = implode(
@@ -1108,6 +1149,7 @@ final class Analytics_Report_AI_Admin {
 				$site_instance_id,
 				(string) $issued_at,
 				$exchange_ticket,
+				$refresh_key_box,
 			)
 		);
 
@@ -1130,6 +1172,7 @@ final class Analytics_Report_AI_Admin {
 			'transaction_id'   => $transaction_id,
 			'site_instance_id' => $site_instance_id,
 			'exchange_ticket'  => $exchange_ticket,
+			'refresh_key_box'  => $refresh_key_box,
 			'issued_at'        => $issued_at,
 			'signature'        => $signature,
 		);
@@ -1138,7 +1181,10 @@ final class Analytics_Report_AI_Admin {
 
 		$body = wp_json_encode( $request_payload );
 
-		unset( $request_payload );
+		unset(
+			$request_payload,
+			$refresh_key_box
+		);
 
 		if ( ! is_string( $body ) || '' === $body ) {
 			return 'managed_oauth_exchange_invalid_response';
@@ -1149,7 +1195,7 @@ final class Analytics_Report_AI_Admin {
 			array(
 				'timeout'             => 20,
 				'redirection'         => 0,
-				'limit_response_size' => 98304,
+				'limit_response_size' => 131072,
 				'headers'             => array(
 					'Accept'       => 'application/json',
 					'Content-Type' => 'application/json',
@@ -1223,6 +1269,10 @@ final class Analytics_Report_AI_Admin {
 				case 'invalid_exchange_request_authentication':
 					return 'managed_oauth_exchange_rejected';
 
+				case 'exchange_service_unavailable':
+				case 'refresh_capability_unavailable':
+					return 'managed_oauth_exchange_unavailable';
+
 				default:
 					return 'managed_oauth_exchange_invalid_response';
 			}
@@ -1258,7 +1308,7 @@ final class Analytics_Report_AI_Admin {
 			'1' !== $response_payload['protocol_version'] ||
 			'success' !== $response_payload['result'] ||
 			! is_string( $response_payload['exchange_response'] ) ||
-			strlen( $response_payload['exchange_response'] ) > 73728 ||
+			strlen( $response_payload['exchange_response'] ) > 98304 ||
 			1 !== preg_match(
 				'/^r1\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/',
 				$response_payload['exchange_response']
@@ -1340,11 +1390,13 @@ final class Analytics_Report_AI_Admin {
 				$exchange_payload['refresh_token'],
 				$exchange_payload['expires_in'],
 				$exchange_payload['refresh_token_expires_in'],
+				$exchange_payload['refresh_capability'],
 				$exchange_payload['scope'],
 				$exchange_payload['token_type']
 			) ||
 			! is_string( $exchange_payload['access_token'] ) ||
 			! is_string( $exchange_payload['refresh_token'] ) ||
+			! is_string( $exchange_payload['refresh_capability'] ) ||
 			! is_int( $exchange_payload['expires_in'] ) ||
 			$exchange_payload['expires_in'] <= 0 ||
 			$exchange_payload['expires_in'] > PHP_INT_MAX - $stored_at ||
@@ -1371,6 +1423,7 @@ final class Analytics_Report_AI_Admin {
 		$token_payload = array(
 			'access_token'             => $exchange_payload['access_token'],
 			'refresh_token'            => $exchange_payload['refresh_token'],
+			'refresh_capability'       => $exchange_payload['refresh_capability'],
 			'expires_at'               => $stored_at + $exchange_payload['expires_in'],
 			'refresh_token_expires_at' => null !== $exchange_payload['refresh_token_expires_in']
 				? $stored_at + $exchange_payload['refresh_token_expires_in']
