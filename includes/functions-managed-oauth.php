@@ -750,3 +750,150 @@ if ( ! function_exists( 'analytics_report_ai_derive_managed_oauth_refresh_key' )
 		return analytics_report_ai_base64url_encode( $key );
 	}
 }
+
+if ( ! function_exists( 'analytics_report_ai_build_managed_oauth_refresh_canonical_request' ) ) {
+	/**
+	 * Build the canonical managed OAuth refresh request string.
+	 *
+	 * @param string $site_instance_id  Site instance identifier.
+	 * @param int    $issued_at         Request issue time.
+	 * @param string $refresh_capability Worker-issued refresh capability.
+	 * @return string Empty string when invalid.
+	 */
+	function analytics_report_ai_build_managed_oauth_refresh_canonical_request(
+		$site_instance_id,
+		$issued_at,
+		$refresh_capability
+	) {
+		if (
+			! analytics_report_ai_is_managed_oauth_identifier(
+				$site_instance_id
+			) ||
+			! is_int( $issued_at ) ||
+			$issued_at <= 0 ||
+			! is_string( $refresh_capability ) ||
+			'' === $refresh_capability ||
+			strlen( $refresh_capability ) > 49152 ||
+			1 !== preg_match(
+				'/^c1\.[A-Za-z0-9_-]{1,32}\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/',
+				$refresh_capability
+			)
+		) {
+			return '';
+		}
+
+		return implode(
+			"\n",
+			array(
+				'studio317-report-drafts-google-analytics-oauth:refresh-request:v1',
+				'POST',
+				'/v1/oauth/refresh',
+				$site_instance_id,
+				(string) $issued_at,
+				$refresh_capability,
+			)
+		);
+	}
+}
+
+if ( ! function_exists( 'analytics_report_ai_create_managed_oauth_refresh_request_payload' ) ) {
+	/**
+	 * Create an authenticated managed OAuth refresh request payload.
+	 *
+	 * K_refresh is derived request-locally and is never included in the
+	 * returned payload.
+	 *
+	 * @param string   $site_instance_id  Site instance identifier.
+	 * @param string   $refresh_capability Worker-issued refresh capability.
+	 * @param int|null $issued_at         Optional request issue time.
+	 * @return array|false
+	 */
+	function analytics_report_ai_create_managed_oauth_refresh_request_payload(
+		$site_instance_id,
+		$refresh_capability,
+		$issued_at = null
+	) {
+		if ( null === $issued_at ) {
+			$issued_at = time();
+		}
+
+		$canonical_request =
+			analytics_report_ai_build_managed_oauth_refresh_canonical_request(
+				$site_instance_id,
+				$issued_at,
+				$refresh_capability
+			);
+
+		if ( '' === $canonical_request ) {
+			return false;
+		}
+
+		$refresh_key =
+			analytics_report_ai_derive_managed_oauth_refresh_key(
+				$site_instance_id
+			);
+
+		if (
+			! is_string( $refresh_key ) ||
+			43 !== strlen( $refresh_key )
+		) {
+			unset( $canonical_request, $refresh_key );
+
+			return false;
+		}
+
+		$refresh_key_raw =
+			analytics_report_ai_base64url_decode_canonical(
+				$refresh_key
+			);
+
+		unset( $refresh_key );
+
+		if (
+			false === $refresh_key_raw ||
+			32 !== strlen( $refresh_key_raw )
+		) {
+			unset(
+				$canonical_request,
+				$refresh_key_raw
+			);
+
+			return false;
+		}
+
+		$signature =
+			analytics_report_ai_base64url_encode(
+				hash_hmac(
+					'sha256',
+					$canonical_request,
+					$refresh_key_raw,
+					true
+				)
+			);
+
+		unset(
+			$canonical_request,
+			$refresh_key_raw
+		);
+
+		if (
+			43 !== strlen( $signature ) ||
+			1 !== preg_match(
+				'/^[A-Za-z0-9_-]{43}$/',
+				$signature
+			)
+		) {
+			unset( $signature );
+
+			return false;
+		}
+
+		return array(
+			'protocol_version'   => '1',
+			'site_instance_id'   => $site_instance_id,
+			'refresh_capability' => $refresh_capability,
+			'issued_at'          => $issued_at,
+			'signature'          => $signature,
+		);
+	}
+}
