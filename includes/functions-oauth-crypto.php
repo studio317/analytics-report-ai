@@ -752,3 +752,136 @@ if ( ! function_exists( 'analytics_report_ai_decrypt_managed_oauth_token_payload
 		return $payload;
 	}
 }
+
+if ( ! function_exists( 'analytics_report_ai_encrypt_oauth_refresh_key_box' ) ) {
+	/**
+	 * Encrypt K_refresh for request-local transport to the managed OAuth Worker.
+	 *
+	 * Envelope:
+	 * rk1.<base64url iv>.<base64url ciphertext+tag>
+	 *
+	 * K_refresh is encrypted using the transaction-specific K_tx and is never
+	 * persisted by this helper.
+	 *
+	 * @param string $transaction_id   Transaction identifier.
+	 * @param string $site_instance_id Site instance identifier.
+	 * @param string $refresh_key      Base64URL-encoded K_refresh.
+	 * @param string $transaction_key  Base64URL-encoded K_tx.
+	 * @return string Encrypted refresh key box, or empty string.
+	 */
+	function analytics_report_ai_encrypt_oauth_refresh_key_box(
+		$transaction_id,
+		$site_instance_id,
+		$refresh_key,
+		$transaction_key
+	) {
+		if (
+			! is_string( $transaction_id ) ||
+			1 !== preg_match( '/^[a-f0-9]{32}$/', $transaction_id ) ||
+			! is_string( $site_instance_id ) ||
+			1 !== preg_match( '/^[a-f0-9]{32}$/', $site_instance_id ) ||
+			! is_string( $refresh_key ) ||
+			43 !== strlen( $refresh_key ) ||
+			! function_exists( 'openssl_encrypt' )
+		) {
+			return '';
+		}
+
+		$refresh_key_raw     =
+			analytics_report_ai_base64url_decode_canonical(
+				$refresh_key
+			);
+		$transaction_key_raw =
+			analytics_report_ai_decode_oauth_transaction_key(
+				$transaction_key
+			);
+
+		if (
+			false === $refresh_key_raw ||
+			32 !== strlen( $refresh_key_raw ) ||
+			false === $transaction_key_raw
+		) {
+			unset( $refresh_key_raw, $transaction_key_raw );
+
+			return '';
+		}
+
+		$payload = array(
+			'protocol_version' => '1',
+			'transaction_id'   => $transaction_id,
+			'site_instance_id' => $site_instance_id,
+			'refresh_key'      => $refresh_key,
+		);
+
+		$plaintext = wp_json_encode( $payload );
+
+		unset( $payload, $refresh_key_raw );
+
+		if (
+			! is_string( $plaintext ) ||
+			'' === $plaintext ||
+			strlen( $plaintext ) > 2048
+		) {
+			unset( $plaintext, $transaction_key_raw );
+
+			return '';
+		}
+
+		try {
+			$iv = random_bytes( 12 );
+		} catch ( Exception $exception ) {
+			unset(
+				$exception,
+				$plaintext,
+				$transaction_key_raw
+			);
+
+			return '';
+		}
+
+		$tag        = '';
+		$ciphertext = openssl_encrypt(
+			$plaintext,
+			'aes-256-gcm',
+			$transaction_key_raw,
+			OPENSSL_RAW_DATA,
+			$iv,
+			$tag,
+			'studio317-report-drafts-google-analytics-oauth:refresh-key-box:v1',
+			16
+		);
+
+		unset(
+			$plaintext,
+			$transaction_key_raw
+		);
+
+		if (
+			false === $ciphertext ||
+			16 !== strlen( $tag )
+		) {
+			unset( $iv, $tag, $ciphertext );
+
+			return '';
+		}
+
+		$box = implode(
+			'.',
+			array(
+				'rk1',
+				analytics_report_ai_base64url_encode( $iv ),
+				analytics_report_ai_base64url_encode(
+					$ciphertext . $tag
+				),
+			)
+		);
+
+		unset(
+			$iv,
+			$tag,
+			$ciphertext
+		);
+
+		return $box;
+	}
+}
