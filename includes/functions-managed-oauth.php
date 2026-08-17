@@ -498,3 +498,201 @@ if ( ! function_exists( 'analytics_report_ai_derive_managed_oauth_store_key' ) )
 		return $key;
 	}
 }
+
+if ( ! function_exists( 'analytics_report_ai_managed_oauth_token_storage_exists' ) ) {
+	/**
+	 * Check whether managed OAuth encrypted token storage exists.
+	 *
+	 * Token material is not decrypted or exposed by this helper.
+	 *
+	 * @return bool
+	 */
+	function analytics_report_ai_managed_oauth_token_storage_exists() {
+		return false !== get_option(
+			ANALYTICS_REPORT_AI_MANAGED_OAUTH_TOKEN_OPTION_NAME,
+			false
+		);
+	}
+}
+
+if ( ! function_exists( 'analytics_report_ai_store_managed_oauth_token_payload' ) ) {
+	/**
+	 * Encrypt and store managed OAuth token material.
+	 *
+	 * Only the m1 encrypted envelope is persisted. K_store and plaintext token
+	 * material remain request-local.
+	 *
+	 * @param array $payload Managed OAuth token payload.
+	 * @return bool
+	 */
+	function analytics_report_ai_store_managed_oauth_token_payload( $payload ) {
+		if (
+			! analytics_report_ai_validate_managed_oauth_token_payload(
+				$payload
+			)
+		) {
+			return false;
+		}
+
+		$site_instance_id =
+			analytics_report_ai_get_managed_oauth_site_instance_id();
+
+		if (
+			! analytics_report_ai_is_managed_oauth_identifier(
+				$site_instance_id
+			)
+		) {
+			return false;
+		}
+
+		$store_key =
+			analytics_report_ai_derive_managed_oauth_store_key(
+				$site_instance_id
+			);
+
+		if ( false === $store_key ) {
+			return false;
+		}
+
+		$envelope =
+			analytics_report_ai_encrypt_managed_oauth_token_payload(
+				$payload,
+				$store_key
+			);
+
+		unset( $store_key, $site_instance_id );
+
+		if ( '' === $envelope ) {
+			return false;
+		}
+
+		$current = get_option(
+			ANALYTICS_REPORT_AI_MANAGED_OAUTH_TOKEN_OPTION_NAME,
+			false
+		);
+
+		if ( false === $current ) {
+			$stored = add_option(
+				ANALYTICS_REPORT_AI_MANAGED_OAUTH_TOKEN_OPTION_NAME,
+				$envelope,
+				'',
+				false
+			);
+
+			unset( $envelope, $current );
+
+			return $stored;
+		}
+
+		$updated = update_option(
+			ANALYTICS_REPORT_AI_MANAGED_OAUTH_TOKEN_OPTION_NAME,
+			$envelope,
+			false
+		);
+
+		if ( $updated ) {
+			unset( $envelope, $current );
+
+			return true;
+		}
+
+		$stored_envelope = get_option(
+			ANALYTICS_REPORT_AI_MANAGED_OAUTH_TOKEN_OPTION_NAME,
+			false
+		);
+
+		$matches = is_string( $stored_envelope ) &&
+			hash_equals( $envelope, $stored_envelope );
+
+		unset(
+			$envelope,
+			$current,
+			$stored_envelope
+		);
+
+		return $matches;
+	}
+}
+
+if ( ! function_exists( 'analytics_report_ai_get_managed_oauth_token_payload' ) ) {
+	/**
+	 * Read and decrypt managed OAuth token material for request-local use.
+	 *
+	 * @return array|false Valid decrypted token payload, or false.
+	 */
+	function analytics_report_ai_get_managed_oauth_token_payload() {
+		$envelope = get_option(
+			ANALYTICS_REPORT_AI_MANAGED_OAUTH_TOKEN_OPTION_NAME,
+			false
+		);
+
+		if (
+			! is_string( $envelope ) ||
+			'' === $envelope ||
+			strlen( $envelope ) > 73728 ||
+			1 !== preg_match(
+				'/^m1\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/',
+				$envelope
+			)
+		) {
+			return false;
+		}
+
+		$site_instance_id =
+			analytics_report_ai_get_managed_oauth_site_instance_id();
+
+		if (
+			! analytics_report_ai_is_managed_oauth_identifier(
+				$site_instance_id
+			)
+		) {
+			unset( $envelope );
+
+			return false;
+		}
+
+		$store_key =
+			analytics_report_ai_derive_managed_oauth_store_key(
+				$site_instance_id
+			);
+
+		unset( $site_instance_id );
+
+		if ( false === $store_key ) {
+			unset( $envelope );
+
+			return false;
+		}
+
+		$payload =
+			analytics_report_ai_decrypt_managed_oauth_token_payload(
+				$envelope,
+				$store_key
+			);
+
+		unset( $envelope, $store_key );
+
+		return $payload;
+	}
+}
+
+if ( ! function_exists( 'analytics_report_ai_delete_managed_oauth_tokens' ) ) {
+	/**
+	 * Delete only locally stored managed OAuth token ciphertext.
+	 *
+	 * This does not contact or revoke access at Google.
+	 *
+	 * @return bool
+	 */
+	function analytics_report_ai_delete_managed_oauth_tokens() {
+		if (
+			! analytics_report_ai_managed_oauth_token_storage_exists()
+		) {
+			return true;
+		}
+
+		return delete_option(
+			ANALYTICS_REPORT_AI_MANAGED_OAUTH_TOKEN_OPTION_NAME
+		);
+	}
+}
