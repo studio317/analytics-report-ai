@@ -1389,10 +1389,13 @@ final class Analytics_Report_AI_Admin {
 				$exchange_payload['access_token'],
 				$exchange_payload['refresh_token'],
 				$exchange_payload['expires_in'],
-				$exchange_payload['refresh_token_expires_in'],
 				$exchange_payload['refresh_capability'],
 				$exchange_payload['scope'],
 				$exchange_payload['token_type']
+			) ||
+			! array_key_exists(
+				'refresh_token_expires_in',
+				$exchange_payload
 			) ||
 			! is_string( $exchange_payload['access_token'] ) ||
 			! is_string( $exchange_payload['refresh_token'] ) ||
