@@ -720,8 +720,12 @@ final class Analytics_Report_AI_Admin {
 
 		check_admin_referer( 'analytics_report_ai_google_oauth_disconnect', 'analytics_report_ai_google_oauth_disconnect_nonce' );
 
-		$deleted = analytics_report_ai_delete_google_oauth_tokens();
-		$status  = $deleted ? 'google_oauth_local_disconnect_success' : 'google_oauth_local_disconnect_failed';
+		$deleted = analytics_report_ai_is_managed_oauth_enabled()
+			? analytics_report_ai_delete_managed_oauth_tokens()
+			: analytics_report_ai_delete_google_oauth_tokens();
+		$status  = $deleted
+			? 'google_oauth_local_disconnect_success'
+			: 'google_oauth_local_disconnect_failed';
 
 		wp_safe_redirect(
 			$this->get_settings_url(

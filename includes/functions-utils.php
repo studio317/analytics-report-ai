@@ -391,6 +391,72 @@ if ( ! function_exists( 'analytics_report_ai_google_oauth_token_storage_exists' 
 	}
 }
 
+if ( ! function_exists( 'analytics_report_ai_get_managed_google_oauth_token_lifecycle_categories' ) ) {
+	/**
+	 * Get safe managed OAuth lifecycle categories from encrypted local storage.
+	 *
+	 * No external request or token refresh is performed here.
+	 *
+	 * @param array|false|null $tokens          Optional request-local decrypted token payload.
+	 * @param bool|null        $has_oauth_store Optional encrypted storage existence state.
+	 * @return array
+	 */
+	function analytics_report_ai_get_managed_google_oauth_token_lifecycle_categories( $tokens = null, $has_oauth_store = null ) {
+		if ( null === $has_oauth_store ) {
+			$has_oauth_store =
+				analytics_report_ai_managed_oauth_token_storage_exists();
+		}
+
+		if ( null === $tokens && $has_oauth_store ) {
+			$tokens =
+				analytics_report_ai_get_managed_oauth_token_payload();
+		}
+
+		$result = array(
+			'oauth_connection_status_category'    => 'not_connected',
+			'token_lifecycle_status_category'     => 'reconnect_required',
+			'token_refresh_status_category'       => 'unavailable',
+			'token_disconnect_status_category'    => 'not_requested',
+			'token_revoke_status_category'        => 'deferred',
+			'oauth_token_storage_status_category' => $has_oauth_store
+				? 'stored'
+				: 'not_stored',
+		);
+
+		if (
+			! $has_oauth_store ||
+			! is_array( $tokens ) ||
+			empty( $tokens['access_token'] ) ||
+			! is_string( $tokens['access_token'] ) ||
+			empty( $tokens['refresh_token'] ) ||
+			! is_string( $tokens['refresh_token'] ) ||
+			! isset( $tokens['expires_at'] ) ||
+			! is_int( $tokens['expires_at'] )
+		) {
+			return $result;
+		}
+
+		/*
+		 * Do not hand an access token to GA4 when it has 120 seconds or less
+		 * remaining. The next implementation stage will perform on-demand
+		 * refresh at this boundary.
+		 */
+		if ( $tokens['expires_at'] <= time() + 120 ) {
+			$result['oauth_connection_status_category'] = 'token_expired_or_refresh_needed';
+			$result['token_lifecycle_status_category']  = 'expired';
+			$result['token_refresh_status_category']    = 'deferred';
+
+			return $result;
+		}
+
+		$result['oauth_connection_status_category'] = 'connected';
+		$result['token_lifecycle_status_category']  = 'usable';
+		$result['token_refresh_status_category']    = 'not_attempted';
+
+		return $result;
+	}
+}
+
 if ( ! function_exists( 'analytics_report_ai_get_google_oauth_token_lifecycle_categories' ) ) {
 	/**
 	 * Get safe OAuth token lifecycle categories without exposing token values.
@@ -401,6 +467,15 @@ if ( ! function_exists( 'analytics_report_ai_get_google_oauth_token_lifecycle_ca
 	 * @return array
 	 */
 	function analytics_report_ai_get_google_oauth_token_lifecycle_categories( $tokens = null ) {
+		if (
+			function_exists(
+				'analytics_report_ai_is_managed_oauth_enabled'
+			) &&
+			analytics_report_ai_is_managed_oauth_enabled()
+		) {
+			return analytics_report_ai_get_managed_google_oauth_token_lifecycle_categories();
+		}
+
 		if ( null === $tokens ) {
 			$tokens = get_option( ANALYTICS_REPORT_AI_GOOGLE_OAUTH_TOKEN_OPTION_NAME, false );
 		}
@@ -493,6 +568,81 @@ if ( ! function_exists( 'analytics_report_ai_resolve_google_ga4_credential_sourc
 	function analytics_report_ai_resolve_google_ga4_credential_source( $settings = null ) {
 		if ( ! is_array( $settings ) ) {
 			$settings = analytics_report_ai_get_settings();
+		}
+
+		if (
+			function_exists(
+				'analytics_report_ai_is_managed_oauth_enabled'
+			) &&
+			analytics_report_ai_is_managed_oauth_enabled()
+		) {
+			$has_oauth_store =
+				analytics_report_ai_managed_oauth_token_storage_exists();
+			$tokens          = $has_oauth_store
+				? analytics_report_ai_get_managed_oauth_token_payload()
+				: false;
+
+			$lifecycle_categories =
+				analytics_report_ai_get_managed_google_oauth_token_lifecycle_categories(
+					$tokens,
+					$has_oauth_store
+				);
+
+			$lifecycle_categories['connection_state'] =
+				isset(
+					$lifecycle_categories['oauth_connection_status_category']
+				)
+					? $lifecycle_categories['oauth_connection_status_category']
+					: 'not_connected';
+
+			$result = array_merge(
+				array(
+					'status'        => 'credential_source_missing',
+					'access_token'  => '',
+					'fallback_used' => false,
+				),
+				$lifecycle_categories
+			);
+
+			if ( ! $has_oauth_store ) {
+				unset( $tokens );
+
+				return $result;
+			}
+
+			if (
+				! is_array( $tokens ) ||
+				empty( $tokens['access_token'] ) ||
+				! is_string( $tokens['access_token'] )
+			) {
+				unset( $tokens );
+
+				$result['status'] =
+					'credential_source_oauth_error_category';
+
+				return $result;
+			}
+
+			if (
+				'connected' !==
+				$lifecycle_categories['oauth_connection_status_category']
+			) {
+				unset( $tokens );
+
+				$result['status'] =
+					'credential_source_oauth_refresh_needed';
+
+				return $result;
+			}
+
+			$result['status'] =
+				'credential_source_oauth_connected';
+			$result['access_token'] =
+				$tokens['access_token'];
+
+			unset( $tokens );
+
+			return $result;
 		}
 
 		$tokens               = get_option( ANALYTICS_REPORT_AI_GOOGLE_OAUTH_TOKEN_OPTION_NAME, false );
