@@ -183,6 +183,8 @@ final class Analytics_Report_AI_Settings {
 			return;
 		}
 
+		$is_managed_oauth = analytics_report_ai_is_managed_oauth_enabled();
+
 		$settings                  = analytics_report_ai_get_settings();
 		$host_filter_enabled     = ! empty( $settings['host_filter_enabled'] );
 		$ga4_property_id         = isset( $settings['ga4_property_id'] ) ? $settings['ga4_property_id'] : '';
@@ -227,17 +229,28 @@ final class Analytics_Report_AI_Settings {
 			</p>
 
 			<?php
-			Analytics_Report_AI_Help_Dialog::render_dialog(
-				'studio317-report-drafts-google-analytics-setup-checklist-help',
-				__( 'Setup checklist', 'studio317-report-drafts-google-analytics' ),
+			$setup_checklist_items = array(
+				__( 'Configure the GA4 property and optional host filter if needed.', 'studio317-report-drafts-google-analytics' ),
+			);
+
+			if ( ! $is_managed_oauth ) {
+				$setup_checklist_items[] = __( 'Enter the Google OAuth client manually, or configure it in wp-config.php or another server configuration file.', 'studio317-report-drafts-google-analytics' );
+			}
+
+			$setup_checklist_items = array_merge(
+				$setup_checklist_items,
 				array(
-					__( 'Configure the GA4 property and optional host filter if needed.', 'studio317-report-drafts-google-analytics' ),
-					__( 'Enter the Google OAuth client manually, or configure it in wp-config.php or another server configuration file.', 'studio317-report-drafts-google-analytics' ),
 					__( 'Configure a compatible AI text-generation provider in WordPress Settings > Connectors.', 'studio317-report-drafts-google-analytics' ),
 					__( 'Click Connect Google Account.', 'studio317-report-drafts-google-analytics' ),
 					__( 'Open Report Builder, choose the report conditions, and click Create AI Report.', 'studio317-report-drafts-google-analytics' ),
 					__( 'Review the generated report draft in the current WordPress user language, then edit and copy it as needed.', 'studio317-report-drafts-google-analytics' ),
-				),
+				)
+			);
+
+			Analytics_Report_AI_Help_Dialog::render_dialog(
+				'studio317-report-drafts-google-analytics-setup-checklist-help',
+				__( 'Setup checklist', 'studio317-report-drafts-google-analytics' ),
+				$setup_checklist_items,
 				'',
 				'ol'
 			);
@@ -329,6 +342,7 @@ final class Analytics_Report_AI_Settings {
 					</div>
 				</section>
 
+				<?php if ( ! $is_managed_oauth ) : ?>
 				<section class="studio317-report-drafts-google-analytics-settings-section" aria-labelledby="studio317-report-drafts-google-analytics-google-oauth-client-settings-heading">
 					<h2 id="studio317-report-drafts-google-analytics-google-oauth-client-settings-heading"><?php echo esc_html__( 'Google OAuth client settings', 'studio317-report-drafts-google-analytics' ); ?></h2>
 
@@ -475,6 +489,7 @@ final class Analytics_Report_AI_Settings {
 						</div>
 					<?php endif; ?>
 				</section>
+				<?php endif; ?>
 
 				<?php submit_button( __( 'Save Settings', 'studio317-report-drafts-google-analytics' ) ); ?>
 			</form>
@@ -497,20 +512,32 @@ final class Analytics_Report_AI_Settings {
 				</p>
 
 				<?php
-				Analytics_Report_AI_Help_Dialog::render_dialog(
-					'studio317-report-drafts-google-analytics-google-oauth-setup-help',
-					__( 'Google OAuth setup', 'studio317-report-drafts-google-analytics' ),
-					array(
+				$google_oauth_setup_items = $is_managed_oauth
+					? array(
+						__( 'Click Connect Google Account to connect this site to Google.', 'studio317-report-drafts-google-analytics' ),
+						__( 'The connection uses read-only access to Google Analytics.', 'studio317-report-drafts-google-analytics' ),
+						__( 'Access and refresh tokens are stored encrypted on this WordPress site.', 'studio317-report-drafts-google-analytics' ),
+						__( 'The Studio317 OAuth service brokers authorization and token refresh.', 'studio317-report-drafts-google-analytics' ),
+						__( 'GA4 Data API requests are sent directly from this WordPress site to Google.', 'studio317-report-drafts-google-analytics' ),
+						__( 'Disconnecting deletes this plugin\'s local Google connection data.', 'studio317-report-drafts-google-analytics' ),
+					)
+					: array(
 						__( 'Server configuration takes precedence over saved Settings values. When server configuration is active, it cannot be edited or deleted here.', 'studio317-report-drafts-google-analytics' ),
 						__( 'If OAuth client settings are incomplete, fix the client ID and client secret before starting Google authorization.', 'studio317-report-drafts-google-analytics' ),
 						__( 'The redirect URI shown on this screen must be registered in the Google OAuth client used by this site.', 'studio317-report-drafts-google-analytics' ),
 						__( 'Refresh is not performed automatically. If the Google connection needs recovery, reconnect the Google account.', 'studio317-report-drafts-google-analytics' ),
 						__( 'Disconnecting Google deletes only Google connection data stored by this plugin. It does not contact Google, revoke provider access, delete OAuth client settings, or change AI provider configuration.', 'studio317-report-drafts-google-analytics' ),
 						__( 'Manual Google access token entry is not available. Use Google OAuth for GA4 access.', 'studio317-report-drafts-google-analytics' ),
-					)
+					);
+
+				Analytics_Report_AI_Help_Dialog::render_dialog(
+					'studio317-report-drafts-google-analytics-google-oauth-setup-help',
+					__( 'Google OAuth setup', 'studio317-report-drafts-google-analytics' ),
+					$google_oauth_setup_items
 				);
 				?>
 
+				<?php if ( ! $is_managed_oauth ) : ?>
 				<div class="studio317-report-drafts-google-analytics-settings-field">
 					<label class="studio317-report-drafts-google-analytics-settings-label" for="studio317-report-drafts-google-analytics-google-oauth-redirect-uri">
 						<?php echo esc_html__( 'Redirect URI for Google OAuth setup', 'studio317-report-drafts-google-analytics' ); ?>
@@ -527,6 +554,7 @@ final class Analytics_Report_AI_Settings {
 						<?php echo esc_html__( 'Register this read-only URI in the Google OAuth client. Do not share it in support requests.', 'studio317-report-drafts-google-analytics' ); ?>
 					</p>
 				</div>
+				<?php endif; ?>
 
 				<?php if ( $google_oauth_is_connected ) : ?>
 					<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
@@ -540,7 +568,7 @@ final class Analytics_Report_AI_Settings {
 					</p>
 				<?php else : ?>
 					<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
-						<?php if ( analytics_report_ai_is_managed_oauth_enabled() ) : ?>
+						<?php if ( $is_managed_oauth ) : ?>
 							<input type="hidden" name="action" value="analytics_report_ai_google_managed_oauth_connect" />
 							<?php wp_nonce_field( 'analytics_report_ai_google_managed_oauth_connect', 'analytics_report_ai_google_managed_oauth_nonce' ); ?>
 						<?php else : ?>
