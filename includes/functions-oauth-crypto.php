@@ -276,6 +276,7 @@ function analytics_report_ai_validate_oauth_exchange_response_payload( $payload 
 		'refresh_token',
 		'expires_in',
 		'refresh_token_expires_in',
+		'refresh_capability',
 		'scope',
 		'token_type',
 		'issued_at',
@@ -357,6 +358,22 @@ function analytics_report_ai_validate_oauth_exchange_response_payload( $payload 
 	}
 
 	if (
+		! is_string( $payload['refresh_capability'] ) ||
+		'' === $payload['refresh_capability'] ||
+		strlen( $payload['refresh_capability'] ) > 49152 ||
+		1 !== preg_match(
+			'/^c1\.[A-Za-z0-9_-]{1,32}\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/',
+			$payload['refresh_capability']
+		) ||
+		1 === preg_match(
+			'/[\x00-\x1F\x7F]/',
+			$payload['refresh_capability']
+		)
+	) {
+		return false;
+	}
+
+	if (
 		'https://www.googleapis.com/auth/analytics.readonly' !== $payload['scope'] ||
 		'Bearer' !== $payload['token_type']
 	) {
@@ -404,7 +421,7 @@ function analytics_report_ai_decrypt_oauth_exchange_response( $response_token, $
 	if (
 		! is_string( $response_token ) ||
 		'' === $response_token ||
-		strlen( $response_token ) > 73728 ||
+		strlen( $response_token ) > 98304 ||
 		! is_string( $transaction_key )
 	) {
 		return false;
@@ -508,6 +525,7 @@ if ( ! function_exists( 'analytics_report_ai_validate_managed_oauth_token_payloa
 		$expected_keys = array(
 			'access_token',
 			'refresh_token',
+			'refresh_capability',
 			'expires_at',
 			'refresh_token_expires_at',
 			'scope',
@@ -536,6 +554,22 @@ if ( ! function_exists( 'analytics_report_ai_validate_managed_oauth_token_payloa
 			) {
 				return false;
 			}
+		}
+
+		if (
+			! is_string( $payload['refresh_capability'] ) ||
+			'' === $payload['refresh_capability'] ||
+			strlen( $payload['refresh_capability'] ) > 49152 ||
+			1 !== preg_match(
+				'/^c1\.[A-Za-z0-9_-]{1,32}\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/',
+				$payload['refresh_capability']
+			) ||
+			1 === preg_match(
+				'/[\x00-\x1F\x7F]/',
+				$payload['refresh_capability']
+			)
+		) {
+			return false;
 		}
 
 		if (
@@ -600,7 +634,7 @@ if ( ! function_exists( 'analytics_report_ai_encrypt_managed_oauth_token_payload
 		if (
 			! is_string( $plaintext ) ||
 			'' === $plaintext ||
-			strlen( $plaintext ) > 49152
+			strlen( $plaintext ) > 98304
 		) {
 			return '';
 		}
@@ -669,7 +703,7 @@ if ( ! function_exists( 'analytics_report_ai_decrypt_managed_oauth_token_payload
 		if (
 			! is_string( $envelope ) ||
 			'' === $envelope ||
-			strlen( $envelope ) > 73728 ||
+			strlen( $envelope ) > 147456 ||
 			! is_string( $store_key ) ||
 			32 !== strlen( $store_key ) ||
 			! function_exists( 'openssl_decrypt' )
