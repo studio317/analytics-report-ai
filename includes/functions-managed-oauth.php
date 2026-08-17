@@ -897,3 +897,361 @@ if ( ! function_exists( 'analytics_report_ai_create_managed_oauth_refresh_reques
 		);
 	}
 }
+
+if ( ! function_exists( 'analytics_report_ai_get_managed_oauth_refresh_endpoint' ) ) {
+	/**
+	 * Get the managed OAuth refresh endpoint from the configured start endpoint.
+	 *
+	 * @return string Empty string on failure.
+	 */
+	function analytics_report_ai_get_managed_oauth_refresh_endpoint() {
+		$start_endpoint =
+			analytics_report_ai_get_managed_oauth_start_endpoint();
+
+		$parts = wp_parse_url( $start_endpoint );
+
+		if (
+			! is_array( $parts ) ||
+			! isset(
+				$parts['scheme'],
+				$parts['host'],
+				$parts['path']
+			) ||
+			'https' !== strtolower( $parts['scheme'] ) ||
+			'' === $parts['host'] ||
+			'/v1/oauth/start' !== $parts['path'] ||
+			! empty( $parts['user'] ) ||
+			! empty( $parts['pass'] ) ||
+			! empty( $parts['query'] ) ||
+			! empty( $parts['fragment'] )
+		) {
+			return '';
+		}
+
+		$endpoint = 'https://' . $parts['host'];
+
+		if ( isset( $parts['port'] ) ) {
+			$port = (int) $parts['port'];
+
+			if ( $port < 1 || $port > 65535 ) {
+				return '';
+			}
+
+			$endpoint .= ':' . $port;
+		}
+
+		return $endpoint . '/v1/oauth/refresh';
+	}
+}
+
+if ( ! function_exists( 'analytics_report_ai_request_managed_oauth_refresh' ) ) {
+	/**
+	 * Refresh managed OAuth access credentials through the Worker.
+	 *
+	 * Temporary Worker or Google failures preserve the existing encrypted
+	 * credential material. A confirmed Google invalid_grant removes the local
+	 * managed OAuth credential because reconnect is required.
+	 *
+	 * @param array|false|null $tokens Optional request-local decrypted token payload.
+	 * @return string Safe refresh status category.
+	 */
+	function analytics_report_ai_request_managed_oauth_refresh( $tokens = null ) {
+		if ( null === $tokens ) {
+			$tokens =
+				analytics_report_ai_get_managed_oauth_token_payload();
+		}
+
+		if (
+			! analytics_report_ai_validate_managed_oauth_token_payload(
+				$tokens
+			)
+		) {
+			return 'managed_oauth_refresh_invalid_local_token';
+		}
+
+		$site_instance_id =
+			analytics_report_ai_get_managed_oauth_site_instance_id();
+
+		if (
+			! analytics_report_ai_is_managed_oauth_identifier(
+				$site_instance_id
+			)
+		) {
+			return 'managed_oauth_refresh_unavailable';
+		}
+
+		$endpoint =
+			analytics_report_ai_get_managed_oauth_refresh_endpoint();
+
+		if ( '' === $endpoint ) {
+			return 'managed_oauth_refresh_unavailable';
+		}
+
+		$request_payload =
+			analytics_report_ai_create_managed_oauth_refresh_request_payload(
+				$site_instance_id,
+				$tokens['refresh_capability']
+			);
+
+		if ( ! is_array( $request_payload ) ) {
+			return 'managed_oauth_refresh_unavailable';
+		}
+
+		$refresh_key =
+			analytics_report_ai_derive_managed_oauth_refresh_key(
+				$site_instance_id
+			);
+
+		if (
+			! is_string( $refresh_key ) ||
+			43 !== strlen( $refresh_key )
+		) {
+			unset( $request_payload, $refresh_key );
+
+			return 'managed_oauth_refresh_unavailable';
+		}
+
+		$body = wp_json_encode( $request_payload );
+
+		unset( $request_payload );
+
+		if ( ! is_string( $body ) || '' === $body ) {
+			unset( $refresh_key );
+
+			return 'managed_oauth_refresh_invalid_response';
+		}
+
+		$response = wp_safe_remote_post(
+			$endpoint,
+			array(
+				'timeout'             => 20,
+				'redirection'         => 0,
+				'limit_response_size' => 131072,
+				'headers'             => array(
+					'Accept'       => 'application/json',
+					'Content-Type' => 'application/json',
+				),
+				'body'                => $body,
+			)
+		);
+
+		unset( $body );
+
+		if ( is_wp_error( $response ) ) {
+			unset( $response, $refresh_key );
+
+			return 'managed_oauth_refresh_network_failed';
+		}
+
+		$status_code =
+			(int) wp_remote_retrieve_response_code( $response );
+
+		$response_body =
+			wp_remote_retrieve_body( $response );
+
+		unset( $response );
+
+		if ( 200 !== $status_code ) {
+			$worker_error_code = '';
+
+			$error_payload = json_decode(
+				$response_body,
+				true,
+				8
+			);
+
+			if (
+				JSON_ERROR_NONE === json_last_error() &&
+				is_array( $error_payload ) &&
+				isset( $error_payload['error'] ) &&
+				is_array( $error_payload['error'] ) &&
+				isset( $error_payload['error']['code'] ) &&
+				is_string(
+					$error_payload['error']['code']
+				)
+			) {
+				$worker_error_code =
+					$error_payload['error']['code'];
+			}
+
+			unset(
+				$error_payload,
+				$response_body,
+				$refresh_key
+			);
+
+			switch ( $worker_error_code ) {
+				case 'google_token_invalid_grant':
+					return analytics_report_ai_delete_managed_oauth_tokens()
+						? 'managed_oauth_refresh_invalid_grant'
+						: 'managed_oauth_refresh_invalid_grant_cleanup_failed';
+
+				case 'refresh_capability_expired':
+					return 'managed_oauth_refresh_reconnect_required';
+
+				case 'refresh_service_unavailable':
+				case 'google_token_service_unavailable':
+					return 'managed_oauth_refresh_unavailable';
+
+				case 'google_token_network_error':
+					return 'managed_oauth_refresh_google_network_error';
+
+				case 'google_token_scope_mismatch':
+					return 'managed_oauth_refresh_scope_mismatch';
+
+				case 'google_token_missing_token':
+					return 'managed_oauth_refresh_missing_token';
+
+				case 'google_token_malformed_response':
+					return 'managed_oauth_refresh_malformed_response';
+
+				case 'google_token_provider_error':
+					return 'managed_oauth_refresh_provider_error';
+
+				case 'invalid_refresh_request_authentication':
+					return 'managed_oauth_refresh_rejected';
+
+				default:
+					return 'managed_oauth_refresh_invalid_response';
+			}
+		}
+
+		$response_payload = json_decode(
+			$response_body,
+			true,
+			8
+		);
+
+		unset( $response_body );
+
+		if (
+			JSON_ERROR_NONE !== json_last_error() ||
+			! is_array( $response_payload )
+		) {
+			unset( $refresh_key );
+
+			return 'managed_oauth_refresh_invalid_response';
+		}
+
+		$expected_keys = array(
+			'protocol_version',
+			'refresh_response',
+			'result',
+		);
+		$actual_keys   = array_keys( $response_payload );
+
+		sort( $expected_keys );
+		sort( $actual_keys );
+
+		if (
+			$expected_keys !== $actual_keys ||
+			'1' !== $response_payload['protocol_version'] ||
+			'success' !== $response_payload['result'] ||
+			! is_string(
+				$response_payload['refresh_response']
+			) ||
+			strlen(
+				$response_payload['refresh_response']
+			) > 98304 ||
+			1 !== preg_match(
+				'/^rr1\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/',
+				$response_payload['refresh_response']
+			)
+		) {
+			unset(
+				$response_payload,
+				$refresh_key
+			);
+
+			return 'managed_oauth_refresh_invalid_response';
+		}
+
+		$refresh_payload =
+			analytics_report_ai_decrypt_oauth_refresh_response(
+				$response_payload['refresh_response'],
+				$refresh_key
+			);
+
+		unset(
+			$response_payload,
+			$refresh_key
+		);
+
+		if ( ! is_array( $refresh_payload ) ) {
+			return 'managed_oauth_refresh_invalid_response';
+		}
+
+		$expected_fingerprint =
+			analytics_report_ai_base64url_encode(
+				hash(
+					'sha256',
+					$tokens['refresh_capability'],
+					true
+				)
+			);
+
+		$now = time();
+
+		if (
+			! hash_equals(
+				$site_instance_id,
+				$refresh_payload['site_instance_id']
+			) ||
+			! hash_equals(
+				$expected_fingerprint,
+				$refresh_payload['refresh_capability_fingerprint']
+			) ||
+			$refresh_payload['issued_at'] > $now + 300 ||
+			$refresh_payload['expires_at'] < $now ||
+			$refresh_payload['expires_in'] >
+				PHP_INT_MAX - $now
+		) {
+			unset(
+				$refresh_payload,
+				$expected_fingerprint
+			);
+
+			return 'managed_oauth_refresh_invalid_response';
+		}
+
+		$updated_tokens = array(
+			'access_token'             =>
+				$refresh_payload['access_token'],
+			'refresh_token'            =>
+				$tokens['refresh_token'],
+			'refresh_capability'       =>
+				$refresh_payload['refresh_capability'],
+			'expires_at'               =>
+				$now + $refresh_payload['expires_in'],
+			'refresh_token_expires_at' =>
+				$tokens['refresh_token_expires_at'],
+			'scope'                    =>
+				$refresh_payload['scope'],
+			'token_type'               =>
+				$refresh_payload['token_type'],
+			'created_at'               =>
+				$tokens['created_at'],
+			'updated_at'               => $now,
+		);
+
+		unset(
+			$refresh_payload,
+			$expected_fingerprint
+		);
+
+		$stored =
+			analytics_report_ai_store_managed_oauth_token_payload(
+				$updated_tokens
+			);
+
+		unset(
+			$updated_tokens,
+			$tokens,
+			$site_instance_id
+		);
+
+		return $stored
+			? 'managed_oauth_refresh_token_stored'
+			: 'managed_oauth_refresh_storage_failed';
+	}
+}
