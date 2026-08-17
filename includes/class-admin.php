@@ -844,10 +844,10 @@ final class Analytics_Report_AI_Admin {
 	}
 
 	/**
-	 * Classify and consume a managed Google OAuth callback handoff.
+	 * Classify, consume, and exchange a managed Google OAuth callback handoff.
 	 *
-	 * The exchange ticket remains request-local and is intentionally not
-	 * exchanged, stored, displayed, or logged at this stage.
+	 * OAuth codes, exchange tickets, transaction keys, and resulting token
+	 * values remain request-local and are never displayed or logged here.
 	 *
 	 * @return string Safe status category.
 	 */
@@ -905,10 +905,10 @@ final class Analytics_Report_AI_Admin {
 			$transaction_key
 		);
 
-		unset( $handoff, $transaction_key );
+		unset( $handoff );
 
 		if ( ! is_array( $payload ) ) {
-			unset( $transaction );
+			unset( $transaction, $transaction_key );
 
 			return 'managed_oauth_handoff_invalid';
 		}
@@ -917,11 +917,13 @@ final class Analytics_Report_AI_Admin {
 			! isset(
 				$payload['transaction_id'],
 				$payload['site_instance_id'],
+				$payload['exchange_ticket'],
 				$payload['issued_at'],
 				$payload['expires_at']
 			) ||
 			! is_string( $payload['transaction_id'] ) ||
 			! is_string( $payload['site_instance_id'] ) ||
+			! is_string( $payload['exchange_ticket'] ) ||
 			! hash_equals(
 				$transaction_id,
 				$payload['transaction_id']
@@ -931,7 +933,7 @@ final class Analytics_Report_AI_Admin {
 				$payload['site_instance_id']
 			)
 		) {
-			unset( $payload, $transaction );
+			unset( $payload, $transaction, $transaction_key );
 
 			return 'managed_oauth_handoff_invalid';
 		}
@@ -942,19 +944,394 @@ final class Analytics_Report_AI_Admin {
 			$payload['issued_at'] > $now + 300 ||
 			$payload['expires_at'] < $now
 		) {
-			unset( $payload, $transaction );
+			unset( $payload, $transaction, $transaction_key );
 
 			return 'managed_oauth_handoff_expired';
 		}
 
-		/*
-		 * The encrypted exchange ticket has now crossed the Worker-to-
-		 * WordPress boundary successfully. Token exchange is deliberately
-		 * deferred to the next implementation stage.
-		 */
-		unset( $payload, $transaction );
+		$exchange_status =
+			$this->request_managed_google_oauth_exchange(
+				$transaction_id,
+				$transaction['site_instance_id'],
+				$payload['exchange_ticket'],
+				$transaction_key
+			);
 
-		return 'managed_oauth_handoff_validated';
+		unset(
+			$payload,
+			$transaction,
+			$transaction_key,
+			$transaction_id
+		);
+
+		return $exchange_status;
+	}
+
+	/**
+	 * Get the managed OAuth exchange endpoint from the configured start endpoint.
+	 *
+	 * @return string Empty string on failure.
+	 */
+	private function get_managed_oauth_exchange_endpoint() {
+		$start_endpoint =
+			analytics_report_ai_get_managed_oauth_start_endpoint();
+
+		if (
+			! $this->is_valid_managed_oauth_start_endpoint(
+				$start_endpoint
+			)
+		) {
+			return '';
+		}
+
+		$parts = wp_parse_url( $start_endpoint );
+
+		if (
+			! is_array( $parts ) ||
+			! isset( $parts['host'] )
+		) {
+			return '';
+		}
+
+		$endpoint = 'https://' . $parts['host'];
+
+		if ( isset( $parts['port'] ) ) {
+			$port = (int) $parts['port'];
+
+			if ( $port < 1 || $port > 65535 ) {
+				return '';
+			}
+
+			$endpoint .= ':' . $port;
+		}
+
+		return $endpoint . '/v1/oauth/exchange';
+	}
+
+	/**
+	 * Validate a managed OAuth exchange endpoint.
+	 *
+	 * @param string $endpoint Worker exchange endpoint.
+	 * @return bool
+	 */
+	private function is_valid_managed_oauth_exchange_endpoint( $endpoint ) {
+		if ( ! is_string( $endpoint ) || '' === $endpoint ) {
+			return false;
+		}
+
+		$parts = wp_parse_url( $endpoint );
+
+		if ( ! is_array( $parts ) ) {
+			return false;
+		}
+
+		return isset(
+			$parts['scheme'],
+			$parts['host'],
+			$parts['path']
+		)
+			&& 'https' === strtolower( $parts['scheme'] )
+			&& '' !== $parts['host']
+			&& '/v1/oauth/exchange' === $parts['path']
+			&& empty( $parts['user'] )
+			&& empty( $parts['pass'] )
+			&& empty( $parts['query'] )
+			&& empty( $parts['fragment'] );
+	}
+
+	/**
+	 * Exchange a managed OAuth ticket through the Worker.
+	 *
+	 * Token values returned inside the encrypted response remain request-local.
+	 *
+	 * @param string $transaction_id   Managed transaction identifier.
+	 * @param string $site_instance_id Managed site identifier.
+	 * @param string $exchange_ticket  Worker-encrypted exchange ticket.
+	 * @param string $transaction_key  Base64URL transaction key.
+	 * @return string Safe status category.
+	 */
+	private function request_managed_google_oauth_exchange(
+		$transaction_id,
+		$site_instance_id,
+		$exchange_ticket,
+		$transaction_key
+	) {
+		if (
+			! analytics_report_ai_is_managed_oauth_identifier(
+				$transaction_id
+			) ||
+			! analytics_report_ai_is_managed_oauth_identifier(
+				$site_instance_id
+			) ||
+			! is_string( $exchange_ticket ) ||
+			strlen( $exchange_ticket ) > 24576 ||
+			1 !== preg_match(
+				'/^x1\.[A-Za-z0-9_-]{1,32}\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/',
+				$exchange_ticket
+			)
+		) {
+			return 'managed_oauth_exchange_invalid_response';
+		}
+
+		$endpoint = $this->get_managed_oauth_exchange_endpoint();
+
+		if (
+			! $this->is_valid_managed_oauth_exchange_endpoint(
+				$endpoint
+			)
+		) {
+			return 'managed_oauth_exchange_unavailable';
+		}
+
+		$transaction_key_raw =
+			analytics_report_ai_decode_oauth_transaction_key(
+				$transaction_key
+			);
+
+		if ( false === $transaction_key_raw ) {
+			return 'managed_oauth_exchange_invalid_response';
+		}
+
+		$issued_at = time();
+
+		$canonical_request = implode(
+			"\n",
+			array(
+				'studio317-report-drafts-google-analytics-oauth:exchange-request:v1',
+				'POST',
+				'/v1/oauth/exchange',
+				$transaction_id,
+				$site_instance_id,
+				(string) $issued_at,
+				$exchange_ticket,
+			)
+		);
+
+		$signature = analytics_report_ai_base64url_encode(
+			hash_hmac(
+				'sha256',
+				$canonical_request,
+				$transaction_key_raw,
+				true
+			)
+		);
+
+		unset(
+			$transaction_key_raw,
+			$canonical_request
+		);
+
+		$request_payload = array(
+			'protocol_version' => '1',
+			'transaction_id'   => $transaction_id,
+			'site_instance_id' => $site_instance_id,
+			'exchange_ticket'  => $exchange_ticket,
+			'issued_at'        => $issued_at,
+			'signature'        => $signature,
+		);
+
+		unset( $signature );
+
+		$body = wp_json_encode( $request_payload );
+
+		unset( $request_payload );
+
+		if ( ! is_string( $body ) || '' === $body ) {
+			return 'managed_oauth_exchange_invalid_response';
+		}
+
+		$response = wp_safe_remote_post(
+			$endpoint,
+			array(
+				'timeout'             => 20,
+				'redirection'         => 0,
+				'limit_response_size' => 98304,
+				'headers'             => array(
+					'Accept'       => 'application/json',
+					'Content-Type' => 'application/json',
+				),
+				'body'                => $body,
+			)
+		);
+
+		unset( $body );
+
+		if ( is_wp_error( $response ) ) {
+			unset( $response );
+
+			return 'managed_oauth_exchange_network_failed';
+		}
+
+		$status_code   =
+			(int) wp_remote_retrieve_response_code( $response );
+		$response_body =
+			wp_remote_retrieve_body( $response );
+
+		unset( $response );
+
+		if ( 200 !== $status_code ) {
+			$worker_error_code = '';
+			$error_payload     = json_decode(
+				$response_body,
+				true,
+				8
+			);
+
+			if (
+				JSON_ERROR_NONE === json_last_error() &&
+				is_array( $error_payload ) &&
+				isset( $error_payload['error'] ) &&
+				is_array( $error_payload['error'] ) &&
+				isset( $error_payload['error']['code'] ) &&
+				is_string( $error_payload['error']['code'] )
+			) {
+				$worker_error_code =
+					$error_payload['error']['code'];
+			}
+
+			unset(
+				$error_payload,
+				$response_body
+			);
+
+			switch ( $worker_error_code ) {
+				case 'google_token_invalid_grant':
+					return 'managed_oauth_exchange_invalid_grant';
+
+				case 'google_token_service_unavailable':
+					return 'managed_oauth_exchange_unavailable';
+
+				case 'google_token_network_error':
+				case 'google_token_scope_mismatch':
+				case 'google_token_missing_token':
+				case 'google_token_malformed_response':
+				case 'google_token_provider_error':
+					return 'managed_oauth_exchange_provider_failed';
+
+				case 'invalid_exchange_request_authentication':
+					return 'managed_oauth_exchange_rejected';
+
+				default:
+					return 'managed_oauth_exchange_invalid_response';
+			}
+		}
+
+		$response_payload = json_decode(
+			$response_body,
+			true,
+			8
+		);
+
+		unset( $response_body );
+
+		if (
+			JSON_ERROR_NONE !== json_last_error() ||
+			! is_array( $response_payload )
+		) {
+			return 'managed_oauth_exchange_invalid_response';
+		}
+
+		$expected_keys = array(
+			'exchange_response',
+			'protocol_version',
+			'result',
+		);
+		$actual_keys   = array_keys( $response_payload );
+
+		sort( $expected_keys );
+		sort( $actual_keys );
+
+		if (
+			$expected_keys !== $actual_keys ||
+			'1' !== $response_payload['protocol_version'] ||
+			'success' !== $response_payload['result'] ||
+			! is_string( $response_payload['exchange_response'] ) ||
+			strlen( $response_payload['exchange_response'] ) > 73728 ||
+			1 !== preg_match(
+				'/^r1\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/',
+				$response_payload['exchange_response']
+			)
+		) {
+			unset( $response_payload );
+
+			return 'managed_oauth_exchange_invalid_response';
+		}
+
+		$exchange_payload =
+			analytics_report_ai_decrypt_oauth_exchange_response(
+				$response_payload['exchange_response'],
+				$transaction_key
+			);
+
+		unset( $response_payload );
+
+		if ( ! is_array( $exchange_payload ) ) {
+			return 'managed_oauth_exchange_invalid_response';
+		}
+
+		$expected_fingerprint =
+			analytics_report_ai_base64url_encode(
+				hash(
+					'sha256',
+					$exchange_ticket,
+					true
+				)
+			);
+
+		$now = time();
+
+		if (
+			! isset(
+				$exchange_payload['transaction_id'],
+				$exchange_payload['site_instance_id'],
+				$exchange_payload['exchange_ticket_fingerprint'],
+				$exchange_payload['issued_at'],
+				$exchange_payload['expires_at']
+			) ||
+			! is_string(
+				$exchange_payload['transaction_id']
+			) ||
+			! is_string(
+				$exchange_payload['site_instance_id']
+			) ||
+			! is_string(
+				$exchange_payload['exchange_ticket_fingerprint']
+			) ||
+			! hash_equals(
+				$transaction_id,
+				$exchange_payload['transaction_id']
+			) ||
+			! hash_equals(
+				$site_instance_id,
+				$exchange_payload['site_instance_id']
+			) ||
+			! hash_equals(
+				$expected_fingerprint,
+				$exchange_payload['exchange_ticket_fingerprint']
+			) ||
+			$exchange_payload['issued_at'] > $now + 300 ||
+			$exchange_payload['expires_at'] < $now
+		) {
+			unset(
+				$exchange_payload,
+				$expected_fingerprint
+			);
+
+			return 'managed_oauth_exchange_invalid_response';
+		}
+
+		/*
+		 * The encrypted token response has been authenticated, decrypted, and
+		 * validated. Persistent token storage is deliberately deferred.
+		 */
+		unset(
+			$exchange_payload,
+			$expected_fingerprint,
+			$exchange_ticket,
+			$transaction_key
+		);
+
+		return 'managed_oauth_exchange_validated';
 	}
 
 	/**

@@ -757,6 +757,34 @@ final class Analytics_Report_AI_Settings {
 			case 'managed_oauth_handoff_validated':
 				$managed_message = __( 'The managed Google authorization return was verified successfully. Token exchange is not enabled yet in this development stage.', 'studio317-report-drafts-google-analytics' );
 				break;
+
+			case 'managed_oauth_exchange_validated':
+				$managed_message = __( 'Managed Google authorization and token exchange were verified successfully. Token storage is not enabled yet in this development stage.', 'studio317-report-drafts-google-analytics' );
+				break;
+
+			case 'managed_oauth_exchange_invalid_grant':
+				$managed_message = __( 'Google authorization could not be completed because the authorization result was rejected. Start the connection again. No token was saved.', 'studio317-report-drafts-google-analytics' );
+				break;
+
+			case 'managed_oauth_exchange_unavailable':
+				$managed_message = __( 'Google authorization could not be completed because the managed connection service was unavailable. No token was saved.', 'studio317-report-drafts-google-analytics' );
+				break;
+
+			case 'managed_oauth_exchange_network_failed':
+				$managed_message = __( 'Google authorization could not be completed because the managed token exchange request failed. No token was saved.', 'studio317-report-drafts-google-analytics' );
+				break;
+
+			case 'managed_oauth_exchange_provider_failed':
+				$managed_message = __( 'Google authorization could not be completed because the token provider returned an unusable response. Raw provider details are not displayed and no token was saved.', 'studio317-report-drafts-google-analytics' );
+				break;
+
+			case 'managed_oauth_exchange_rejected':
+				$managed_message = __( 'Google authorization could not be completed because the managed token exchange request was rejected. No token was saved.', 'studio317-report-drafts-google-analytics' );
+				break;
+
+			case 'managed_oauth_exchange_invalid_response':
+				$managed_message = __( 'Google authorization could not be completed because the encrypted token exchange response could not be verified safely. No token was saved.', 'studio317-report-drafts-google-analytics' );
+				break;
 		}
 
 		if ( '' !== $managed_message ) {
