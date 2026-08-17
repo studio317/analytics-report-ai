@@ -588,6 +588,30 @@ if ( ! function_exists( 'analytics_report_ai_resolve_google_ga4_credential_sourc
 					$has_oauth_store
 				);
 
+			if (
+				'token_expired_or_refresh_needed' ===
+					$lifecycle_categories['oauth_connection_status_category']
+			) {
+				analytics_report_ai_request_managed_oauth_refresh(
+					$tokens
+				);
+
+				unset( $tokens );
+
+				$has_oauth_store =
+					analytics_report_ai_managed_oauth_token_storage_exists();
+
+				$tokens = $has_oauth_store
+					? analytics_report_ai_get_managed_oauth_token_payload()
+					: false;
+
+				$lifecycle_categories =
+					analytics_report_ai_get_managed_google_oauth_token_lifecycle_categories(
+						$tokens,
+						$has_oauth_store
+					);
+			}
+
 			$lifecycle_categories['connection_state'] =
 				isset(
 					$lifecycle_categories['oauth_connection_status_category']
