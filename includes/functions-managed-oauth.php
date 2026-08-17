@@ -629,7 +629,7 @@ if ( ! function_exists( 'analytics_report_ai_get_managed_oauth_token_payload' ) 
 		if (
 			! is_string( $envelope ) ||
 			'' === $envelope ||
-			strlen( $envelope ) > 73728 ||
+			strlen( $envelope ) > 147456 ||
 			1 !== preg_match(
 				'/^m1\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/',
 				$envelope
