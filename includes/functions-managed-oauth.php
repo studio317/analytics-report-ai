@@ -445,3 +445,56 @@ if ( ! function_exists( 'analytics_report_ai_is_managed_oauth_enabled' ) ) {
 			&& true === constant( 'ANALYTICS_REPORT_AI_MANAGED_OAUTH_ENABLED' );
 	}
 }
+
+if ( ! function_exists( 'analytics_report_ai_derive_managed_oauth_store_key' ) ) {
+	/**
+	 * Derive the site-specific managed OAuth token storage key.
+	 *
+	 * K_store is separated from the site master and transaction keys by its
+	 * dedicated HKDF context. The returned key is request-local only.
+	 *
+	 * @param string $site_instance_id Site instance identifier.
+	 * @return string|false Raw 32-byte key, or false.
+	 */
+	function analytics_report_ai_derive_managed_oauth_store_key( $site_instance_id ) {
+		if (
+			! analytics_report_ai_is_managed_oauth_identifier(
+				$site_instance_id
+			) ||
+			! function_exists( 'hash_hkdf' )
+		) {
+			return false;
+		}
+
+		$site_master = analytics_report_ai_derive_managed_oauth_site_master(
+			$site_instance_id
+		);
+		$salt        = hex2bin( $site_instance_id );
+
+		if ( false === $site_master || false === $salt ) {
+			return false;
+		}
+
+		try {
+			$key = hash_hkdf(
+				'sha256',
+				$site_master,
+				32,
+				'studio317-report-drafts-google-analytics-oauth:store-key:v1',
+				$salt
+			);
+		} catch ( Throwable $throwable ) {
+			unset( $throwable, $site_master, $salt );
+
+			return false;
+		}
+
+		unset( $site_master, $salt );
+
+		if ( ! is_string( $key ) || 32 !== strlen( $key ) ) {
+			return false;
+		}
+
+		return $key;
+	}
+}

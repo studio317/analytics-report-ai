@@ -492,3 +492,263 @@ function analytics_report_ai_decrypt_oauth_exchange_response( $response_token, $
 
 	return $payload;
 }
+
+if ( ! function_exists( 'analytics_report_ai_validate_managed_oauth_token_payload' ) ) {
+	/**
+	 * Validate managed OAuth token material before or after encryption.
+	 *
+	 * @param mixed $payload Token payload.
+	 * @return bool
+	 */
+	function analytics_report_ai_validate_managed_oauth_token_payload( $payload ) {
+		if ( ! is_array( $payload ) ) {
+			return false;
+		}
+
+		$expected_keys = array(
+			'access_token',
+			'refresh_token',
+			'expires_at',
+			'refresh_token_expires_at',
+			'scope',
+			'token_type',
+			'created_at',
+			'updated_at',
+		);
+		$actual_keys   = array_keys( $payload );
+
+		sort( $expected_keys );
+		sort( $actual_keys );
+
+		if ( $expected_keys !== $actual_keys ) {
+			return false;
+		}
+
+		foreach ( array( 'access_token', 'refresh_token' ) as $token_key ) {
+			if (
+				! is_string( $payload[ $token_key ] ) ||
+				'' === $payload[ $token_key ] ||
+				strlen( $payload[ $token_key ] ) > 16384 ||
+				1 === preg_match(
+					'/[\x00-\x1F\x7F]/',
+					$payload[ $token_key ]
+				)
+			) {
+				return false;
+			}
+		}
+
+		if (
+			'https://www.googleapis.com/auth/analytics.readonly' !==
+				$payload['scope'] ||
+			'Bearer' !== $payload['token_type']
+		) {
+			return false;
+		}
+
+		if (
+			! is_int( $payload['created_at'] ) ||
+			$payload['created_at'] <= 0 ||
+			! is_int( $payload['updated_at'] ) ||
+			$payload['updated_at'] < $payload['created_at'] ||
+			! is_int( $payload['expires_at'] ) ||
+			$payload['expires_at'] <= $payload['created_at']
+		) {
+			return false;
+		}
+
+		if (
+			null !== $payload['refresh_token_expires_at'] &&
+			(
+				! is_int( $payload['refresh_token_expires_at'] ) ||
+				$payload['refresh_token_expires_at'] <=
+					$payload['created_at']
+			)
+		) {
+			return false;
+		}
+
+		return true;
+	}
+}
+
+if ( ! function_exists( 'analytics_report_ai_encrypt_managed_oauth_token_payload' ) ) {
+	/**
+	 * Encrypt managed OAuth token material using K_store.
+	 *
+	 * Envelope:
+	 * m1.<base64url iv>.<base64url ciphertext+tag>
+	 *
+	 * @param array  $payload   Valid managed OAuth token payload.
+	 * @param string $store_key Raw 32-byte K_store.
+	 * @return string Encrypted envelope, or empty string.
+	 */
+	function analytics_report_ai_encrypt_managed_oauth_token_payload( $payload, $store_key ) {
+		if (
+			! analytics_report_ai_validate_managed_oauth_token_payload(
+				$payload
+			) ||
+			! is_string( $store_key ) ||
+			32 !== strlen( $store_key ) ||
+			! function_exists( 'openssl_encrypt' )
+		) {
+			return '';
+		}
+
+		$plaintext = wp_json_encode( $payload );
+
+		if (
+			! is_string( $plaintext ) ||
+			'' === $plaintext ||
+			strlen( $plaintext ) > 49152
+		) {
+			return '';
+		}
+
+		try {
+			$iv = random_bytes( 12 );
+		} catch ( Exception $exception ) {
+			unset( $exception, $plaintext );
+
+			return '';
+		}
+
+		$tag        = '';
+		$ciphertext = openssl_encrypt(
+			$plaintext,
+			'aes-256-gcm',
+			$store_key,
+			OPENSSL_RAW_DATA,
+			$iv,
+			$tag,
+			'studio317-report-drafts-google-analytics-oauth:token-store:v1',
+			16
+		);
+
+		unset( $plaintext );
+
+		if (
+			false === $ciphertext ||
+			16 !== strlen( $tag )
+		) {
+			unset( $iv, $tag, $ciphertext );
+
+			return '';
+		}
+
+		$envelope = implode(
+			'.',
+			array(
+				'm1',
+				analytics_report_ai_base64url_encode( $iv ),
+				analytics_report_ai_base64url_encode(
+					$ciphertext . $tag
+				),
+			)
+		);
+
+		unset(
+			$iv,
+			$tag,
+			$ciphertext
+		);
+
+		return $envelope;
+	}
+}
+
+if ( ! function_exists( 'analytics_report_ai_decrypt_managed_oauth_token_payload' ) ) {
+	/**
+	 * Decrypt managed OAuth token material using K_store.
+	 *
+	 * @param string $envelope  Encrypted m1 envelope.
+	 * @param string $store_key Raw 32-byte K_store.
+	 * @return array|false Valid token payload, or false.
+	 */
+	function analytics_report_ai_decrypt_managed_oauth_token_payload( $envelope, $store_key ) {
+		if (
+			! is_string( $envelope ) ||
+			'' === $envelope ||
+			strlen( $envelope ) > 73728 ||
+			! is_string( $store_key ) ||
+			32 !== strlen( $store_key ) ||
+			! function_exists( 'openssl_decrypt' )
+		) {
+			return false;
+		}
+
+		$parts = explode( '.', $envelope );
+
+		if (
+			3 !== count( $parts ) ||
+			'm1' !== $parts[0]
+		) {
+			return false;
+		}
+
+		$iv                 = analytics_report_ai_base64url_decode_canonical(
+			$parts[1]
+		);
+		$ciphertext_and_tag =
+			analytics_report_ai_base64url_decode_canonical(
+				$parts[2]
+			);
+
+		if (
+			false === $iv ||
+			12 !== strlen( $iv ) ||
+			false === $ciphertext_and_tag ||
+			strlen( $ciphertext_and_tag ) <= 16
+		) {
+			return false;
+		}
+
+		$tag        = substr( $ciphertext_and_tag, -16 );
+		$ciphertext = substr(
+			$ciphertext_and_tag,
+			0,
+			-16
+		);
+
+		$plaintext = openssl_decrypt(
+			$ciphertext,
+			'aes-256-gcm',
+			$store_key,
+			OPENSSL_RAW_DATA,
+			$iv,
+			$tag,
+			'studio317-report-drafts-google-analytics-oauth:token-store:v1'
+		);
+
+		unset(
+			$iv,
+			$tag,
+			$ciphertext,
+			$ciphertext_and_tag
+		);
+
+		if ( false === $plaintext ) {
+			return false;
+		}
+
+		$payload = json_decode(
+			$plaintext,
+			true,
+			16,
+			JSON_BIGINT_AS_STRING
+		);
+
+		unset( $plaintext );
+
+		if (
+			JSON_ERROR_NONE !== json_last_error() ||
+			! analytics_report_ai_validate_managed_oauth_token_payload(
+				$payload
+			)
+		) {
+			return false;
+		}
+
+		return $payload;
+	}
+}
