@@ -104,6 +104,7 @@ final class Analytics_Report_AI_Admin {
 		add_action( 'admin_menu', array( $this, 'register_menus' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 		add_action( 'admin_post_analytics_report_ai_google_oauth_connect', array( $this, 'handle_google_oauth_connect' ) );
+		add_action( 'admin_post_analytics_report_ai_google_managed_oauth_connect', array( $this, 'handle_google_managed_oauth_connect' ) );
 		add_action( 'admin_post_analytics_report_ai_google_oauth_callback', array( $this, 'handle_google_oauth_callback' ) );
 		add_action( 'admin_post_analytics_report_ai_google_oauth_disconnect', array( $this, 'handle_google_oauth_disconnect' ) );
 	}
@@ -252,6 +253,299 @@ final class Analytics_Report_AI_Admin {
 	}
 
 	/**
+	 * Handle the Studio317-managed Google OAuth connect action.
+	 *
+	 * This creates a short-lived local transaction and asks the managed OAuth
+	 * Worker to construct the Google authorization redirect. It does not
+	 * exchange authorization codes or store Google tokens.
+	 *
+	 * @return void
+	 */
+	public function handle_google_managed_oauth_connect() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die(
+				esc_html__( 'You do not have permission to manage Studio317 Report Drafts for Google Analytics credentials.', 'studio317-report-drafts-google-analytics' ),
+				esc_html__( 'Permission denied', 'studio317-report-drafts-google-analytics' ),
+				array( 'response' => 403 )
+			);
+		}
+
+		check_admin_referer(
+			'analytics_report_ai_google_managed_oauth_connect',
+			'analytics_report_ai_google_managed_oauth_nonce'
+		);
+
+		$transaction = analytics_report_ai_create_managed_oauth_transaction(
+			get_current_user_id()
+		);
+
+		if ( ! is_array( $transaction ) ) {
+			$this->redirect_managed_oauth_start_failure(
+				'managed_oauth_transaction_unavailable'
+			);
+		}
+
+		$transaction_id = isset( $transaction['transaction_id'] )
+			&& is_string( $transaction['transaction_id'] )
+			? $transaction['transaction_id']
+			: '';
+
+		$authorization_url =
+			$this->request_managed_google_oauth_authorization_url(
+				$transaction
+			);
+
+		unset( $transaction );
+
+		if ( '' === $authorization_url ) {
+			analytics_report_ai_delete_managed_oauth_transaction(
+				$transaction_id
+			);
+
+			$this->redirect_managed_oauth_start_failure(
+				'managed_oauth_worker_start_failed'
+			);
+		}
+
+		unset( $transaction_id );
+
+		$this->redirect_to_google_oauth_authorization_url(
+			$authorization_url
+		);
+	}
+
+	/**
+	 * Request a Google authorization URL from the managed OAuth Worker.
+	 *
+	 * @param array $transaction Managed OAuth transaction.
+	 * @return string Empty string on failure.
+	 */
+	private function request_managed_google_oauth_authorization_url( $transaction ) {
+		if ( ! is_array( $transaction ) ) {
+			return '';
+		}
+
+		$endpoint = analytics_report_ai_get_managed_oauth_start_endpoint();
+
+		if ( ! $this->is_valid_managed_oauth_start_endpoint( $endpoint ) ) {
+			return '';
+		}
+
+		$payload = array(
+			'protocol_version' => '1',
+			'transaction_id'   => isset( $transaction['transaction_id'] )
+				? $transaction['transaction_id']
+				: '',
+			'site_instance_id' => isset( $transaction['site_instance_id'] )
+				? $transaction['site_instance_id']
+				: '',
+			'callback_url'     => $this->get_google_oauth_redirect_uri(),
+			'transaction_key'  => isset( $transaction['transaction_key'] )
+				? $transaction['transaction_key']
+				: '',
+			'issued_at'        => isset( $transaction['issued_at'] )
+				? $transaction['issued_at']
+				: 0,
+		);
+
+		$body = wp_json_encode( $payload );
+
+		unset( $payload );
+
+		if ( ! is_string( $body ) || '' === $body ) {
+			return '';
+		}
+
+		$response = wp_safe_remote_post(
+			$endpoint,
+			array(
+				'timeout'     => 15,
+				'redirection' => 0,
+				'headers'     => array(
+					'Accept'       => 'application/json',
+					'Content-Type' => 'application/json',
+				),
+				'body'        => $body,
+			)
+		);
+
+		unset( $body );
+
+		if ( is_wp_error( $response ) ) {
+			unset( $response );
+
+			return '';
+		}
+
+		$status_code = (int) wp_remote_retrieve_response_code( $response );
+		$location    = wp_remote_retrieve_header( $response, 'location' );
+
+		unset( $response );
+
+		if (
+			303 !== $status_code ||
+			! is_string( $location ) ||
+			! $this->is_valid_managed_google_oauth_authorization_url(
+				$location,
+				$endpoint
+			)
+		) {
+			return '';
+		}
+
+		return $location;
+	}
+
+	/**
+	 * Validate the configured managed OAuth start endpoint.
+	 *
+	 * @param string $endpoint Worker endpoint.
+	 * @return bool
+	 */
+	private function is_valid_managed_oauth_start_endpoint( $endpoint ) {
+		if ( ! is_string( $endpoint ) || '' === $endpoint ) {
+			return false;
+		}
+
+		$parts = wp_parse_url( $endpoint );
+
+		if ( ! is_array( $parts ) ) {
+			return false;
+		}
+
+		return isset(
+			$parts['scheme'],
+			$parts['host'],
+			$parts['path']
+		)
+			&& 'https' === strtolower( $parts['scheme'] )
+			&& '' !== $parts['host']
+			&& '/v1/oauth/start' === $parts['path']
+			&& empty( $parts['user'] )
+			&& empty( $parts['pass'] )
+			&& empty( $parts['query'] )
+			&& empty( $parts['fragment'] );
+	}
+
+	/**
+	 * Validate the Google authorization URL returned by the Worker.
+	 *
+	 * @param string $authorization_url Authorization URL.
+	 * @param string $start_endpoint    Managed OAuth start endpoint.
+	 * @return bool
+	 */
+	private function is_valid_managed_google_oauth_authorization_url(
+		$authorization_url,
+		$start_endpoint
+	) {
+		if (
+			! is_string( $authorization_url ) ||
+			'' === $authorization_url ||
+			strlen( $authorization_url ) > 16384
+		) {
+			return false;
+		}
+
+		$parts = wp_parse_url( $authorization_url );
+
+		if (
+			! is_array( $parts ) ||
+			empty( $parts['query'] ) ||
+			! isset( $parts['scheme'], $parts['host'], $parts['path'] ) ||
+			'https' !== strtolower( $parts['scheme'] ) ||
+			'accounts.google.com' !== strtolower( $parts['host'] ) ||
+			'/o/oauth2/v2/auth' !== $parts['path'] ||
+			! empty( $parts['user'] ) ||
+			! empty( $parts['pass'] ) ||
+			! empty( $parts['fragment'] )
+		) {
+			return false;
+		}
+
+		wp_parse_str( $parts['query'], $query );
+
+		$expected_keys = array(
+			'access_type',
+			'client_id',
+			'prompt',
+			'redirect_uri',
+			'response_type',
+			'scope',
+			'state',
+		);
+
+		$actual_keys = array_keys( $query );
+
+		sort( $expected_keys );
+		sort( $actual_keys );
+
+		if ( $expected_keys !== $actual_keys ) {
+			return false;
+		}
+
+		if (
+			empty( $query['client_id'] ) ||
+			! is_string( $query['client_id'] ) ||
+			'code' !== $query['response_type'] ||
+			self::GOOGLE_OAUTH_ANALYTICS_READONLY_SCOPE !== $query['scope'] ||
+			'offline' !== $query['access_type'] ||
+			'select_account consent' !== $query['prompt'] ||
+			! is_string( $query['state'] ) ||
+			1 !== preg_match(
+				'/^s1\.[A-Za-z0-9_-]{1,32}\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/',
+				$query['state']
+			)
+		) {
+			return false;
+		}
+
+		$redirect_uri = wp_parse_url( $query['redirect_uri'] );
+		$worker_start = wp_parse_url( $start_endpoint );
+
+		if (
+			! is_array( $redirect_uri ) ||
+			! is_array( $worker_start ) ||
+			! isset(
+				$redirect_uri['scheme'],
+				$redirect_uri['host'],
+				$redirect_uri['path'],
+				$worker_start['scheme'],
+				$worker_start['host']
+			)
+		) {
+			return false;
+		}
+
+		return strtolower( $redirect_uri['scheme'] )
+				=== strtolower( $worker_start['scheme'] )
+			&& strtolower( $redirect_uri['host'] )
+				=== strtolower( $worker_start['host'] )
+			&& '/v1/google/callback' === $redirect_uri['path']
+			&& empty( $redirect_uri['user'] )
+			&& empty( $redirect_uri['pass'] )
+			&& empty( $redirect_uri['query'] )
+			&& empty( $redirect_uri['fragment'] );
+	}
+
+	/**
+	 * Redirect back to Settings after managed OAuth start failure.
+	 *
+	 * @param string $status Safe failure category.
+	 * @return void
+	 */
+	private function redirect_managed_oauth_start_failure( $status ) {
+		wp_safe_redirect(
+			$this->get_settings_url(
+				array(
+					'analytics_report_ai_google_oauth_status' => $status,
+				)
+			)
+		);
+
+		exit;
+	}
+
+	/**
 	 * Handle the Google OAuth connect action.
 	 *
 	 * This action redirects to Google authorization only after local capability,
@@ -360,6 +654,23 @@ final class Analytics_Report_AI_Admin {
 				esc_html__( 'Permission denied', 'studio317-report-drafts-google-analytics' ),
 				array( 'response' => 403 )
 			);
+		}
+
+		if (
+			filter_has_var( INPUT_GET, 'transaction_id' ) ||
+			filter_has_var( INPUT_GET, 'handoff' )
+		) {
+			$callback_status = $this->classify_managed_google_oauth_callback();
+
+			wp_safe_redirect(
+				$this->get_settings_url(
+					array(
+						'analytics_report_ai_google_oauth_status' => $callback_status,
+					)
+				)
+			);
+
+			exit;
 		}
 
 		$callback_result = $this->classify_google_oauth_callback();
@@ -530,6 +841,120 @@ final class Analytics_Report_AI_Admin {
 			'analytics_report_ai_google_oauth_callback',
 			admin_url( 'admin-post.php' )
 		);
+	}
+
+	/**
+	 * Classify and consume a managed Google OAuth callback handoff.
+	 *
+	 * The exchange ticket remains request-local and is intentionally not
+	 * exchanged, stored, displayed, or logged at this stage.
+	 *
+	 * @return string Safe status category.
+	 */
+	private function classify_managed_google_oauth_callback() {
+		$transaction_id = filter_input(
+			INPUT_GET,
+			'transaction_id',
+			FILTER_UNSAFE_RAW
+		);
+		$handoff        = filter_input(
+			INPUT_GET,
+			'handoff',
+			FILTER_UNSAFE_RAW
+		);
+
+		if (
+			! is_string( $transaction_id ) ||
+			! is_string( $handoff ) ||
+			'' === $transaction_id ||
+			'' === $handoff
+		) {
+			return 'managed_oauth_callback_missing';
+		}
+
+		if (
+			! analytics_report_ai_is_managed_oauth_identifier(
+				$transaction_id
+			) ||
+			strlen( $handoff ) > 40960 ||
+			1 !== preg_match(
+				'/^h1\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/',
+				$handoff
+			)
+		) {
+			return 'managed_oauth_callback_invalid';
+		}
+
+		$transaction =
+			analytics_report_ai_consume_managed_oauth_transaction(
+				$transaction_id,
+				get_current_user_id()
+			);
+
+		if ( ! is_array( $transaction ) ) {
+			return 'managed_oauth_transaction_unavailable';
+		}
+
+		$transaction_key = isset( $transaction['transaction_key'] )
+			&& is_string( $transaction['transaction_key'] )
+			? $transaction['transaction_key']
+			: '';
+
+		$payload = analytics_report_ai_decrypt_oauth_handoff(
+			$handoff,
+			$transaction_key
+		);
+
+		unset( $handoff, $transaction_key );
+
+		if ( ! is_array( $payload ) ) {
+			unset( $transaction );
+
+			return 'managed_oauth_handoff_invalid';
+		}
+
+		if (
+			! isset(
+				$payload['transaction_id'],
+				$payload['site_instance_id'],
+				$payload['issued_at'],
+				$payload['expires_at']
+			) ||
+			! is_string( $payload['transaction_id'] ) ||
+			! is_string( $payload['site_instance_id'] ) ||
+			! hash_equals(
+				$transaction_id,
+				$payload['transaction_id']
+			) ||
+			! hash_equals(
+				$transaction['site_instance_id'],
+				$payload['site_instance_id']
+			)
+		) {
+			unset( $payload, $transaction );
+
+			return 'managed_oauth_handoff_invalid';
+		}
+
+		$now = time();
+
+		if (
+			$payload['issued_at'] > $now + 300 ||
+			$payload['expires_at'] < $now
+		) {
+			unset( $payload, $transaction );
+
+			return 'managed_oauth_handoff_expired';
+		}
+
+		/*
+		 * The encrypted exchange ticket has now crossed the Worker-to-
+		 * WordPress boundary successfully. Token exchange is deliberately
+		 * deferred to the next implementation stage.
+		 */
+		unset( $payload, $transaction );
+
+		return 'managed_oauth_handoff_validated';
 	}
 
 	/**

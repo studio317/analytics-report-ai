@@ -70,6 +70,8 @@ final class Analytics_Report_AI_Plugin {
 	 */
 	private function load_dependencies() {
 		require_once ANALYTICS_REPORT_AI_DIR . 'includes/functions-utils.php';
+		require_once ANALYTICS_REPORT_AI_DIR . 'includes/functions-oauth-crypto.php';
+		require_once ANALYTICS_REPORT_AI_DIR . 'includes/functions-managed-oauth.php';
 		require_once ANALYTICS_REPORT_AI_DIR . 'includes/class-admin.php';
 		require_once ANALYTICS_REPORT_AI_DIR . 'includes/class-help-dialog.php';
 		require_once ANALYTICS_REPORT_AI_DIR . 'includes/class-settings.php';

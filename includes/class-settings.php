@@ -540,8 +540,13 @@ final class Analytics_Report_AI_Settings {
 					</p>
 				<?php else : ?>
 					<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
-						<input type="hidden" name="action" value="analytics_report_ai_google_oauth_connect" />
-						<?php wp_nonce_field( 'analytics_report_ai_google_oauth_connect', 'analytics_report_ai_google_oauth_nonce' ); ?>
+						<?php if ( analytics_report_ai_is_managed_oauth_enabled() ) : ?>
+							<input type="hidden" name="action" value="analytics_report_ai_google_managed_oauth_connect" />
+							<?php wp_nonce_field( 'analytics_report_ai_google_managed_oauth_connect', 'analytics_report_ai_google_managed_oauth_nonce' ); ?>
+						<?php else : ?>
+							<input type="hidden" name="action" value="analytics_report_ai_google_oauth_connect" />
+							<?php wp_nonce_field( 'analytics_report_ai_google_oauth_connect', 'analytics_report_ai_google_oauth_nonce' ); ?>
+						<?php endif; ?>
 						<?php submit_button( $google_oauth_needs_reconnect ? __( 'Reconnect Google Account', 'studio317-report-drafts-google-analytics' ) : __( 'Connect Google Account', 'studio317-report-drafts-google-analytics' ), 'secondary', 'submit', false ); ?>
 					</form>
 				<?php endif; ?>
@@ -719,6 +724,47 @@ final class Analytics_Report_AI_Settings {
 		$status = is_string( $status ) ? sanitize_key( $status ) : '';
 
 		if ( '' === $status ) {
+			return;
+		}
+
+		$managed_message = '';
+
+		switch ( $status ) {
+			case 'managed_oauth_transaction_unavailable':
+				$managed_message = __( 'Google authorization could not continue because the temporary local connection transaction was unavailable or had expired. Start the connection again.', 'studio317-report-drafts-google-analytics' );
+				break;
+
+			case 'managed_oauth_worker_start_failed':
+				$managed_message = __( 'Google authorization could not be started through the managed connection service. No Google token was saved.', 'studio317-report-drafts-google-analytics' );
+				break;
+
+			case 'managed_oauth_callback_missing':
+				$managed_message = __( 'Google connection could not continue because the managed return request was incomplete.', 'studio317-report-drafts-google-analytics' );
+				break;
+
+			case 'managed_oauth_callback_invalid':
+				$managed_message = __( 'Google connection could not continue because the managed return request was invalid.', 'studio317-report-drafts-google-analytics' );
+				break;
+
+			case 'managed_oauth_handoff_invalid':
+				$managed_message = __( 'Google connection could not continue because the encrypted return information could not be verified.', 'studio317-report-drafts-google-analytics' );
+				break;
+
+			case 'managed_oauth_handoff_expired':
+				$managed_message = __( 'Google connection could not continue because the encrypted return information had expired. Start the connection again.', 'studio317-report-drafts-google-analytics' );
+				break;
+
+			case 'managed_oauth_handoff_validated':
+				$managed_message = __( 'The managed Google authorization return was verified successfully. Token exchange is not enabled yet in this development stage.', 'studio317-report-drafts-google-analytics' );
+				break;
+		}
+
+		if ( '' !== $managed_message ) {
+			?>
+			<div class="notice notice-info">
+				<p><?php echo esc_html( $managed_message ); ?></p>
+			</div>
+			<?php
 			return;
 		}
 
