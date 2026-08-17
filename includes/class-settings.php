@@ -778,6 +778,26 @@ final class Analytics_Report_AI_Settings {
 				$managed_message = __( 'Google authorization could not be completed because the token provider returned an unusable response. Raw provider details are not displayed and no token was saved.', 'studio317-report-drafts-google-analytics' );
 				break;
 
+			case 'managed_oauth_exchange_google_network_error':
+				$managed_message = __( 'Google token exchange could not be completed because communication with Google failed. No token was saved.', 'studio317-report-drafts-google-analytics' );
+				break;
+
+			case 'managed_oauth_exchange_scope_mismatch':
+				$managed_message = __( 'Google token exchange returned permissions that did not match the required Google Analytics read-only scope. No token was saved.', 'studio317-report-drafts-google-analytics' );
+				break;
+
+			case 'managed_oauth_exchange_missing_token':
+				$managed_message = __( 'Google token exchange completed, but the required refresh token was not returned. No token was saved.', 'studio317-report-drafts-google-analytics' );
+				break;
+
+			case 'managed_oauth_exchange_malformed_response':
+				$managed_message = __( 'Google token exchange returned a response that could not be validated safely. Raw response details are not displayed and no token was saved.', 'studio317-report-drafts-google-analytics' );
+				break;
+
+			case 'managed_oauth_exchange_provider_error':
+				$managed_message = __( 'Google rejected the token exchange request. Raw Google error details are not displayed and no token was saved.', 'studio317-report-drafts-google-analytics' );
+				break;
+
 			case 'managed_oauth_exchange_rejected':
 				$managed_message = __( 'Google authorization could not be completed because the managed token exchange request was rejected. No token was saved.', 'studio317-report-drafts-google-analytics' );
 				break;

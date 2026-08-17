@@ -1202,11 +1202,19 @@ final class Analytics_Report_AI_Admin {
 					return 'managed_oauth_exchange_unavailable';
 
 				case 'google_token_network_error':
+					return 'managed_oauth_exchange_google_network_error';
+
 				case 'google_token_scope_mismatch':
+					return 'managed_oauth_exchange_scope_mismatch';
+
 				case 'google_token_missing_token':
+					return 'managed_oauth_exchange_missing_token';
+
 				case 'google_token_malformed_response':
+					return 'managed_oauth_exchange_malformed_response';
+
 				case 'google_token_provider_error':
-					return 'managed_oauth_exchange_provider_failed';
+					return 'managed_oauth_exchange_provider_error';
 
 				case 'invalid_exchange_request_authentication':
 					return 'managed_oauth_exchange_rejected';
