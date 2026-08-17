@@ -696,3 +696,57 @@ if ( ! function_exists( 'analytics_report_ai_delete_managed_oauth_tokens' ) ) {
 		);
 	}
 }
+
+if ( ! function_exists( 'analytics_report_ai_derive_managed_oauth_refresh_key' ) ) {
+	/**
+	 * Derive the site-specific managed OAuth refresh authentication key.
+	 *
+	 * K_refresh is separated from K_store and transaction keys by a dedicated
+	 * HKDF context. The key is derived when needed and is never persisted.
+	 *
+	 * @param string $site_instance_id Site instance identifier.
+	 * @return string Base64URL-encoded 32-byte K_refresh, or empty string.
+	 */
+	function analytics_report_ai_derive_managed_oauth_refresh_key( $site_instance_id ) {
+		if (
+			! analytics_report_ai_is_managed_oauth_identifier(
+				$site_instance_id
+			) ||
+			! function_exists( 'hash_hkdf' )
+		) {
+			return '';
+		}
+
+		$site_master =
+			analytics_report_ai_derive_managed_oauth_site_master(
+				$site_instance_id
+			);
+		$salt        = hex2bin( $site_instance_id );
+
+		if ( false === $site_master || false === $salt ) {
+			return '';
+		}
+
+		try {
+			$key = hash_hkdf(
+				'sha256',
+				$site_master,
+				32,
+				'studio317-report-drafts-google-analytics-oauth:refresh-key:v1',
+				$salt
+			);
+		} catch ( Throwable $throwable ) {
+			unset( $throwable, $site_master, $salt );
+
+			return '';
+		}
+
+		unset( $site_master, $salt );
+
+		if ( ! is_string( $key ) || 32 !== strlen( $key ) ) {
+			return '';
+		}
+
+		return analytics_report_ai_base64url_encode( $key );
+	}
+}
