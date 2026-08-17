@@ -762,6 +762,14 @@ final class Analytics_Report_AI_Settings {
 				$managed_message = __( 'Managed Google authorization and token exchange were verified successfully. Token storage is not enabled yet in this development stage.', 'studio317-report-drafts-google-analytics' );
 				break;
 
+			case 'managed_oauth_token_stored':
+				$managed_message = __( 'Managed Google authorization completed successfully and the OAuth tokens were saved locally in encrypted form.', 'studio317-report-drafts-google-analytics' );
+				break;
+
+			case 'managed_oauth_token_storage_failed':
+				$managed_message = __( 'Google authorization and token exchange completed, but the encrypted token data could not be saved locally.', 'studio317-report-drafts-google-analytics' );
+				break;
+
 			case 'managed_oauth_exchange_invalid_grant':
 				$managed_message = __( 'Google authorization could not be completed because the authorization result was rejected. Start the connection again. No token was saved.', 'studio317-report-drafts-google-analytics' );
 				break;

@@ -1328,18 +1328,71 @@ final class Analytics_Report_AI_Admin {
 			return 'managed_oauth_exchange_invalid_response';
 		}
 
-		/*
-		 * The encrypted token response has been authenticated, decrypted, and
-		 * validated. Persistent token storage is deliberately deferred.
-		 */
+		$stored_at = time();
+
+		if (
+			! isset(
+				$exchange_payload['access_token'],
+				$exchange_payload['refresh_token'],
+				$exchange_payload['expires_in'],
+				$exchange_payload['refresh_token_expires_in'],
+				$exchange_payload['scope'],
+				$exchange_payload['token_type']
+			) ||
+			! is_string( $exchange_payload['access_token'] ) ||
+			! is_string( $exchange_payload['refresh_token'] ) ||
+			! is_int( $exchange_payload['expires_in'] ) ||
+			$exchange_payload['expires_in'] <= 0 ||
+			$exchange_payload['expires_in'] > PHP_INT_MAX - $stored_at ||
+			(
+				null !== $exchange_payload['refresh_token_expires_in'] &&
+				(
+					! is_int( $exchange_payload['refresh_token_expires_in'] ) ||
+					$exchange_payload['refresh_token_expires_in'] <= 0 ||
+					$exchange_payload['refresh_token_expires_in'] >
+						PHP_INT_MAX - $stored_at
+				)
+			)
+		) {
+			unset(
+				$exchange_payload,
+				$expected_fingerprint,
+				$exchange_ticket,
+				$transaction_key
+			);
+
+			return 'managed_oauth_exchange_invalid_response';
+		}
+
+		$token_payload = array(
+			'access_token'             => $exchange_payload['access_token'],
+			'refresh_token'            => $exchange_payload['refresh_token'],
+			'expires_at'               => $stored_at + $exchange_payload['expires_in'],
+			'refresh_token_expires_at' => null !== $exchange_payload['refresh_token_expires_in']
+				? $stored_at + $exchange_payload['refresh_token_expires_in']
+				: null,
+			'scope'                    => $exchange_payload['scope'],
+			'token_type'               => $exchange_payload['token_type'],
+			'created_at'               => $stored_at,
+			'updated_at'               => $stored_at,
+		);
+
+		$stored =
+			analytics_report_ai_store_managed_oauth_token_payload(
+				$token_payload
+			);
+
 		unset(
+			$token_payload,
 			$exchange_payload,
 			$expected_fingerprint,
 			$exchange_ticket,
 			$transaction_key
 		);
 
-		return 'managed_oauth_exchange_validated';
+		return $stored
+			? 'managed_oauth_token_stored'
+			: 'managed_oauth_token_storage_failed';
 	}
 
 	/**
