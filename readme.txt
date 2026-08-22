@@ -2,9 +2,9 @@
 Contributors: cuerda
 Tags: analytics, ai, ga4, reports
 Requires at least: 7.0
-Tested up to: 7.0
+Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 0.2.0
+Stable tag: 0.3.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -192,6 +192,13 @@ No. Google OAuth token values are hidden in the plugin admin UI. Existing self-m
 Do not send credentials, API keys, access tokens, Authorization headers, plugin option values, request bodies, raw API responses, AI data JSON, generated report text, screenshots, browser Network evidence, GA4 property identifiers, host names, page paths, traffic source values, city values, or analytics metric values. Describe the screen, action, visible status message, warning message, or general error name instead.
 
 == Changelog ==
+
+= 0.3.0 =
+* Added Studio317-managed Google OAuth as the default for new and clean installations, so users normally no longer need to create their own Google Cloud OAuth client credentials.
+* Added encrypted local storage and on-demand refresh handling for managed Google OAuth connections through the Studio317 OAuth service, while GA4 Data API requests continue to be sent directly from WordPress to Google.
+* Preserved legacy self-managed OAuth compatibility for existing installations with previous OAuth configuration or token storage.
+* Updated Google connection status, external-service documentation, and regional data wording for the managed OAuth workflow.
+* Verified compatibility with WordPress 7.1.
 
 = 0.2.0 =
 * Simplified Report Builder so administrators can create an AI-assisted report draft from selected report conditions in one action.
