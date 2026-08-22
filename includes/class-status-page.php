@@ -26,12 +26,19 @@ final class Analytics_Report_AI_Status_Page {
 			return;
 		}
 
+		$is_managed_oauth                  = analytics_report_ai_is_managed_oauth_enabled();
 		$settings                          = analytics_report_ai_get_settings();
-		$google_oauth_client_configuration = analytics_report_ai_resolve_google_oauth_client_configuration( $settings );
-		$google_oauth_client_source        = $this->get_scalar_status( $google_oauth_client_configuration, 'source_category', 'missing' );
-		$google_oauth_client_fallback      = $this->get_scalar_status( $google_oauth_client_configuration, 'settings_fallback_status', 'not_saved' );
-		$google_oauth_client_value_display = $this->get_scalar_status( $google_oauth_client_configuration, 'value_hidden_status', 'hidden' );
-		unset( $google_oauth_client_configuration['client_id'], $google_oauth_client_configuration['client_secret'] );
+		$google_oauth_client_source        = 'missing';
+		$google_oauth_client_fallback      = 'not_saved';
+		$google_oauth_client_value_display = 'hidden';
+
+		if ( ! $is_managed_oauth ) {
+			$google_oauth_client_configuration = analytics_report_ai_resolve_google_oauth_client_configuration( $settings );
+			$google_oauth_client_source        = $this->get_scalar_status( $google_oauth_client_configuration, 'source_category', 'missing' );
+			$google_oauth_client_fallback      = $this->get_scalar_status( $google_oauth_client_configuration, 'settings_fallback_status', 'not_saved' );
+			$google_oauth_client_value_display = $this->get_scalar_status( $google_oauth_client_configuration, 'value_hidden_status', 'hidden' );
+			unset( $google_oauth_client_configuration['client_id'], $google_oauth_client_configuration['client_secret'] );
+		}
 
 		$google_oauth_lifecycle_categories   = analytics_report_ai_get_google_oauth_token_lifecycle_categories();
 		$google_oauth_connection_status      = $this->get_scalar_status( $google_oauth_lifecycle_categories, 'oauth_connection_status_category', 'not_connected' );
@@ -58,18 +65,25 @@ final class Analytics_Report_AI_Status_Page {
 
 				<table class="widefat striped studio317-report-drafts-google-analytics-status-table">
 					<tbody>
-						<tr>
-							<th scope="row"><?php echo esc_html__( 'OAuth client setup', 'studio317-report-drafts-google-analytics' ); ?></th>
-							<td><?php echo esc_html( $this->get_google_oauth_client_source_label( $google_oauth_client_source ) ); ?></td>
-						</tr>
-						<tr>
-							<th scope="row"><?php echo esc_html__( 'Saved Settings client', 'studio317-report-drafts-google-analytics' ); ?></th>
-							<td><?php echo esc_html( $this->get_google_oauth_client_fallback_label( $google_oauth_client_fallback ) ); ?></td>
-						</tr>
-						<tr>
-							<th scope="row"><?php echo esc_html__( 'Value display', 'studio317-report-drafts-google-analytics' ); ?></th>
-							<td><?php echo esc_html( $this->get_value_display_label( $google_oauth_client_value_display ) ); ?></td>
-						</tr>
+						<?php if ( $is_managed_oauth ) : ?>
+							<tr>
+								<th scope="row"><?php echo esc_html__( 'Google OAuth mode', 'studio317-report-drafts-google-analytics' ); ?></th>
+								<td><?php echo esc_html__( 'Studio317-managed OAuth', 'studio317-report-drafts-google-analytics' ); ?></td>
+							</tr>
+						<?php else : ?>
+							<tr>
+								<th scope="row"><?php echo esc_html__( 'OAuth client setup', 'studio317-report-drafts-google-analytics' ); ?></th>
+								<td><?php echo esc_html( $this->get_google_oauth_client_source_label( $google_oauth_client_source ) ); ?></td>
+							</tr>
+							<tr>
+								<th scope="row"><?php echo esc_html__( 'Saved Settings client', 'studio317-report-drafts-google-analytics' ); ?></th>
+								<td><?php echo esc_html( $this->get_google_oauth_client_fallback_label( $google_oauth_client_fallback ) ); ?></td>
+							</tr>
+							<tr>
+								<th scope="row"><?php echo esc_html__( 'Value display', 'studio317-report-drafts-google-analytics' ); ?></th>
+								<td><?php echo esc_html( $this->get_value_display_label( $google_oauth_client_value_display ) ); ?></td>
+							</tr>
+						<?php endif; ?>
 						<tr>
 							<th scope="row"><?php echo esc_html__( 'AI generation provider', 'studio317-report-drafts-google-analytics' ); ?></th>
 							<td>

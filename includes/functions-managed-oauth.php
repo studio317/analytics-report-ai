@@ -434,15 +434,30 @@ if ( ! function_exists( 'analytics_report_ai_get_managed_oauth_start_endpoint' )
 
 if ( ! function_exists( 'analytics_report_ai_is_managed_oauth_enabled' ) ) {
 	/**
-	 * Check whether managed OAuth is explicitly enabled for this environment.
+	 * Check whether managed OAuth is enabled for this environment.
 	 *
-	 * Managed OAuth remains disabled unless the environment opts in.
+	 * An explicit environment override takes priority. Otherwise, sites with
+	 * existing legacy OAuth configuration or token storage remain in legacy
+	 * mode, while new and unconfigured sites default to managed OAuth.
 	 *
 	 * @return bool
 	 */
 	function analytics_report_ai_is_managed_oauth_enabled() {
-		return defined( 'ANALYTICS_REPORT_AI_MANAGED_OAUTH_ENABLED' )
-			&& true === constant( 'ANALYTICS_REPORT_AI_MANAGED_OAUTH_ENABLED' );
+		if ( defined( 'ANALYTICS_REPORT_AI_MANAGED_OAUTH_ENABLED' ) ) {
+			return true === constant( 'ANALYTICS_REPORT_AI_MANAGED_OAUTH_ENABLED' );
+		}
+
+		$client_configuration = analytics_report_ai_resolve_google_oauth_client_configuration();
+
+		if (
+			'missing' !== $client_configuration['constants_status'] ||
+			'missing' !== $client_configuration['settings_status'] ||
+			analytics_report_ai_google_oauth_token_storage_exists()
+		) {
+			return false;
+		}
+
+		return true;
 	}
 }
 

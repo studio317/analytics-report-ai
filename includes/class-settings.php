@@ -184,6 +184,11 @@ final class Analytics_Report_AI_Settings {
 		}
 
 		$is_managed_oauth = analytics_report_ai_is_managed_oauth_enabled();
+		if ( $is_managed_oauth ) {
+			$has_google_oauth_token_storage = analytics_report_ai_managed_oauth_token_storage_exists();
+		} else {
+			$has_google_oauth_token_storage = analytics_report_ai_google_oauth_token_storage_exists();
+		}
 
 		$settings                  = analytics_report_ai_get_settings();
 		$host_filter_enabled     = ! empty( $settings['host_filter_enabled'] );
@@ -198,7 +203,6 @@ final class Analytics_Report_AI_Settings {
 		$google_oauth_lifecycle_categories      = analytics_report_ai_get_google_oauth_token_lifecycle_categories();
 		$google_oauth_connection_state          = isset( $google_oauth_lifecycle_categories['oauth_connection_status_category'] ) ? $google_oauth_lifecycle_categories['oauth_connection_status_category'] : analytics_report_ai_get_google_oauth_connection_state();
 		$google_oauth_token_lifecycle_status    = isset( $google_oauth_lifecycle_categories['token_lifecycle_status_category'] ) ? $google_oauth_lifecycle_categories['token_lifecycle_status_category'] : 'reconnect_required';
-		$has_google_oauth_token_storage         = analytics_report_ai_google_oauth_token_storage_exists();
 		$google_oauth_redirect_uri              = $this->get_google_oauth_redirect_uri();
 		$google_oauth_is_connected              = 'connected' === $google_oauth_connection_state && 'usable' === $google_oauth_token_lifecycle_status;
 		$google_oauth_needs_reconnect           = ! $google_oauth_is_connected && $has_google_oauth_token_storage;

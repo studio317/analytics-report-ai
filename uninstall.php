@@ -13,3 +13,5 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 
 delete_option( 'analytics_report_ai_settings' );
 delete_option( 'analytics_report_ai_oauth_tokens' );
+delete_option( 'analytics_report_ai_managed_oauth_site_instance_id' );
+delete_option( 'analytics_report_ai_managed_oauth_tokens' );
